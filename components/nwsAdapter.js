@@ -46,7 +46,9 @@
       periodByDate.set(date, entry);
     });
     weather.forecastDaily.days = weather.forecastDaily.days.map((day) => {
-      const date = new Date(day.forecastStart).toISOString().slice(0, 10);
+      // forecastStart is deliberately encoded from the provider's local calendar date.
+      // Do not use toISOString() here: converting local midnight to UTC can shift the date.
+      const date = String(day.forecastStart || "").slice(0, 10);
       const periodsForDate = periodByDate.get(date);
       if (!periodsForDate) return day;
       const dayPeriod = periodsForDate.day;

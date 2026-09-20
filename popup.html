@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <div class="preloader loaded">
         <div class="preloader_icons">
                 <div class="preloader_icon_cloud"><img src="images/weather_icon/preloader_cloud.svg"
@@ -88,7 +88,12 @@
                                 <div class="folding-angle"></div>
                 </aside>
                 <div><a id="photo_credit" class="photo_credit" href="#" target="_blank">Photo Credit</a></div>
-                <div class="header"></div><input type="checkbox" class="openSidebarMenu" id="openSidebarMenu"> <label
+                <div class="header"></div>
+                <div id="weatherpulse_refresh_controls" class="manual_refresh_bar" role="toolbar" aria-label="Weather refresh">
+                        <button id="manual_refresh_button" type="button" title="Fetch fresh weather data">↻ Refresh weather</button>
+                        <span id="manual_refresh_status" aria-live="polite">Ready</span>
+                </div>
+                <input type="checkbox" class="openSidebarMenu" id="openSidebarMenu"> <label
                         for="openSidebarMenu" class="sidebarIconToggle">
                         <div class="spinner diagonal part-1"></div>
                         <div class="spinner horizontal"></div>

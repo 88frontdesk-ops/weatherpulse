@@ -108,6 +108,17 @@ const daily = (wCast) => {
         ((hr.className = "hr_forecast_daily"), dailyForecastTable.appendChild(hr));
       }
     }
+    // Restore Daily accordion expand/collapse behavior.
+    dailyForecastTable.querySelectorAll(".accordion").forEach((button) => {
+      button.onclick = () => {
+        const panel = button.nextElementSibling;
+        if (!panel || !panel.classList.contains("panel_daily")) return;
+        const isOpen = button.classList.toggle("active");
+        panel.style.maxHeight = isOpen ? `${panel.scrollHeight}px` : null;
+        const arrow = button.querySelector(".more_down_icon_Class");
+        if (arrow) arrow.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+      };
+    });
   })();
   const dailySparkline = async (dayIndex, dayHours, icons, tempUnit, timeFormat) => {
     await loadCharts();
@@ -149,6 +160,25 @@ const daily = (wCast) => {
       if ("degrees" === data.windDirUnit) { updateElementWithDayNight(elementIdWindDir, windDirDailyDay, toDeg); updateElementWithDayNight(elementIdWindDirNight, windDirDailyDay, toDeg); } else { updateElementWithDayNight(elementIdWindDir, windDirDailyDay, toCom); updateElementWithDayNight(elementIdWindDirNight, windDirDailyNight, toCom); }
       function updateTemperatureElements(i, setting, wCast) { const tempMax = wCast.forecastDaily.days[i].temperatureMax + 273.15, tempMin = wCast.forecastDaily.days[i].temperatureMin + 273.15, conversionFunction = "c" === setting ? k2c : k2f; const updateElement = (idSuffix, content) => { document.getElementById(`forecast_${i}_${idSuffix}`).textContent = content; }; updateElement("daily_temperatures_max", `${conversionFunction(tempMax)}°`); updateElement("daily_temperatures_min", `${conversionFunction(tempMin)}°`); updateElement("daily_temp", `${conversionFunction(tempMax)}°`); updateElement("daily_temp_min", `${conversionFunction(tempMin)}°`); }
       function setDescriptionAndDate(i, wCast, daylight) {
+        const dayRecord = wCast.forecastDaily.days[i];
+        const dayDate = moment.unix(toTimestamp(dayRecord.forecastStart) + offsetUnix);
+        const dayLabel = document.getElementById(`forecast_${i}_daily_day`);
+        if (dayLabel) dayLabel.textContent = i === 0 ? (chrome.i18n.getMessage("today") || "Today") : dayDate.format("ddd D");
+        const iconNames = {
+          "clear-day":"c_sun", "clear-night":"c_moon", rain:"c_cloud_rain",
+          snow:"c_cloud_snow", sleet:"c_cloud_snow_alt", wind:"c_wind",
+          fog:"c_cloud_fog_alt", cloudy:"c_cloud",
+          "partly-cloudy-day":"c_cloud_sun", "partly-cloudy-night":"c_cloud_moon"
+        };
+        const setDailyIcon = (selector, forecast, daylight) => {
+          const el = document.querySelector(selector);
+          if (!el || !forecast) return;
+          const name = getWeIcon(forecast.conditionCode, daylight, forecast.cloudCover);
+          const icon = iconNames[name] || (daylight ? "c_sun" : "c_moon");
+          el.innerHTML = `<img src="images/weather_icon/${icon}.svg" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon">`;
+        };
+        setDailyIcon(`.forecast_${i}_daily_day_icon_Class`, dayRecord.daytimeForecast, true);
+        setDailyIcon(`.forecast_${i}_daily_night_icon_Class`, dayRecord.overnightForecast, false);
         function setDescription(prefix, forecast) { const windSpeedConversionFactor = 1e3 / 3600; const forecastDescription = typeof forecast.description === "string" && forecast.description.trim() ? forecast.description.trim() : getWeDescription(forecast.conditionCode); const descriptionText = capitalize(forecastDescription) + ". " + capitalize(getBeaufortDesc(forecast.windSpeed * windSpeedConversionFactor)); document.getElementById(`forecast_${i}_${prefix}_description`).textContent = descriptionText; }
         setDescription("daily_night", wCast.forecastDaily.days[i].overnightForecast); setDescription("daily_day", wCast.forecastDaily.days[i].daytimeForecast);
         const dayDateText = moment.unix(toTimestamp(wCast.forecastDaily.days[i].forecastStart) + offsetUnix).format("dddd, MMMM DD, YYYY");
@@ -168,6 +198,6 @@ const daily = (wCast) => {
       document.getElementById(`forecast_${i}_daily_precipitation`).textContent = formatPrecipitation(wCast.forecastDaily.days[i].daytimeForecast.precipitationAmount, data.precipitationUnit); document.getElementById(`forecast_${i}_daily_night_precipitation`).textContent = formatPrecipitation(wCast.forecastDaily.days[i].overnightForecast.precipitationAmount, data.precipitationUnit);
       setDescriptionAndDate(i, wCast, !0);
     }
-    weeklySelected = data.weeklySelected; getDailyChart();
+    weeklySelected = data.weeklySelected;
   });
 };

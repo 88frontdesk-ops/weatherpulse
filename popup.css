@@ -5843,3 +5843,15 @@ input:checked + .slider_setting_radar:before {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+/* Daily forecast day/night icons: keep icons compact in the accordion header. */
+.forecast_daily_daynight_icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  max-width: 22px;
+  max-height: 22px;
+  object-fit: contain;
+  vertical-align: middle;
+}

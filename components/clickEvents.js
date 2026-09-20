@@ -506,7 +506,7 @@ const clickEvents = () => {
       document.getElementById("proLogin").addEventListener("click", (e) => {
         chrome.storage.local.get(["subscriptionActive", "deviceId"], (data) => {
           window.open(
-            `https://uvweather.net/prologin?deviceId=${encodeURIComponent(data.deviceId)}`,
+            `prologin?deviceId=${encodeURIComponent(data.deviceId)}`,
             "_blank",
           );
         });

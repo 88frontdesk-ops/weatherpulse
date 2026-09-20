@@ -4,7 +4,7 @@ if (typeof globalThis.fetch === "function" && !globalThis.__weatherFetchTracked)
   globalThis.fetch = async (...args) => {
     const response = await originalFetch(...args);
     const requestUrl = typeof args[0] === "string" ? args[0] : args[0]?.url;
-    if (requestUrl?.startsWith("https://weather.uvw.workers.dev/")) {
+    if (requestUrl?.startsWith("")) {
       globalThis._lastWeatherFetchAt = Math.floor(Date.now() / 1000);
     }
     return response;

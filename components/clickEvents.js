@@ -71,9 +71,11 @@ const clickEvents = () => {
       document.querySelectorAll(".daily_hourly_page").forEach((item) => {
         item.addEventListener("click", (event) => {
           chrome.storage.local.get(
-            ["hourlySelected", "weeklySelected"],
+            ["hourlySelected", "weeklySelected", "outlookSelected"],
             (data) => {
-              data.hourlySelected
+              // Outlook period cards represent hourly forecast details.
+              // Do not fall through to World, which still expects the removed legacy API.
+              data.hourlySelected || data.outlookSelected
                 ? hourlyPage()
                 : data.weeklySelected
                   ? dailyPage()

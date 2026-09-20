@@ -200,12 +200,12 @@ SunCalc.getMoonIllumination = function (date) {
     m = moonCoords(d),
     sdist = 149598000,
     phi = acos(
-      sin(s.dec) * sin(m.dec) + cos(s.dec) * cos(m.dec) * cos(s.ra - m.ra)
+      sin(s.dec) * sin(m.dec) + cos(s.dec) * cos(m.dec) * cos(s.ra - m.ra),
     ),
     inc = atan(sdist * sin(phi), m.dist - sdist * cos(phi)),
     angle = atan(
       cos(s.dec) * sin(s.ra - m.ra),
-      sin(s.dec) * cos(m.dec) - cos(s.dec) * sin(m.dec) * cos(s.ra - m.ra)
+      sin(s.dec) * cos(m.dec) - cos(s.dec) * sin(m.dec) * cos(s.ra - m.ra),
     );
 
   return {

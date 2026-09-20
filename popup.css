@@ -5844,7 +5844,6 @@ input:checked + .slider_setting_radar:before {
   white-space: nowrap;
 }
 
-
 /* Daily forecast day/night icons: keep icons compact in the accordion header. */
 .forecast_daily_daynight_icon {
   display: inline-block;

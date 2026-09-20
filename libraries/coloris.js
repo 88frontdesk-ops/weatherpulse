@@ -133,7 +133,7 @@
           Array.from(document.getElementsByClassName("clr-field")).forEach(
             function (field) {
               return field.classList.toggle("clr-rtl", settings.rtl);
-            }
+            },
           );
           break;
         case "margin":
@@ -173,7 +173,7 @@
                 button.setAttribute("id", "clr-swatch-" + i);
                 button.setAttribute(
                   "aria-labelledby",
-                  "clr-swatch-label clr-swatch-" + i
+                  "clr-swatch-label clr-swatch-" + i,
                 );
                 button.style.color = swatch;
                 button.textContent = swatch;
@@ -406,7 +406,7 @@
       colorValue.focus({ preventScroll: true });
       colorValue.setSelectionRange(
         currentEl.selectionStart,
-        currentEl.selectionEnd
+        currentEl.selectionEnd,
       );
     }
 
@@ -664,7 +664,7 @@
     document.dispatchEvent(
       new CustomEvent("coloris:pick", {
         detail: { color: color, currentEl: currentEl },
-      })
+      }),
     );
   }
 
@@ -826,9 +826,8 @@
     }
 
     // Select the current format in the format switcher
-    document.querySelector(
-      '.clr-format [value="' + format + '"]'
-    ).checked = true;
+    document.querySelector('.clr-format [value="' + format + '"]').checked =
+      true;
   }
 
   /**
@@ -897,7 +896,7 @@
 
     if (lightness > 0 && lightness < 1) {
       saturation = Math.round(
-        ((value - lightness) / Math.min(lightness, 1 - lightness)) * 100
+        ((value - lightness) / Math.min(lightness, 1 - lightness)) * 100,
       );
     }
 
@@ -1189,7 +1188,7 @@
         currentFormat = event.target.value;
         updateColor();
         pickColor();
-      }
+      },
     );
 
     addListener(picker, "click", ".clr-swatches button", function (event) {
@@ -1254,7 +1253,7 @@
 
       // Open the color picker
       event.target.nextElementSibling.dispatchEvent(
-        new Event("click", { bubbles: true })
+        new Event("click", { bubbles: true }),
       );
     });
 

@@ -1,6 +1,6 @@
 (() => {
   const WEATHER_TIMEOUT_MS = 10000;
-  const requestJson = async (url, headers = {}) => { const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT_MS); try { const response = await fetch(url, { method: "GET", headers, signal: controller.signal }); if (!response.ok) throw new Error(`Weather request failed: ${response.status}`); return response.json(); } finally { clearTimeout(timeout); } };
+  const requestJson = async (url, headers = {}) => { const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT_MS); try { const response = await fetch(url, { method: "GET", headers, cache: "no-store", signal: controller.signal }); if (!response.ok) throw new Error(`Weather request failed: ${response.status}`); return response.json(); } finally { clearTimeout(timeout); } };
   const setApiSource = (source) => { if (globalThis.chrome?.storage?.local) chrome.storage.local.set({ weatherApiSource: source }); };
   const clamp01 = (value) => Math.max(0, Math.min(1, value));
   const directionToDegrees = (value) => { if (typeof value === "number" && Number.isFinite(value)) return value; const directions = { N: 0, NNE: 22.5, NE: 45, ENE: 67.5, E: 90, ESE: 112.5, SE: 135, SSE: 157.5, S: 180, SSW: 202.5, SW: 225, WSW: 247.5, W: 270, WNW: 292.5, NW: 315, NNW: 337.5 }; return directions[String(value || "").toUpperCase()] ?? 0; };

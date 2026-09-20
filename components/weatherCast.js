@@ -76,17 +76,9 @@ const weCast = (latlong, country, timezone, resolve, reject) => {
     });
   };
 
-  useCache().then((data) => {
-    const apiInterval = data.subscriptionActive ? 2 : 1;
-    const cached = data.wCast;
-    const hasNwsDetails = Array.isArray(cached?.forecastDaily?.days) && cached.forecastDaily.days.some((day) => day?.nwsDetailedForecast?.day || day?.nwsDetailedForecast?.night);
-    const freshEnough = cached?.currentWeather?.asOf && hasNwsDetails && Date.now() < Date.parse(cached.currentWeather.asOf) + apiInterval * 60 * 60 * 1000;
-    if (freshEnough) {
-      try { const result = applyWeather(cached); resolve && resolve(result); return; }
-      catch (error) { console.warn("Cached weather data invalid; refreshing.", error); }
-    }
-    loadWeatherData({ latitude: lat, longitude: lng, country, timezone })
-      .then((wCast) => { const result = applyWeather(wCast); resolve && resolve(result); })
-      .catch((error) => { console.error("Weather provider request failed.", error); reject && reject(error); });
-  }).catch((error) => { console.error("Weather cache lookup failed.", error); reject && reject(error); });
+  // Always fetch fresh weather data. Deliberately bypass the extension's stored
+  // weather snapshot so every popup opening requests current NWS/Open-Meteo data.
+  loadWeatherData({ latitude: lat, longitude: lng, country, timezone })
+    .then((wCast) => { const result = applyWeather(wCast); resolve && resolve(result); })
+    .catch((error) => { console.error("Weather provider request failed.", error); reject && reject(error); });
 };

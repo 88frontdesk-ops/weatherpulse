@@ -8,7 +8,9 @@
   background-color: #fff;
   justify-content: flex-end;
   direction: ltr;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05), 0 5px 20px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 0 5px rgba(0, 0, 0, 0.05),
+    0 5px 20px rgba(0, 0, 0, 0.1);
   -moz-user-select: none;
   -webkit-user-select: none;
   user-select: none;
@@ -29,7 +31,8 @@
   height: 100px;
   margin-bottom: 15px;
   border-radius: 3px 3px 0 0;
-  background-image: linear-gradient(rgba(0, 0, 0, 0), #000),
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0), #000),
     linear-gradient(90deg, #fff, currentColor);
   cursor: pointer;
 }
@@ -387,7 +390,8 @@ input.clr-color:focus {
 .clr-swatches button,
 .clr-preview:before,
 .clr-field button {
-  background-image: repeating-linear-gradient(
+  background-image:
+    repeating-linear-gradient(
       45deg,
       #aaa 25%,
       transparent 25%,
@@ -403,7 +407,9 @@ input.clr-color:focus {
       #aaa 75%,
       #aaa
     );
-  background-position: 0 0, 4px 4px;
+  background-position:
+    0 0,
+    4px 4px;
   background-size: 8px 8px;
 }
 
@@ -416,7 +422,9 @@ input.clr-color:focus {
 .clr-keyboard-nav .clr-alpha input:focus + div,
 .clr-keyboard-nav .clr-segmented input:focus + label {
   outline: none;
-  box-shadow: 0 0 0 2px #1e90ff, 0 0 2px 2px #fff;
+  box-shadow:
+    0 0 0 2px #1e90ff,
+    0 0 2px 2px #fff;
 }
 
 .clr-picker[data-alpha="false"] .clr-alpha {
@@ -467,7 +475,8 @@ input.clr-color:focus {
 .clr-dark .clr-alpha div,
 .clr-dark .clr-swatches button,
 .clr-dark .clr-preview:before {
-  background-image: repeating-linear-gradient(
+  background-image:
+    repeating-linear-gradient(
       45deg,
       #666 25%,
       transparent 25%,
@@ -489,7 +498,9 @@ input.clr-color:focus {
 
 .clr-picker.clr-polaroid {
   border-radius: 6px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1), 0 5px 30px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 0 5px rgba(0, 0, 0, 0.1),
+    0 5px 30px rgba(0, 0, 0, 0.2);
 }
 
 .clr-picker.clr-polaroid:before {

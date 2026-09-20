@@ -93,7 +93,7 @@ const byteArrayToString = function (bytes) {
       const c2 = bytes[pos++];
       const c3 = bytes[pos++];
       out[c++] = String.fromCharCode(
-        ((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63)
+        ((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63),
       );
     }
   }
@@ -185,7 +185,7 @@ const base64 = {
         byteToCharMap[outByte1],
         byteToCharMap[outByte2],
         byteToCharMap[outByte3],
-        byteToCharMap[outByte4]
+        byteToCharMap[outByte4],
       );
     }
     return output.join("");
@@ -548,7 +548,7 @@ function validateIndexedDBOpenable() {
         reject(
           ((_a = request.error) === null || _a === void 0
             ? void 0
-            : _a.message) || ""
+            : _a.message) || "",
         );
       };
     } catch (error) {
@@ -622,7 +622,7 @@ class FirebaseError extends Error {
     code,
     message,
     /** Custom data for this error. */
-    customData
+    customData,
   ) {
     super(message);
     this.code = code;
@@ -819,7 +819,7 @@ class Provider {
     var _a;
     // if multipleInstances is not supported, use the default name
     const normalizedIdentifier = this.normalizeInstanceIdentifier(
-      options === null || options === void 0 ? void 0 : options.identifier
+      options === null || options === void 0 ? void 0 : options.identifier,
     );
     const optional =
       (_a =
@@ -857,7 +857,7 @@ class Provider {
   setComponent(component) {
     if (component.name !== this.name) {
       throw Error(
-        `Mismatching Component ${component.name} for Provider ${this.name}.`
+        `Mismatching Component ${component.name} for Provider ${this.name}.`,
       );
     }
     if (this.component) {
@@ -934,11 +934,11 @@ class Provider {
   initialize(opts = {}) {
     const { options = {} } = opts;
     const normalizedIdentifier = this.normalizeInstanceIdentifier(
-      opts.instanceIdentifier
+      opts.instanceIdentifier,
     );
     if (this.isInitialized(normalizedIdentifier)) {
       throw Error(
-        `${this.name}(${normalizedIdentifier}) has already been initialized`
+        `${this.name}(${normalizedIdentifier}) has already been initialized`,
       );
     }
     if (!this.isComponentSet()) {
@@ -1029,7 +1029,7 @@ class Provider {
           this.component.onInstanceCreated(
             this.container,
             instanceIdentifier,
-            instance
+            instance,
           );
         } catch (_a) {
           // ignore errors in the onInstanceCreatedCallback
@@ -1100,7 +1100,7 @@ class ComponentContainer {
     const provider = this.getProvider(component.name);
     if (provider.isComponentSet()) {
       throw new Error(
-        `Component ${component.name} has already been registered with ${this.name}`
+        `Component ${component.name} has already been registered with ${this.name}`,
       );
     }
     provider.setComponent(component);
@@ -1214,7 +1214,7 @@ const defaultLogHandler = (instance, logType, ...args) => {
     console[method](`[${now}]  ${instance.name}:`, ...args);
   } else {
     throw new Error(
-      `Attempted to log a message with an invalid logType (value: ${logType})`
+      `Attempted to log a message with an invalid logType (value: ${logType})`,
     );
   }
 };
@@ -1489,7 +1489,7 @@ function wrapFunction(func) {
       const tx = func.call(unwrap(this), storeNames, ...args);
       transactionStoreNamesMap.set(
         tx,
-        storeNames.sort ? storeNames.sort() : [storeNames]
+        storeNames.sort ? storeNames.sort() : [storeNames],
       );
       return wrap(tx);
     };
@@ -1551,7 +1551,7 @@ const unwrap = (value) => reverseTransformCache.get(value);
 function openDB(
   name,
   version,
-  { blocked, upgrade, blocking, terminated } = {}
+  { blocked, upgrade, blocking, terminated } = {},
 ) {
   const request = indexedDB.open(name, version);
   const openPromise = wrap(request);
@@ -1562,7 +1562,7 @@ function openDB(
         event.oldVersion,
         event.newVersion,
         wrap(request.transaction),
-        event
+        event,
       );
     });
   }
@@ -1572,8 +1572,8 @@ function openDB(
         // Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
         event.oldVersion,
         event.newVersion,
-        event
-      )
+        event,
+      ),
     );
   }
   openPromise
@@ -1581,7 +1581,7 @@ function openDB(
       if (terminated) db.addEventListener("close", () => terminated());
       if (blocking) {
         db.addEventListener("versionchange", (event) =>
-          blocking(event.oldVersion, event.newVersion, event)
+          blocking(event.oldVersion, event.newVersion, event),
         );
       }
     })
@@ -1852,7 +1852,7 @@ function _addComponent(app, component) {
   } catch (e) {
     logger.debug(
       `Component ${component.name} failed to register with FirebaseApp ${app.name}`,
-      e
+      e,
     );
   }
 }
@@ -1874,7 +1874,7 @@ function _registerComponent(component) {
   const componentName = component.name;
   if (_components.has(componentName)) {
     logger.debug(
-      `There were multiple attempts to register component ${componentName}.`
+      `There were multiple attempts to register component ${componentName}.`,
     );
     return false;
   }
@@ -1914,7 +1914,7 @@ function _getProvider(app, name) {
 function _removeServiceInstance(
   app,
   name,
-  instanceIdentifier = DEFAULT_ENTRY_NAME
+  instanceIdentifier = DEFAULT_ENTRY_NAME,
 ) {
   _getProvider(app, name).clearInstance(instanceIdentifier);
 }
@@ -1996,7 +1996,7 @@ class FirebaseAppImpl {
       config.automaticDataCollectionEnabled;
     this._container = container;
     this.container.addComponent(
-      new Component("app", () => this, "PUBLIC" /* ComponentType.PUBLIC */)
+      new Component("app", () => this, "PUBLIC" /* ComponentType.PUBLIC */),
     );
   }
   get automaticDataCollectionEnabled() {
@@ -2071,7 +2071,7 @@ function initializeApp(_options, rawConfig = {}) {
   }
   const config = Object.assign(
     { name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: false },
-    rawConfig
+    rawConfig,
   );
   const name = config.name;
   if (typeof name !== "string" || !name) {
@@ -2175,7 +2175,7 @@ async function deleteApp(app) {
   if (_apps.has(name)) {
     _apps.delete(name);
     await Promise.all(
-      app.container.getProviders().map((provider) => provider.delete())
+      app.container.getProviders().map((provider) => provider.delete()),
     );
     app.isDeleted = true;
   }
@@ -2207,7 +2207,7 @@ function registerVersion(libraryKeyOrName, version, variant) {
     ];
     if (libraryMismatch) {
       warning.push(
-        `library name "${library}" contains illegal characters (whitespace or "/")`
+        `library name "${library}" contains illegal characters (whitespace or "/")`,
       );
     }
     if (libraryMismatch && versionMismatch) {
@@ -2215,7 +2215,7 @@ function registerVersion(libraryKeyOrName, version, variant) {
     }
     if (versionMismatch) {
       warning.push(
-        `version name "${version}" contains illegal characters (whitespace or "/")`
+        `version name "${version}" contains illegal characters (whitespace or "/")`,
       );
     }
     logger.warn(warning.join(" "));
@@ -2225,8 +2225,8 @@ function registerVersion(libraryKeyOrName, version, variant) {
     new Component(
       `${library}-version`,
       () => ({ library, version }),
-      "VERSION" /* ComponentType.VERSION */
-    )
+      "VERSION" /* ComponentType.VERSION */,
+    ),
   );
 }
 /**
@@ -2239,7 +2239,7 @@ function registerVersion(libraryKeyOrName, version, variant) {
 function onLog(logCallback, options) {
   if (logCallback !== null && typeof logCallback !== "function") {
     throw ERROR_FACTORY.create(
-      "invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */
+      "invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */,
     );
   }
   setUserLogHandler(logCallback, options);
@@ -2315,7 +2315,7 @@ async function readHeartbeatsFromIndexedDB(app) {
         "idb-get" /* AppError.IDB_GET */,
         {
           originalErrorMessage: e === null || e === void 0 ? void 0 : e.message,
-        }
+        },
       );
       logger.warn(idbGetError.message);
     }
@@ -2336,7 +2336,7 @@ async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
         "idb-set" /* AppError.IDB_WRITE */,
         {
           originalErrorMessage: e === null || e === void 0 ? void 0 : e.message,
-        }
+        },
       );
       logger.warn(idbGetError.message);
     }
@@ -2421,7 +2421,7 @@ class HeartbeatServiceImpl {
     if (
       this._heartbeatsCache.lastSentHeartbeatDate === date ||
       this._heartbeatsCache.heartbeats.some(
-        (singleDateHeartbeat) => singleDateHeartbeat.date === date
+        (singleDateHeartbeat) => singleDateHeartbeat.date === date,
       )
     ) {
       return;
@@ -2435,7 +2435,7 @@ class HeartbeatServiceImpl {
         const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
         const now = Date.now();
         return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
-      }
+      },
     );
     return this._storage.overwrite(this._heartbeatsCache);
   }
@@ -2463,10 +2463,10 @@ class HeartbeatServiceImpl {
     const date = getUTCDateString();
     // Extract as many heartbeats from the cache as will fit under the size limit.
     const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(
-      this._heartbeatsCache.heartbeats
+      this._heartbeatsCache.heartbeats,
     );
     const headerString = base64urlEncodeWithoutPadding(
-      JSON.stringify({ version: 2, heartbeats: heartbeatsToSend })
+      JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }),
     );
     // Store last sent date to prevent another being logged/sent for the same day.
     this._heartbeatsCache.lastSentHeartbeatDate = date;
@@ -2492,7 +2492,7 @@ function getUTCDateString() {
 }
 function extractHeartbeatsForHeader(
   heartbeatsCache,
-  maxSize = MAX_HEADER_BYTES
+  maxSize = MAX_HEADER_BYTES,
 ) {
   // Heartbeats grouped by user agent in the standard format to be sent in
   // the header.
@@ -2502,7 +2502,7 @@ function extractHeartbeatsForHeader(
   for (const singleDateHeartbeat of heartbeatsCache) {
     // Look for an existing entry with the same user agent.
     const heartbeatEntry = heartbeatsToSend.find(
-      (hb) => hb.agent === singleDateHeartbeat.agent
+      (hb) => hb.agent === singleDateHeartbeat.agent,
     );
     if (!heartbeatEntry) {
       // If no entry for this user agent exists, create one.
@@ -2617,7 +2617,7 @@ function countBytes(heartbeatsCache) {
   // base64 has a restricted set of characters, all of which should be 1 byte.
   return base64urlEncodeWithoutPadding(
     // heartbeatsCache wrapper properties
-    JSON.stringify({ version: 2, heartbeats: heartbeatsCache })
+    JSON.stringify({ version: 2, heartbeats: heartbeatsCache }),
   ).length;
 }
 
@@ -2642,15 +2642,15 @@ function registerCoreComponents(variant) {
     new Component(
       "platform-logger",
       (container) => new PlatformLoggerServiceImpl(container),
-      "PRIVATE" /* ComponentType.PRIVATE */
-    )
+      "PRIVATE" /* ComponentType.PRIVATE */,
+    ),
   );
   _registerComponent(
     new Component(
       "heartbeat",
       (container) => new HeartbeatServiceImpl(container),
-      "PRIVATE" /* ComponentType.PRIVATE */
-    )
+      "PRIVATE" /* ComponentType.PRIVATE */,
+    ),
   );
   // Register `app` package.
   registerVersion(name$o, version$1, variant);

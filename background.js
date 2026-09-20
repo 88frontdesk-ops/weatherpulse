@@ -30,12 +30,13 @@ if (!self.document) {
       badgeTempUV(location.latlong, location.country, location.timezone);
     };
 
-    const defaultCity = () => setLocationDefaults({
-      citys: "New York",
-      latlong: "40.713,-74.0072",
-      timezone: "America/New_York",
-      country: "US",
-    });
+    const defaultCity = () =>
+      setLocationDefaults({
+        citys: "New York",
+        latlong: "40.713,-74.0072",
+        timezone: "America/New_York",
+        country: "US",
+      });
 
     const initializeLocation = () => {
       chrome.storage.local.get("verUpdate", (data) => {
@@ -67,22 +68,28 @@ if (!self.document) {
     const badgeTempUV = (latlong, country, timezone) => {
       if (!latlong || !timezone) return;
       timeZoneBadge = getTimezoneOffset(timezone);
-      chrome.storage.local.get(["badgeDataSource", "IntervalUpdate"], (data) => {
-        const requiresFreshData =
-          data.badgeDataSource === "realtime" ||
-          ["15", "30"].includes(String(data.IntervalUpdate));
-        if (requiresFreshData) {
-          chrome.storage.local.remove("wCast", () => weCast(latlong, country, timezone));
-        } else {
-          weCast(latlong, country, timezone);
-        }
-      });
+      chrome.storage.local.get(
+        ["badgeDataSource", "IntervalUpdate"],
+        (data) => {
+          const requiresFreshData =
+            data.badgeDataSource === "realtime" ||
+            ["15", "30"].includes(String(data.IntervalUpdate));
+          if (requiresFreshData) {
+            chrome.storage.local.remove("wCast", () =>
+              weCast(latlong, country, timezone),
+            );
+          } else {
+            weCast(latlong, country, timezone);
+          }
+        },
+      );
     };
 
     const intervalUpdate = () => {
       chrome.storage.local.get("IntervalUpdate", (data) => {
         const interval = parseInt(data.IntervalUpdate, 10) || 60;
-        if (!data.IntervalUpdate) chrome.storage.local.set({ IntervalUpdate: "60" });
+        if (!data.IntervalUpdate)
+          chrome.storage.local.set({ IntervalUpdate: "60" });
         chrome.alarms.create("intervalUpdateTimes", {
           delayInMinutes: 0.05,
           periodInMinutes: Math.max(15, interval),
@@ -93,9 +100,12 @@ if (!self.document) {
     chrome.storage.local.get("verUpdate", (data) => {
       if (![1, 2].includes(data.verUpdate)) initializeLocation();
       else {
-        chrome.storage.local.get(["latlong", "country", "timezone"], (location) => {
-          badgeTempUV(location.latlong, location.country, location.timezone);
-        });
+        chrome.storage.local.get(
+          ["latlong", "country", "timezone"],
+          (location) => {
+            badgeTempUV(location.latlong, location.country, location.timezone);
+          },
+        );
       }
       intervalUpdate();
     });

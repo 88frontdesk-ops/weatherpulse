@@ -197,9 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
           (function (latlong, country, timezone) {
             return new Promise((resolve, reject) => {
               wCast = [];
-              chrome.storage.local.remove("wCast", function () {
-                weCast(latlong, country, timezone, resolve, reject);
-              });
+              // Let weCast decide whether the 15-minute cache is still valid.
+              // Do not delete the cache on every popup open.
+              weCast(latlong, country, timezone, resolve, reject, false);
             });
           })(latlong, country, timezone),
         ]).then((_ref) => {
@@ -269,11 +269,31 @@ document.addEventListener("DOMContentLoaded", () => {
   noData();
   document.getElementById("preload_body").style.display = "block";
   loadLocations();
+  // Register navigation handlers before optional settings initialization.
+  // If a settings value or widget fails during startup, navigation remains usable.
+  clickEvents();
   setting();
   favouriteCheck = !0;
+  const manualRefreshButton = document.getElementById("manual_refresh_button");
+  const manualRefreshStatus = document.getElementById("manual_refresh_status");
+  if (manualRefreshButton) manualRefreshButton.addEventListener("click", () => {
+    manualRefreshButton.disabled = true;
+    if (manualRefreshStatus) manualRefreshStatus.textContent = " Refreshing…";
+    chrome.storage.local.get(["latlong", "country", "timezone"], (data) => {
+      new Promise((resolve, reject) => {
+        weCast(data.latlong, data.country, data.timezone, resolve, reject, true);
+      }).then((freshWeather) => {
+        refreshPopup(freshWeather);
+        if (manualRefreshStatus) manualRefreshStatus.textContent = " Updated";
+      }).catch(() => {
+        if (manualRefreshStatus) manualRefreshStatus.textContent = " Refresh failed";
+      }).finally(() => {
+        manualRefreshButton.disabled = false;
+      });
+    });
+  });
   popup();
   toggleActions();
-  clickEvents();
   mp_visits();
   setTimeout(() => {
     mp_event("Popup Open");

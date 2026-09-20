@@ -1,6 +1,7 @@
-const weCast = (latlong, country, timezone, resolve, reject) => {
+const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = false) => {
   const [lat, lng] = String(latlong || "").split(",").map(Number);
-  const useCache = async () => chrome.storage.local.get(["wCast", "subscriptionActive"]);
+  const CACHE_TTL_MS = 15 * 60 * 1000;
+  const useCache = async () => chrome.storage.local.get(["wCast", "wCastCachedAt", "subscriptionActive"]);
 
   const applyWeather = (wCast) => {
     if (!wCast?.currentWeather || !wCast?.forecastHourly?.hours?.length || !wCast?.forecastDaily?.days?.length) throw new Error("Incomplete weather response");
@@ -76,9 +77,18 @@ const weCast = (latlong, country, timezone, resolve, reject) => {
     });
   };
 
-  // Always fetch fresh weather data. Deliberately bypass the extension's stored
-  // weather snapshot so every popup opening requests current NWS/Open-Meteo data.
-  loadWeatherData({ latitude: lat, longitude: lng, country, timezone })
-    .then((wCast) => { const result = applyWeather(wCast); resolve && resolve(result); })
-    .catch((error) => { console.error("Weather provider request failed.", error); reject && reject(error); });
+  useCache().then((cached) => {
+    const cachedWeather = cached?.wCast;
+    const cachedAt = Number(cached?.wCastCachedAt) || 0;
+    const cacheIsFresh = cachedWeather && cachedAt > 0 && (Date.now() - cachedAt) < CACHE_TTL_MS;
+    if (!forceRefresh && cacheIsFresh) {
+      try { const result = applyWeather(cachedWeather); resolve && resolve(result); return; } catch (error) { console.warn("Cached weather data invalid; fetching fresh data.", error); }
+    }
+    return loadWeatherData({ latitude: lat, longitude: lng, country, timezone })
+      .then((weather) => {
+        chrome.storage.local.set({ wCastCachedAt: Date.now() });
+        const result = applyWeather(weather);
+        resolve && resolve(result);
+      });
+  }).catch((error) => { console.error("Weather provider request failed.", error); reject && reject(error); });
 };

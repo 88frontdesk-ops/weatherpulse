@@ -18,6 +18,8 @@ const favourite = () => {
             // hidden modal can retain unloaded icon resources until tab switch.
             typeof daily === "function" && daily(wCast),
             (favIcon_daily.style.display = "block"),
+            // Render once more on the next paint after the Daily modal is visible.
+            requestAnimationFrame(() => requestAnimationFrame(() => { if (typeof daily === "function" && wCast) daily(wCast); })), 
             (favIcon_daily.style.backgroundImage =
               'url("/images/favourite-active.svg")'),
             dailyIcon.classList.add("sub_menu_icon_active_Class"),

@@ -29,7 +29,7 @@ const daily = (wCast) => {
         );
       } catch (_) {}
       const fileName = iconNames[iconName] || (daylight ? "c_sun" : "c_moon");
-      return `<img src="images/weather_icon/${fileName}.svg" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;
+      return `<img src="${chrome.runtime.getURL(`images/weather_icon/${fileName}.svg`)}" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;
     };
     return ((dailyForecastItem.innerHTML = `
       <button class="accordion">
@@ -203,7 +203,7 @@ const daily = (wCast) => {
             name = getWeIcon(forecast.conditionCode || "clear", daylight, Number(forecast.cloudCover) || 0);
           } catch (_) {}
           const icon = iconNames[name] || (daylight ? "c_sun" : "c_moon");
-          const src = `/images/weather_icon/${icon}.svg`;
+          const src = chrome.runtime.getURL(`images/weather_icon/${icon}.svg`);
           el.style.backgroundImage = "none";
           el.textContent = "";
           el.innerHTML = `<img src="${src}" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;

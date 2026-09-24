@@ -1,1 +1,1 @@
-localStorage.setItem("uvw_language", "en");
+localStorage.setItem("weatherpulse_language", "en");

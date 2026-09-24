@@ -269,6 +269,27 @@ document.addEventListener("DOMContentLoaded", () => {
   noData();
   document.getElementById("preload_body").style.display = "block";
   loadLocations();
+  // Register the Settings controls independently of the large legacy clickEvents
+  // initializer. This keeps the gear usable even if another optional control
+  // throws during startup. The capture handler also prevents a stale/overlay
+  // handler from swallowing the click.
+  const openSettingsDirect = (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (typeof closeAllPopup === "function") closeAllPopup();
+    if (modalSetting) {
+      modalSetting.style.display = "block";
+      modalSetting.style.visibility = "visible";
+      modalSetting.style.zIndex = "1000";
+    }
+    const unitTab = document.getElementById("tab_setting_unit");
+    if (unitTab) unitTab.checked = true;
+    if (typeof mp_event === "function") mp_event("Setting Page");
+  };
+  document.querySelectorAll(".setting_page").forEach((item) => {
+    item.addEventListener("click", openSettingsDirect, true);
+  });
+
   // Register navigation handlers before optional settings initialization.
   // If a settings value or widget fails during startup, navigation remains usable.
   clickEvents();

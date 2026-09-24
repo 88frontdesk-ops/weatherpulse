@@ -6,13 +6,38 @@ const daily = (wCast) => {
     (document.getElementById("subtitle_daily_text").textContent = chrome.i18n.getMessage("next10Days")));
   const createDailyForecast = (index) => {
     const dailyForecastItem = document.createElement("div");
+    const dayRecord = wCast.forecastDaily.days[index] || {};
+    const iconNames = {
+      "clear-day": "c_sun",
+      "clear-night": "c_moon",
+      rain: "c_cloud_rain",
+      snow: "c_cloud_snow",
+      sleet: "c_cloud_snow_alt",
+      wind: "c_wind",
+      fog: "c_cloud_fog_alt",
+      cloudy: "c_cloud",
+      "partly-cloudy-day": "c_cloud_sun",
+      "partly-cloudy-night": "c_cloud_moon"
+    };
+    const getDailyIconMarkup = (forecast, daylight) => {
+      let iconName = daylight ? "clear-day" : "clear-night";
+      try {
+        iconName = getWeIcon(
+          forecast?.conditionCode || "clear",
+          daylight,
+          Number(forecast?.cloudCover) || 0
+        );
+      } catch (_) {}
+      const fileName = iconNames[iconName] || (daylight ? "c_sun" : "c_moon");
+      return `<img src="images/weather_icon/${fileName}.svg" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;
+    };
     return ((dailyForecastItem.innerHTML = `
       <button class="accordion">
         <span id="forecast_${index}_daily_day" class="forecast_day_modal_Class">-</span>
         <span id="forecast_${index}_pop" class="forecast_rain_modal_Class"></span>
         <span class="popDaily_group_Class">
-          <span class="forecast_${index}_daily_day_icon_Class forecast_icon_modal_Class">.</span>
-          <span class="forecast_${index}_daily_night_icon_Class forecast_icon_modal_Class" style="margin-left: 12px;">.</span>
+          <span class="forecast_${index}_daily_day_icon_Class forecast_icon_modal_Class">${getDailyIconMarkup(dayRecord.daytimeForecast, true)}</span>
+          <span class="forecast_${index}_daily_night_icon_Class forecast_icon_modal_Class" style="margin-left: 12px;">${getDailyIconMarkup(dayRecord.overnightForecast, false)}</span>
         </span>
         <span class="icon_min_max_daily_Class">
           <span id="forecast_${index}_daily_temp" class="forecast_temp_max_modal_Class">-°</span>
@@ -23,15 +48,15 @@ const daily = (wCast) => {
       <div class="panel_daily">
         <div class="panel_sub_daily">
         <div id="forecast_${index}_daily_full_date" class="forecast_daily_full_date_Class"></div>
-        <div style="display: flex; flex-direction: row;">
-            <span id="daily_${index}_day_description_group" style="max-width: 225px; width: 225px; display: inline-block;">
+        <div class="daily_description_groups">
+            <div id="daily_${index}_day_description_group" class="daily_description_group">
               <div id="forecast_${index}_daily_day_date" class="forecast_daily_date_Class">-</div>
               <div id="forecast_${index}_daily_day_description" class="forecast_daily_description_Class">-</div>
-            </span>
-            <span id="daily_${index}_night_description_group">
+            </div>
+            <div id="daily_${index}_night_description_group" class="daily_description_group">
               <div id="forecast_${index}_daily_night_date" class="forecast_daily_date_Class">-</div>
               <div id="forecast_${index}_daily_night_description" class="forecast_daily_description_Class">-</div>
-          </span>
+            </div>
         </div>
 
         <hr id="hr_forecast_daily_sub" class="hr_forecast_daily_main">
@@ -132,8 +157,8 @@ const daily = (wCast) => {
     const timelineContainer = document.getElementById(`daily_${dayIndex}_timeline`); timelineContainer && icons.length > 0 && (timelineContainer._timelineData = icons.map((icon) => ({ color: getTimelineColor(icon), text: getTimelineText(icon) })));
   };
   for (let i = 0; i < 5; i++) document.querySelector(`.forecast_${i}_date`).textContent = moment.unix(toTimestamp(wCast.forecastDaily.days[i].forecastStart) + offsetUnix).format("ddd D");
-  chrome.storage.local.get(["setSettingFC", "windDirUnit", "windUnit", "weeklySelected", "precipitationUnit", "humidityUnit", "subscriptionActive", "TimeFormat"], (data) => {
-    const updateElementWithDayNight = (elementId, value, unitConverter) => { const element = document.getElementById(elementId); element && (element.textContent = unitConverter(value)); }, endOfHourly = data.subscriptionActive ? wCast.forecastHourly.hours.length : Math.min(48, wCast.forecastHourly.hours.length), hoursByDay = {};
+  chrome.storage.local.get(["setSettingFC", "windDirUnit", "windUnit", "weeklySelected", "precipitationUnit", "humidityUnit", "weatherpulseFullAccess", "TimeFormat"], (data) => {
+    const updateElementWithDayNight = (elementId, value, unitConverter) => { const element = document.getElementById(elementId); element && (element.textContent = unitConverter(value)); }, endOfHourly = data.weatherpulseFullAccess ? wCast.forecastHourly.hours.length : Math.min(48, wCast.forecastHourly.hours.length), hoursByDay = {};
     for (let h = 0; h < endOfHourly; h++) { const dayKey = moment.unix(toTimestamp(wCast.forecastHourly.hours[h].forecastStart) + offsetUnix).format("YYYY-MM-DD"); (hoursByDay[dayKey] || (hoursByDay[dayKey] = []), hoursByDay[dayKey].push(wCast.forecastHourly.hours[h])); }
     for (let i = 0; i < wCast.forecastDaily.days.length; i++) {
       const dayHours = hoursByDay[moment.unix(toTimestamp(wCast.forecastDaily.days[i].forecastStart) + offsetUnix).format("YYYY-MM-DD")];
@@ -173,9 +198,17 @@ const daily = (wCast) => {
         const setDailyIcon = (selector, forecast, daylight) => {
           const el = document.querySelector(selector);
           if (!el || !forecast) return;
-          const name = getWeIcon(forecast.conditionCode, daylight, forecast.cloudCover);
+          let name = "clear-day";
+          try {
+            name = getWeIcon(forecast.conditionCode || "clear", daylight, Number(forecast.cloudCover) || 0);
+          } catch (_) {}
           const icon = iconNames[name] || (daylight ? "c_sun" : "c_moon");
-          el.innerHTML = `<img src="images/weather_icon/${icon}.svg" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon">`;
+          const src = `/images/weather_icon/${icon}.svg`;
+          el.style.backgroundImage = "none";
+          el.textContent = "";
+          el.innerHTML = `<img src="${src}" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;
+          const img = el.querySelector("img");
+          if (img) { img.style.display = "block"; img.style.width = "22px"; img.style.height = "22px"; img.style.visibility = "visible"; }
         };
         setDailyIcon(`.forecast_${i}_daily_day_icon_Class`, dayRecord.daytimeForecast, true);
         setDailyIcon(`.forecast_${i}_daily_night_icon_Class`, dayRecord.overnightForecast, false);
@@ -194,7 +227,17 @@ const daily = (wCast) => {
       function formatPrecipitation(amount, unit) { return "mmh" === unit ? `${Math.round(amount)} mm` : `${(0.0393701 * amount).toFixed(1)} in`; }
       document.getElementById(`forecast_${i}_daily_humidity`).textContent = humidityValueDay; document.getElementById(`forecast_${i}_daily_night_humidity`).textContent = humidityValueNight;
       document.getElementById(`forecast_${i}_daily_cloudCover`).textContent = Math.round(100 * wCast.forecastDaily.days[i].daytimeForecast.cloudCover) + "%"; document.getElementById(`forecast_${i}_daily_night_cloudCover`).textContent = Math.round(100 * wCast.forecastDaily.days[i].overnightForecast.cloudCover) + "%";
-      document.getElementById(`forecast_${i}_daily_probability`).textContent = 5 * Math.ceil(100 * wCast.forecastDaily.days[i].daytimeForecast.precipitationChance / 5) + "%"; document.getElementById(`forecast_${i}_daily_night_probability`).textContent = 5 * Math.ceil(100 * wCast.forecastDaily.days[i].overnightForecast.precipitationChance / 5) + "%";
+      const dayPop = Number(wCast.forecastDaily.days[i].daytimeForecast.precipitationChance);
+      const nightPop = Number(wCast.forecastDaily.days[i].overnightForecast.precipitationChance);
+      const dayPopText = Number.isFinite(dayPop) ? `${5 * Math.ceil(100 * dayPop / 5)}%` : "—";
+      const nightPopText = Number.isFinite(nightPop) ? `${5 * Math.ceil(100 * nightPop / 5)}%` : "—";
+      document.getElementById(`forecast_${i}_daily_probability`).textContent = dayPopText;
+      document.getElementById(`forecast_${i}_daily_night_probability`).textContent = nightPopText;
+      // The accordion header has its own precipitation element. It previously was
+      // created but never populated, which is why the value appeared only after
+      // navigating away/back and repainting other Daily content.
+      const headerPop = document.getElementById(`forecast_${i}_pop`);
+      if (headerPop) headerPop.textContent = dayPopText;
       document.getElementById(`forecast_${i}_daily_precipitation`).textContent = formatPrecipitation(wCast.forecastDaily.days[i].daytimeForecast.precipitationAmount, data.precipitationUnit); document.getElementById(`forecast_${i}_daily_night_precipitation`).textContent = formatPrecipitation(wCast.forecastDaily.days[i].overnightForecast.precipitationAmount, data.precipitationUnit);
       setDescriptionAndDate(i, wCast, !0);
     }

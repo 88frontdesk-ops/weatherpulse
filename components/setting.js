@@ -1,6 +1,6 @@
 const setting = () => {
   ((document.getElementById("title_version_setting").textContent =
-    chrome.i18n.getMessage("settingUvWeatherVersion", [
+    chrome.i18n.getMessage("settingWeatherPulseVersion", [
       chrome.runtime.getManifest().version,
     ])),
     (document.getElementById("chrome_version_setting").textContent =
@@ -213,12 +213,12 @@ const setting = () => {
           }));
         var langSelect = document.getElementById("setting_language_select");
         if (langSelect) {
-          var currentLang = localStorage.getItem("uvw_language") || "auto";
+          var currentLang = localStorage.getItem("weatherpulse_language") || "auto";
           ((langSelect.value = currentLang),
             langSelect.addEventListener("change", function () {
               var lang = langSelect.value;
-              (localStorage.setItem("uvw_language", lang),
-                chrome.storage.local.set({ uvw_language: lang }),
+              (localStorage.setItem("weatherpulse_language", lang),
+                chrome.storage.local.set({ weatherpulse_language: lang }),
                 window.location.reload());
             }));
         }

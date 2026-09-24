@@ -119,80 +119,24 @@ const loadLocations = () => {
       closeAddLocation());
   },
   myLocation = (selectedLocation) => {
-    const options_myLocation = {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "User-Agent": " (info@)",
-        "X-Extension-Auth": "",
-      },
+    const useCoordinates = (latitude, longitude, cityName = "Current location", countryCode = "US", timezoneName) => {
+      const finish = (resolvedCity, resolvedCountry, resolvedTimezone) => {
+        citys = resolvedCity || cityName; country = resolvedCountry || countryCode || "US"; latlong = `${latitude},${longitude}`; timezone = resolvedTimezone || timezoneName || tzlookup(latitude, longitude);
+        chrome.storage.local.set({ timezone, citys, latlong, country, selectedLocationUpdated: 1 }, () => selectedLocations(selectedLocation));
+      };
+      fetch(`https://api.weather.gov/points/${latitude.toFixed(4)},${longitude.toFixed(4)}`, { method: "GET", headers: { Accept: "application/geo+json", "User-Agent": "WeatherPulse extension" } })
+        .then((response) => response.ok ? response.json() : Promise.reject(new Error(`NWS points: ${response.status}`)))
+        .then((points) => { const rel = points?.properties?.relativeLocation?.properties; finish(rel?.city || cityName, "US", points?.properties?.timeZone || timezoneName); })
+        .catch(() => finish(cityName, countryCode, timezoneName));
     };
-    fetchPlus(() => fetch("", options_myLocation))
-      .then((response) => response.json())
-      .then((result) => {
-        result.error
-          ? myLocationAlter()
-          : ((countryAPI = JSON.stringify(result.country)),
-            (country = countryAPI.split('"')[1]),
-            "ZZ" == country && (country = " "),
-            (city = JSON.stringify(result.city)),
-            (cityName =
-              city.split('"')[1].charAt(0).toUpperCase() +
-              city.split('"')[1].slice(1)),
-            (citys = truncateCityName(cityName)),
-            (latlong = JSON.stringify(result.cityLatLong).split('"')[1]),
-            (timezone = JSON.stringify(result.cityData[0].timezone).split(
-              '"',
-            )[1]),
-            chrome.storage.local.get("latlong", (data) => {
-              ((latlong_current = data.latlong),
-                latlong !== latlong_current
-                  ? (chrome.storage.local.set({
-                      timezone: timezone,
-                      citys: citys,
-                      latlong: latlong,
-                      country: country,
-                    }),
-                    selectedLocations(selectedLocation))
-                  : closeAddLocation());
-            }));
-      })
-      .catch((err) => {
-        myLocationAlter();
-      });
+    if (!navigator.geolocation) return myLocationAlter();
+    navigator.geolocation.getCurrentPosition((position) => useCoordinates(position.coords.latitude, position.coords.longitude), () => myLocationAlter(), { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 });
   },
   myLocationAlter = () => {
-    const options_myLocation_alter = {
-      method: "GET",
-      headers: { Accept: "application/json", "User-Agent": " (info@)" },
-    };
-    fetchPlus(() => fetch("https://ipinfo.io/json", options_myLocation_alter))
-      .then((response) => response.json())
-      .then((result) => {
-        void 0 === JSON.stringify(result.error) &&
-          ((countryAPI = JSON.stringify(result.country)),
-          (country = countryAPI.split('"')[1]),
-          "ZZ" == country && (country = " "),
-          (city = JSON.stringify(result.city)),
-          (cityName =
-            city.split('"')[1].charAt(0).toUpperCase() +
-            city.split('"')[1].slice(1)),
-          (citys = truncateCityName(cityName)),
-          (latlong = JSON.stringify(result.loc).split('"')[1]),
-          (timezone = JSON.stringify(result.timezone).split('"')[1]),
-          chrome.storage.local.get(["latlong"], (data) => {
-            ((latlong_current = data.latlong),
-              latlong !== latlong_current &&
-                (chrome.storage.local.set({
-                  timezone: timezone,
-                  citys: citys,
-                  latlong: latlong,
-                  country: country,
-                }),
-                selectedLocations(selectedLocation)));
-          }));
-      })
-      .catch((err) => {});
+    chrome.storage.local.get(["latlong", "citys", "country", "timezone"], (data) => {
+      if (data.latlong) return;
+      chrome.storage.local.set({ latlong: "40.713,-74.0072", citys: "New York", country: "US", timezone: "America/New_York" });
+    });
   },
   updateLocationList = () => {
     chrome.storage.local.get(

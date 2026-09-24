@@ -14,6 +14,9 @@ const favourite = () => {
           ? (closeAllPopup(),
             displayModal(),
             (modal7days.style.display = "block"),
+            // Daily must be rendered after reopening the popup; otherwise the
+            // hidden modal can retain unloaded icon resources until tab switch.
+            typeof daily === "function" && daily(wCast),
             (favIcon_daily.style.display = "block"),
             (favIcon_daily.style.backgroundImage =
               'url("/images/favourite-active.svg")'),

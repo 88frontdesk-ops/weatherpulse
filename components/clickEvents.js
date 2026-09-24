@@ -14,6 +14,9 @@ const clickEvents = () => {
           displayModal(),
           chrome.storage.local.set({ setAsHome: 1 }),
           (modal7days.style.display = "block"),
+          // Render Daily after the modal is visible so image resources are
+          // resolved on popup reopen instead of waiting for another tab click.
+          typeof daily === "function" && daily(wCast),
           (favIcon_daily.style.display = "block"),
           chrome.storage.local.get("setAsHomepage", (data) => {
             "daily" == data.setAsHomepage &&
@@ -41,6 +44,9 @@ const clickEvents = () => {
           displayModal(),
           chrome.storage.local.set({ setAsHome: 1 }),
           (modal7days.style.display = "block"),
+          // Render Daily after the modal is visible so image resources are
+          // resolved on popup reopen instead of waiting for another tab click.
+          typeof daily === "function" && daily(wCast),
           (favIcon_daily.style.display = "block"),
           chrome.storage.local.get("setAsHomepage", (data) => {
             "daily" == data.setAsHomepage &&
@@ -137,9 +143,9 @@ const clickEvents = () => {
       document
         .getElementById("setting_defualt_button_u_all")
         .addEventListener("click", (e) => {
-          chrome.storage.local.get("subscriptionActive", (_ref) => {
-            let { subscriptionActive: subscriptionActive } = _ref;
-            subscriptionActive
+          chrome.storage.local.get("weatherpulseFullAccess", (_ref) => {
+            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref;
+            weatherpulseFullAccess
               ? (mp_setting("Badge Type", "UV"),
                 (setSettingUT = "u"),
                 chrome.storage.local.set({ setSettingUT: "u" }),
@@ -164,9 +170,9 @@ const clickEvents = () => {
       document
         .getElementById("setting_badge_source_realtime_all")
         .addEventListener("click", (e) => {
-          chrome.storage.local.get("subscriptionActive", (_ref2) => {
-            let { subscriptionActive: subscriptionActive } = _ref2;
-            subscriptionActive || vipPage();
+          chrome.storage.local.get("weatherpulseFullAccess", (_ref2) => {
+            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref2;
+            weatherpulseFullAccess || vipPage();
           });
         }),
       document
@@ -232,14 +238,8 @@ const clickEvents = () => {
           });
         }),
       (searchPage = () => {
-        (setTimeout(() => {
-          document.getElementById("kid_icon_hover").style.pointerEvents =
-            "none";
-        }, 300),
-          setTimeout(() => {
-            document.getElementById("kid_icon_hover").style.pointerEvents =
-              "auto";
-          }, 1e3),
+        (document.getElementById("kid_icon_hover") &&
+          (document.getElementById("kid_icon_hover").style.pointerEvents = "auto"),
           "block" !== modalSearch.style.display &&
             (chrome.storage.local.set({ selectedLocationUpdated: 1 }),
             updateLocationList(),
@@ -302,9 +302,9 @@ const clickEvents = () => {
       }),
       document.querySelectorAll(".extended_hourly_forecast").forEach((item) => {
         item.addEventListener("click", (event) => {
-          chrome.storage.local.get("subscriptionActive", (_ref3) => {
-            let { subscriptionActive: subscriptionActive } = _ref3;
-            subscriptionActive || vipPage();
+          chrome.storage.local.get("weatherpulseFullAccess", (_ref3) => {
+            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref3;
+            weatherpulseFullAccess || vipPage();
           });
         });
       }),
@@ -344,9 +344,9 @@ const clickEvents = () => {
       document.querySelectorAll(".calendar_page").forEach((item) => {
         item.addEventListener("click", (event) => {
           chrome.storage.local.get(
-            ["subscriptionActive", "setAsHomepage", "latlong"],
+            ["weatherpulseFullAccess", "setAsHomepage", "latlong"],
             (data) => {
-              data.subscriptionActive
+              data.weatherpulseFullAccess
                 ? (calendar_api(data.latlong).then((result) => {
                     (closeAllPopup(),
                       "calendar" == data.setAsHomepage &&
@@ -362,9 +362,9 @@ const clickEvents = () => {
       }),
       document.querySelectorAll(".aqi_forecast_page").forEach((item) => {
         item.addEventListener("click", (event) => {
-          chrome.storage.local.get("subscriptionActive", (_ref4) => {
-            let { subscriptionActive: subscriptionActive } = _ref4;
-            subscriptionActive
+          chrome.storage.local.get("weatherpulseFullAccess", (_ref4) => {
+            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref4;
+            weatherpulseFullAccess
               ? (closeAllPopup(),
                 aqi_forecast(),
                 (document.getElementById(
@@ -380,7 +380,7 @@ const clickEvents = () => {
       document.querySelectorAll(".lunar_page").forEach((item) => {
         item.addEventListener("click", (event) => {
           chrome.storage.local.get(
-            ["subscriptionActive", "setAsHomepage"],
+            ["weatherpulseFullAccess", "setAsHomepage"],
             (data) => {
               (closeAllPopup(),
                 lunar(),
@@ -420,10 +420,10 @@ const clickEvents = () => {
           closeAllPopup();
         }),
       (currentPage = () => {
-        (prev24Hrs(),
-          current(),
-          closeAllPopup(),
+        (closeAllPopup(),
           (modalCurrent.style.display = "block"),
+          current(),
+          prev24Hrs(),
           (favIcon_current.style.display = "block"),
           chrome.storage.local.set({ setAsHome: 1 }),
           chrome.storage.local.get("setAsHomepage", (data) => {
@@ -491,28 +491,6 @@ const clickEvents = () => {
               : cardTargetNext()),
             mp_event("Ad Card Click"));
         }),
-      document.getElementById("vipSidebar").addEventListener("click", () => {
-        chrome.storage.local.get(
-          ["subscriptionActive", "deviceId", "freeCountryPro"],
-          (data) => {
-            data.freeCountryPro ||
-              (data.subscriptionActive
-                ? window.open(
-                    "https://billing.stripe.com/p/login/7sI01rgxsaiMc5aaEE",
-                    "_blank",
-                  )
-                : vipPage());
-          },
-        );
-      }),
-      document.getElementById("proLogin").addEventListener("click", (e) => {
-        chrome.storage.local.get(["subscriptionActive", "deviceId"], (data) => {
-          window.open(
-            `prologin?deviceId=${encodeURIComponent(data.deviceId)}`,
-            "_blank",
-          );
-        });
-      }),
       document
         .getElementById("cardUdate_close")
         .addEventListener("click", (e) => {
@@ -791,9 +769,9 @@ const clickEvents = () => {
       document
         .getElementById("setting_defualt_button_15_all")
         .addEventListener("click", (e) => {
-          chrome.storage.local.get("subscriptionActive", (_ref5) => {
-            let { subscriptionActive: subscriptionActive } = _ref5;
-            subscriptionActive
+          chrome.storage.local.get("weatherpulseFullAccess", (_ref5) => {
+            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref5;
+            weatherpulseFullAccess
               ? (mp_setting("Interval Update", "15"),
                 chrome.storage.local.set({ IntervalUpdate: "15" }),
                 (wCast = []),
@@ -813,9 +791,9 @@ const clickEvents = () => {
       document
         .getElementById("setting_defualt_button_30_all")
         .addEventListener("click", (e) => {
-          chrome.storage.local.get("subscriptionActive", (_ref6) => {
-            let { subscriptionActive: subscriptionActive } = _ref6;
-            subscriptionActive
+          chrome.storage.local.get("weatherpulseFullAccess", (_ref6) => {
+            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref6;
+            weatherpulseFullAccess
               ? (mp_setting("Interval Update", "30"),
                 chrome.storage.local.set({ IntervalUpdate: "30" }),
                 (wCast = []),
@@ -1189,21 +1167,21 @@ const clickEvents = () => {
           ((document.getElementById(
             "weatherReport_button",
           ).style.pointerEvents = "none"),
-            chrome.storage.local.get("subscriptionActive", (_ref1) => {
-              let { subscriptionActive: subscriptionActive } = _ref1;
+            chrome.storage.local.get("weatherpulseFullAccess", (_ref1) => {
+              let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref1;
               (setTimeout(
                 () => {
                   ((document.getElementById(
                     "weatherReport_button",
                   ).style.pointerEvents = "auto"),
-                    subscriptionActive &&
+                    weatherpulseFullAccess &&
                       (weatherReportTitles.textContent = chrome.i18n.getMessage(
                         "weatherReportByLexi",
                       )));
                 },
-                subscriptionActive ? 6e4 : 1e3,
+                weatherpulseFullAccess ? 6e4 : 1e3,
               ),
-                subscriptionActive
+                weatherpulseFullAccess
                   ? (getWeatherReport(wCast), mp_event("Weather Report"))
                   : (weatherReportTooltips.forEach((item) => {
                       item.style.display = "none";
@@ -1242,9 +1220,9 @@ const clickEvents = () => {
         .querySelectorAll("#setting_section_auto_dark")
         .forEach((item) => {
           item.addEventListener("click", (event) => {
-            chrome.storage.local.get("subscriptionActive", (_ref10) => {
-              let { subscriptionActive: subscriptionActive } = _ref10;
-              subscriptionActive || vipPage();
+            chrome.storage.local.get("weatherpulseFullAccess", (_ref10) => {
+              let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref10;
+              weatherpulseFullAccess || vipPage();
             });
           });
         }));
@@ -1309,20 +1287,6 @@ const clickEvents = () => {
           ((titleHomeClassSetting.style.visibility = "visible"),
             (homescreenTodayMenu.style.visibility = "visible"));
         }));
-    (document
-      .getElementById("cardUdate_upgrade")
-      .addEventListener("click", (e) => {
-        chrome.storage.local.get("subscriptionActive", (_ref11) => {
-          let { subscriptionActive: subscriptionActive } = _ref11;
-          subscriptionActive || vipPage();
-        });
-      }),
-      document.getElementById("upgrade_home").addEventListener("click", (e) => {
-        chrome.storage.local.get("subscriptionActive", (_ref12) => {
-          let { subscriptionActive: subscriptionActive } = _ref12;
-          subscriptionActive || vipPage();
-        });
-      }),
       document
         .getElementById("setting_defualt_button_mmh_all")
         .addEventListener("click", (e) => {
@@ -1340,7 +1304,7 @@ const clickEvents = () => {
               !0),
             delayButtons(),
             releaseButtons());
-        }));
+        });
   },
   releaseButtons = () => {
     setTimeout(() => {

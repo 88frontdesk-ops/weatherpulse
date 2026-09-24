@@ -1,5 +1,5 @@
 .mediaViewInfo {
-  --web-view-name: UV Weather;
+  --web-view-name: WeatherPulse;
   --web-view-id: UV_Weather;
   --web-center-horizontally: true;
   --web-center-vertically: true;
@@ -201,7 +201,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --web-view-name: UV Weather;
+  --web-view-name: WeatherPulse;
   --web-view-id: UV_Weather;
   --web-center-horizontally: true;
   --web-center-vertically: true;
@@ -5859,3 +5859,47 @@ input:checked + .slider_setting_radar:before {
 /* WeatherPulse manual refresh control */
 .manual_refresh_bar { display:flex !important; visibility:visible !important; opacity:1 !important; position:relative !important; z-index:99999 !important; width:100%; box-sizing:border-box; background:rgba(0,0,0,.08); }
 #manual_refresh_button { display:inline-block !important; visibility:visible !important; opacity:1 !important; min-height:34px; background:#1976d2; color:#fff; }
+
+/* WeatherPulse v3 interaction fixes */
+.manual_refresh_bar { position:absolute !important; top:10px !important; left:50% !important; transform:translateX(-50%) !important; width:auto !important; z-index:20 !important; pointer-events:none !important; background:transparent !important; padding:0 !important; }
+.manual_refresh_bar button, .manual_refresh_bar #manual_refresh_status { pointer-events:auto !important; }
+.header_menu { z-index:30 !important; }
+.header_menu .setting_page, .header_menu .search_page, .header_menu > div { position:relative; z-index:31; }
+.setting_page, .setting_page a, .setting_page img { cursor:pointer !important; pointer-events:auto !important; }
+.kid_icon_hover_Class { z-index:35 !important; pointer-events:auto !important; }
+.kid_icon_hover_Class a { visibility:visible !important; opacity:1 !important; display:flex; width:56px; height:56px; align-items:center; justify-content:center; }
+.kid_icon { width:24px !important; height:24px !important; padding:14px !important; }
+.location_search_input { width:250px; height:36px; box-sizing:border-box; border:1px solid rgba(255,255,255,.35); border-radius:6px; background:rgba(0,0,0,.28); color:var(--font-color); padding:0 10px; outline:none; font-size:14px; }
+.location_search_input::placeholder { color:var(--font-color); opacity:.65; }
+.location_search_results { margin-top:5px; width:250px; max-height:150px; overflow-y:auto; background:rgba(20,20,20,.96); border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+.location_search_result { padding:8px 10px; cursor:pointer; font-size:13px; line-height:16px; color:#fff; }
+.location_search_result:hover { background:rgba(255,102,43,.28); }
+.location_search_status { font-size:12px; opacity:.7; margin-top:4px; color:var(--font-color); }
+.geocoder { top:92px !important; z-index:4 !important; }
+.forecast_icon_modal_Class { overflow:visible !important; background-image:none !important; }
+.forecast_daily_daynight_icon { width:22px !important; height:22px !important; display:block !important; object-fit:contain !important; opacity:1 !important; filter:none !important; }
+
+/* Daily day/night descriptions: keep text inside each column and wrap long forecast text. */
+.daily_description_groups {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.daily_description_group {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 225px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.daily_description_group .forecast_daily_description_Class {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  line-height: 1.35;
+}

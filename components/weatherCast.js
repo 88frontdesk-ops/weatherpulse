@@ -1,7 +1,7 @@
 const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = false) => {
   const [lat, lng] = String(latlong || "").split(",").map(Number);
   const CACHE_TTL_MS = 15 * 60 * 1000;
-  const useCache = async () => chrome.storage.local.get(["wCast", "wCastCachedAt", "subscriptionActive"]);
+  const useCache = async () => chrome.storage.local.get(["wCast", "wCastCachedAt", "weatherpulseFullAccess"]);
 
   const applyWeather = (wCast) => {
     if (!wCast?.currentWeather || !wCast?.forecastHourly?.hours?.length || !wCast?.forecastDaily?.days?.length) throw new Error("Incomplete weather response");

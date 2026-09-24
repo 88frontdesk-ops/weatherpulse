@@ -988,12 +988,6 @@ const clickEvents = () => {
         .querySelectorAll(".share_download_link_Class")
         .forEach((item) => {
           item.addEventListener("click", (event) => {
-            ((document.getElementById("shareGroup_home").style.pointerEvents =
-              "none"),
-              setTimeout(() => {
-                document.getElementById("shareGroup_home").style.pointerEvents =
-                  "auto";
-              }, 1e3));
             chrome.storage.local.get("theme", (_ref0) => {
               let { theme: theme } = _ref0;
               (((theme) => {

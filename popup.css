@@ -3067,12 +3067,6 @@ ul li {
   font-weight: 600;
 }
 
-.shareGroup_home_Class {
-  position: absolute;
-  left: 195px;
-  top: 567px;
-  opacity: 0.5;
-}
 
 .shareGroup_calendar_Class {
   position: absolute;
@@ -5877,6 +5871,33 @@ input:checked + .slider_setting_radar:before {
 .location_search_status { font-size:12px; opacity:.7; margin-top:4px; color:var(--font-color); }
 .geocoder { top:92px !important; z-index:4 !important; }
 .forecast_icon_modal_Class { overflow:visible !important; background-image:none !important; }
+/* Final Daily icon positioning: the legacy class positioned these 350px away from the card. */
+.popDaily_group_Class .forecast_icon_modal_Class {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  filter: none !important;
+  color: transparent !important;
+  background: none !important;
+  z-index: 1 !important;
+}
+.popDaily_group_Class .forecast_icon_modal_Class img {
+  position: static !important;
+  display: block !important;
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 .forecast_daily_daynight_icon { width:22px !important; height:22px !important; display:block !important; object-fit:contain !important; opacity:1 !important; filter:none !important; }
 
 /* Daily day/night descriptions: keep text inside each column and wrap long forecast text. */

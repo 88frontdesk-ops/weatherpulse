@@ -239,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(wCast);
         hazard(wCast);
         daily(wCast);
+        requestAnimationFrame(() => requestAnimationFrame(() => { if (typeof daily === "function" && wCast) daily(wCast); }));
         hourly(wCast);
         minutely(wCast);
         home();

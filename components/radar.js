@@ -46,7 +46,7 @@ const removeLayerById = (map, layerId) => {
           const zoomWeather = data.zoomWeather || 5;
           ((isInDelay = !1),
             (isPaused = !1),
-            (mapboxgl.accessToken = await getMapboxToken()));
+            (mapboxgl.accessToken = await getMapboxToken()) || (() => { throw new Error("Mapbox token is not configured"); })());
           let latLngMapBox = defaultCoordsRadar;
           if ("undefined" != typeof latlong) {
             const latLongArray = latlong.split(",").map(Number);

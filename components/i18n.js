@@ -1,5 +1,5 @@
 !(function () {
-  var savedLang = localStorage.getItem("uvw_language");
+  var savedLang = localStorage.getItem("weatherpulse_language");
   if (savedLang && "auto" !== savedLang) {
     var messages = null,
       fallback = null;

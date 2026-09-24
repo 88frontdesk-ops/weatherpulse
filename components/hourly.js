@@ -1,7 +1,7 @@
 const hourly = (wCast) => {
     ((hourlyTimelineIcon = []),
-      chrome.storage.local.get("subscriptionActive", (data) => {
-        let endOfHourly = data.subscriptionActive
+      chrome.storage.local.get("weatherpulseFullAccess", (data) => {
+        let endOfHourly = data.weatherpulseFullAccess
           ? wCast.forecastHourly.hours.length
           : 48;
         hourlyStructure().then(() => refreshHourly(0, endOfHourly));
@@ -66,8 +66,8 @@ const hourly = (wCast) => {
     };
     return (
       (populateForecastTable = () => {
-        chrome.storage.local.get("subscriptionActive", (data) => {
-          let endOfHourly = data.subscriptionActive
+        chrome.storage.local.get("weatherpulseFullAccess", (data) => {
+          let endOfHourly = data.weatherpulseFullAccess
             ? wCast.forecastHourly.hours.length
             : 48;
           const forecastTable = document.getElementById("forecastTable");

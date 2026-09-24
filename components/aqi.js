@@ -1,6 +1,5 @@
 /*
  * Air-quality data powered by Open-Meteo Air Quality.
- * No UVWeather/UVW proxy is used here.
  */
 (() => {
   const AQI_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";

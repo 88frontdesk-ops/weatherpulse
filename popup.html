@@ -12,15 +12,12 @@
 
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>UV Weather</title>
+        <title>WeatherPulse</title>
         <link rel="stylesheet" href="/popup.css" media="screen">
         <script type="text/javascript" src="/components/i18n.js"></script>
         <script type="text/javascript" src="/components/englishLanguage.js"></script>
         <script type="text/javascript" src="/components/lazyLoad.js"></script>
         <link type="text/javascript" rel="preload" href="/popup.js" as="script">
-        <script type="module" src="/libraries/firebase-app.js"></script>
-        <script type="module" src="/libraries/firebase-firestore.js"></script>
-        <script type="module" src="/components/userStatus.js"></script>
         <script type="text/javascript" src="/libraries/suncalc.js"></script>
         <script type="text/javascript" src="/components/util.js"></script>
         <script type="text/javascript" src="/components/elements.js"></script>
@@ -37,7 +34,7 @@
         <script type="text/javascript" src="/components/prev24Hrs.js"></script>
         <script type="text/javascript" src="/components/favourite.js"></script>
         <script type="text/javascript" src="/components/update.js"></script>
-        <script type="text/javascript" src="/components/vip.js"></script>
+        <script type="text/javascript" src="/components/access.js"></script>
         <script type="text/javascript" src="/components/temperature.js"></script>
         <script type="text/javascript" src="/components/solar.js"></script>
         <script type="text/javascript" src="/components/timeFormat.js"></script>
@@ -198,24 +195,6 @@
                                                                 </div>
                                                         </span></span></li>
                                 </a>
-                                <hr class="hr_forecast_menu"><a id="proLogin" class="hide_pro whitelink">
-                                        <li><img src="images/user.svg" class="sidebar_icon_Class"> <span
-                                                        id="sidebar_text_login">__MSG_proMemberLogin__</span></li>
-                                </a>
-                                <hr class="hr_forecast_menu"><a id="vipSidebar" class="whitelink vip_popup_class">
-                                        <li><span class="menu_text_group_setting"><span
-                                                                style="display:flex;flex-direction:row"><img
-                                                                        src="images/crown-gold.svg"
-                                                                        class="sidebar_icon_vip_Class"> </span><span>
-                                                                <div id="sidebar_text_vip">__MSG_unlockProFeatures__
-                                                                </div>
-                                                                <div id="sidebar_text_vip_subTitle"
-                                                                        class="menu_subTitle">__MSG_startFreeTrial__
-                                                                </div>
-                                                                <div id="vip_user_email" class="menu_subTitle"
-                                                                        style="display:none"></div>
-                                                        </span></span></li>
-                                </a>
                                 <div class="app_information_Class">
                                         <div class="madein_Class"><span>__MSG_madeWith__ </span><span
                                                         class="madein_heart_Class"></span> <span>__MSG_inCanada__
@@ -241,16 +220,6 @@
                                                                         style="margin-left:5px"></span> <span
                                                                         style="font-size:13px">Microsoft
                                                                         Azure</span></a></span></div>
-                                </div>
-                                <div id="express_qr" class="hide_pro express_qr_Class"><img
-                                                style="max-width:100%;max-height:100%"
-                                                src="https://api.qrserver.com/v1/create-qr-code/?data=?deviceId=00000000-0000-0000-0000-000000000000&size=100x100&color=ffffff&bgcolor=FF642D&format=svg&qzone=1&margin=1">
-                                </div>
-                                <div id="support_Class" class="hide_pro support_Class">
-                                        <div class="email_text1_Class"><span
-                                                        class="email_text2_Class">__MSG_expressUpgrade__</span></div>
-                                        <span id="title_version_setting"><span
-                                                        class="title_version_Class">__MSG_scanQrCode__</span></span>
                                 </div>
                         </ul>
                 </div>
@@ -401,7 +370,7 @@
                                         </svg></div>
                         </div>
                 </div><a id="share_facebook_link" class="resp-sharing-button__link"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://chromewebstore.google.com/detail/uv-weather/ngeokhpbgoadbpdpnplcminbjhdecjeb"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://chromewebstore.google.com/"
                         target="_blank" rel="noopener" aria-label="">
                         <div id="share_facebook"
                                 class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small">
@@ -413,7 +382,7 @@
                                         </svg></div>
                         </div>
                 </a><a id="share_x_link" class="resp-sharing-button__link"
-                        href="https://x.com/intent/tweet?url=https://chromewebstore.google.com/detail/uv-weather/ngeokhpbgoadbpdpnplcminbjhdecjeb&text=AI-Powered%20Weather%20Forecasting&via="
+                        href="https://x.com/intent/tweet?url=https://chromewebstore.google.com/&text=AI-Powered%20Weather%20Forecasting&via="
                         target="_blank" rel="noopener" aria-label="">
                         <div id="share_x" class="resp-sharing-button resp-sharing-button--x resp-sharing-button--small">
                                 <div aria-hidden="true"
@@ -424,7 +393,7 @@
                                         </svg></div>
                         </div>
                 </a><a id="share_linkedin_link" class="resp-sharing-button__link"
-                        href="https://www.linkedin.com/shareArticle?url=https://chromewebstore.google.com/detail/uv-weather/ngeokhpbgoadbpdpnplcminbjhdecjeb&title=AI-Powered%20Weather%20Forecasting"
+                        href="https://www.linkedin.com/shareArticle?url=https://chromewebstore.google.com/&title=AI-Powered%20Weather%20Forecasting"
                         target="_blank" rel="noopener" aria-label="">
                         <div id="share_linkedin"
                                 class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small">
@@ -436,7 +405,7 @@
                                         </svg></div>
                         </div>
                 </a><a id="share_reddit_link" class="resp-sharing-button__link"
-                        href="https://reddit.com/submit?url=https://chromewebstore.google.com/detail/uv-weather/ngeokhpbgoadbpdpnplcminbjhdecjeb&title=AI-Powered%20Weather%20Forecasting"
+                        href="https://reddit.com/submit?url=https://chromewebstore.google.com/&title=AI-Powered%20Weather%20Forecasting"
                         target="_blank" rel="noopener" aria-label="">
                         <div id="share_reddit"
                                 class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small">
@@ -453,11 +422,6 @@
                 <div id="nextLocationGroup_home" class="nextLocationGroup_home_Class" style="padding-right:15px"><a
                                 id="nextLocation_home"><img src="images/loop.svg" class="top_menu_icon_Class"
                                         style="width:30px;height:30px;margin-top:-1px"></a></div>
-                <div id="vipIcon_home" class="hide_pro tooltip vipIcon_home_Class" style="padding-right:18px"><a
-                                id="upgrade_home"><img src="images/crown-gold.svg"
-                                        style="width:22px;height:22px;padding-bottom:3px"> </a><span
-                                class="tooltiptext tooltip-left"
-                                style="margin-top:40px;margin-right:-200px">__MSG_startProTrial__</span></div>
                 <div class="tooltip notification_home_Class" style="padding-right:10px"><img id="notification_icon"
                                 src="images/notification_off.svg" class="top_menu_icon_Class notification_icon_Class"
                                 style="margin-top:-3px;margin-right:3px"> <span id="display_notification_popup"><span
@@ -473,7 +437,6 @@
         <div class="cardUpdate_Class">
                 <div id="cardUdate_close" class="cardUpdate_close_Class"><img src="images/close-box.svg"
                                 class="cardupdate_close_img"></div>
-                <div id="cardUdate_upgrade" class="cardUpdate_upgrade_Class">__MSG_goAdFree__</div>
                 <div id="cardUpdate_heading" class="cardUpdate_heading_Class">__MSG_planLikePro__</div>
                 <div id="cardUpdate_title" class="cardUpdate_title_Class">__MSG_unlockProFeatures__</div>
                 <div id="cardUpdate_text" class="cardUpdate_text_Class">__MSG_unlockProDesc__</div>
@@ -752,7 +715,7 @@
                 </div>
                 <div id="map_popup_close" class="modal_map_close"></div>
                 <div id="weatherMap" class="map_Class"></div>
-                <div id="map_popup_title" class="modal_map_title"><span>UV Weather | </span><span><a
+                <div id="map_popup_title" class="modal_map_title"><span>WeatherPulse | </span><span><a
                                         href="https://www.rainviewer.com/api.html" target="_blank"
                                         style="text-decoration:none;font-weight:400"><span
                                                 class="hyperlink_text">RainViewer | </span></a></span><span><a
@@ -814,7 +777,7 @@
                         style="z-index:15;position:absolute;top:0;right:0;bottom:0;left:0;background:#0b0b19;opacity:1.5;transition:opacity 2s ease">
                 </div>
                 <div id="weatherWorld" class="world_Class"></div>
-                <div id="world_popup_title" class="modal_world_title"><span>UV Weather | </span><span><a
+                <div id="world_popup_title" class="modal_world_title"><span>WeatherPulse | </span><span><a
                                         href="https://www.mapbox.com" target="_blank"
                                         style="text-decoration:none;font-weight:400"><span class="hyperlink_text"
                                                 style="color:#fff!important">Mapbox | </span></a></span><span><a
@@ -1597,7 +1560,7 @@
                 <div id="locationList" class="locationList_Class">
                         <div class="locationNameGroup_Class" id="locationNameGroup"></div>
                 </div>
-                <div class="addLocation_bottomText">__MSG_searchMapPoweredBy__ <a href="https://www.mapbox.com"
+                <div class="addLocation_bottomText">Location search by Open-Meteo <a href="https://www.mapbox.com"
                                 target="_blank" style="text-decoration:none;font-weight:400"><span
                                         class="hyperlink_text">Mapbox</span></a></div>
         </div>

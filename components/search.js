@@ -1,201 +1,48 @@
 const searchMap = async () => {
-  (await loadLib(MAPBOX_LIBS),
-    chrome.storage.local.get(
-      ["selectedLocationNumber", "selectedLocationMax", "theme"],
-      async (data) => {
-        const isMaxSelected =
-          data.selectedLocationNumber >= data.selectedLocationMax;
-        ((searchBoxGeocoder.style.display = isMaxSelected ? "none" : "block"),
-          (myLocationIp.style.display = isMaxSelected ? "none" : "block"),
-          "dark" === data.theme
-            ? (mapStyle = "mapbox://styles/mapbox/dark-v11?optimize=true")
-            : (mapStyle = "mapbox://styles/mapbox/light-v11?optimize=true"),
-          setTimeout(() => {
-            const isMaxSelected =
-              data.selectedLocationNumber >= data.selectedLocationMax;
-            maximumNumber.style.display = isMaxSelected ? "block" : "none";
-          }, 450),
-          (mapboxgl.accessToken = await getMapboxToken()),
-          (latLngMapBox = latlong
-            ? JSON.parse("[" + latlong.split(",").reverse().join(",") + "]")
-            : [-74.0072, 40.713]));
-        const updateGeocoderProximity = () => {
-            var center = map.getCenter().wrap();
-            geocoder.setProximity({
-              longitude: center.lng,
-              latitude: center.lat,
-            });
-          },
-          onDragEnd = async () => {
-            var lngLat = marker.getLngLat();
-            ((latClick = lngLat.lat),
-              (lngClick = lngLat.lng),
-              (latlong = latClick + "," + lngClick),
-              (latandlongbyClick = [lngClick, latClick]),
-              data.selectedLocationNumber < data.selectedLocationMax &&
-                popupSeachPin.remove(),
-              fetch(
-                `https://api.mapbox.com/geocoding/v5/mapbox.places/${latandlongbyClick}.json?types=place,locality&limit=1&access_token=${await getMapboxToken()}`,
-              )
-                .then((resp) => resp.json())
-                .then((result) => {
-                  if (
-                    result.hasOwnProperty("features") &&
-                    result.features.hasOwnProperty("0") &&
-                    result.features[0].hasOwnProperty("place_name") &&
-                    result.features[0].hasOwnProperty("text")
-                  ) {
-                    var cityAPI = result.features[0].text;
-                    ((latlong = latClick + "," + lngClick),
-                      (timezone =
-                        lat >= 90 ? "Etc/GMT" : tzlookup(latClick, lngClick)),
-                      (timeZoneBadge = getTimezoneOffset(timezone)),
-                      (citys = cityAPI));
-                    const placeNameParts =
-                      result.features[0].place_name.split(",");
-                    if (
-                      ((countryFull =
-                        placeNameParts.length > 2
-                          ? placeNameParts[2]
-                          : placeNameParts[1]),
-                      result.features[0].hasOwnProperty("context"))
-                    )
-                      for (
-                        let i = 0;
-                        i <= result.features[0].context.length;
-                        i++
-                      )
-                        if (
-                          result.features[0].context[i].hasOwnProperty(
-                            "short_code",
-                          )
-                        ) {
-                          country = result.features[0].context[
-                            i
-                          ].short_code.substring(0, 2);
-                          break;
-                        }
-                    (chrome.storage.local.set({
-                      latlong: latlong,
-                      citys: citys,
-                      country: country,
-                      timezone: timezone,
-                      IntervalUpdate: "60",
-                    }),
-                      (document.getElementById(
-                        "setting_defualt_button_60",
-                      ).checked = !0),
-                      selectedLocations(selectedLocation));
-                  }
-                }));
-          };
-        for (; searchInner.firstChild; )
-          searchInner.removeChild(searchInner.firstChild);
-        var map = new mapboxgl.Map({
-          container: "mapSearch",
-          animate: !0,
-          style: mapStyle,
-          center: latLngMapBox,
-          minZoom: 4,
-          maxZoom: 12,
-          zoom: 10,
-          interactive: !0,
-        });
-        (map.dragRotate.disable(), map.touchZoomRotate.disableRotation());
-        const navMapboxSearch = new mapboxgl.NavigationControl({
-          visualizePitch: !1,
-          showCompass: !1,
-        });
-        (map.addControl(navMapboxSearch, "top-right"),
-          map.on("load", updateGeocoderProximity),
-          map.on("moveend", updateGeocoderProximity));
-        var center = map.getCenter().wrap(),
-          savedLang = localStorage.getItem("uvw_language"),
-          mapboxLang =
-            savedLang && "auto" !== savedLang
-              ? savedLang.replace("_", "-")
-              : void 0,
-          geocoder = new MapboxGeocoder({
-            accessToken: mapboxgl.accessToken,
-            mapboxgl: mapboxgl,
-            marker: !1,
-            types: "place, locality, postcode",
-            limit: 7,
-            language: mapboxLang,
-            placeholder: chrome.i18n.getMessage("searchPlaceholder"),
-            proximity: { longitude: center.lng, latitude: center.lat },
-            marker: { color: "#ff662b", draggable: !1 },
-            render: (item) =>
-              "<div class='geocoder-dropdown-item'>" +
-              item.text +
-              "<div class='geocoder-dropdown-text'>" +
-              item.place_name.split(", ").slice(1).join(", ").slice(0, 38) +
-              "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></div>",
-          });
-        (searchBoxGeocoder &&
-          geocoder.onAdd &&
-          searchBoxGeocoder.appendChild(geocoder.onAdd(map)),
-          data.selectedLocationNumber < data.selectedLocationMax ||
-          void 0 === data.selectedLocationNumber
-            ? ((marker = new mapboxgl.Marker({
-                color: "#ff662b",
-                draggable: !0,
-              })
-                .setLngLat(latLngMapBox)
-                .addTo(map)),
-              (popupSeachPin = new mapboxgl.Popup({
-                closeButton: !1,
-                closeOnMove: !0,
-                className: "search-dragdrop-popup",
-                offset: 38,
-              })
-                .setLngLat(latLngMapBox)
-                .setHTML(chrome.i18n.getMessage("searchDragDrop"))
-                .addTo(map)))
-            : (marker = new mapboxgl.Marker({ color: "#ff662b", draggable: !1 })
-                .setLngLat(latLngMapBox)
-                .addTo(map)),
-          map.on("load", () => {
-            (map.addSource("single-point", {
-              type: "geojson",
-              data: { type: "FeatureCollection", features: [] },
-            }),
-              marker.on("dragend", onDragEnd),
-              geocoder.on("result", (ev) => {
-                if (
-                  (updateGeocoderProximity(),
-                  (cityAPI = ev.result.place_name.split(",")[0]),
-                  (lat = ev.result.geometry.coordinates[1]),
-                  (lng = ev.result.geometry.coordinates[0]),
-                  map.jumpTo({ center: ev.result.center, zoom: 10 }),
-                  lat >= 90
-                    ? (timezone = "Etc/GMT")
-                    : (timezone = tzlookup(lat, lng)),
-                  (timeZoneBadge = getTimezoneOffset(timezone)),
-                  (latlong = lat + "," + lng),
-                  (citys = cityAPI),
-                  ev.result.place_name.split(",")[2]
-                    ? (countryFull = ev.result.place_name.split(",")[2])
-                    : (countryFull = ev.result.place_name.split(",")[1]),
-                  ev.result.hasOwnProperty("context"))
-                ) {
-                  for (let i = 0; i <= ev.result.context.length; i++)
-                    if (ev.result.context[i].hasOwnProperty("short_code")) {
-                      country = ev.result.context[i].short_code.substring(0, 2);
-                      break;
-                    }
-                } else country = " ";
-                (marker.remove(),
-                  chrome.storage.local.set({
-                    latlong: latlong,
-                    citys: citys,
-                    country: country,
-                    timezone: timezone,
-                  }),
-                  selectedLocations(selectedLocation));
-              }),
-              geocoder.on("error", (ev) => {}));
-          }));
-      },
-    ));
+  const container = document.getElementById("geocoder");
+  if (!container) return;
+  container.innerHTML = `
+    <input id="weatherpulse_location_search" class="location_search_input" type="search" autocomplete="off" spellcheck="false" placeholder="Search city or ZIP code">
+    <div id="weatherpulse_location_results" class="location_search_results" role="listbox"></div>
+    <div id="weatherpulse_location_status" class="location_search_status" aria-live="polite"></div>
+  `;
+  const input = document.getElementById("weatherpulse_location_search");
+  const results = document.getElementById("weatherpulse_location_results");
+  const status = document.getElementById("weatherpulse_location_status");
+  let timer = null, requestId = 0;
+  const clearResults = () => { results.innerHTML = ""; };
+  const setStatus = (text) => { if (status) status.textContent = text || ""; };
+  const selectLocation = (item) => {
+    const latitude = Number(item.latitude), longitude = Number(item.longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+    const selectedCountry = String(item.country_code || "").toUpperCase() || "US";
+    const selectedCity = item.name || item.admin2 || item.admin1 || "Selected location";
+    const selectedTimezone = item.timezone || tzlookup(latitude, longitude);
+    latlong = `${latitude},${longitude}`; citys = selectedCity; country = selectedCountry; timezone = selectedTimezone;
+    chrome.storage.local.set({ latlong, citys, country, timezone, IntervalUpdate: "60", selectedLocationUpdated: 1 }, () => {
+      selectedLocations(selectedLocation); clearResults(); input.value = `${selectedCity}${selectedCountry ? `, ${selectedCountry}` : ""}`; setStatus("Location added");
+    });
+  };
+  const renderResults = (items) => {
+    clearResults();
+    items.forEach((item) => {
+      const row = document.createElement("div"); row.className = "location_search_result"; row.setAttribute("role", "option");
+      row.textContent = [item.name, item.admin1, item.country].filter(Boolean).join(", ");
+      row.addEventListener("mousedown", (event) => { event.preventDefault(); selectLocation(item); }); results.appendChild(row);
+    });
+  };
+  const search = async () => {
+    const query = input.value.trim(); clearResults(); if (query.length < 2) { setStatus(""); return; }
+    const currentRequest = ++requestId; setStatus("Searching…");
+    try {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=8&language=en&format=json`;
+      const response = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error(`Geocoding failed: ${response.status}`);
+      const data = await response.json(); if (currentRequest !== requestId) return;
+      const items = Array.isArray(data.results) ? data.results : []; renderResults(items); setStatus(items.length ? "" : "No locations found");
+    } catch (error) { if (currentRequest !== requestId) return; setStatus("Location search is unavailable. Please try again."); console.error("Open-Meteo location search failed", error); }
+  };
+  input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(search, 250); });
+  input.addEventListener("keydown", (event) => { if (event.key === "Enter") { clearTimeout(timer); search(); } if (event.key === "Escape") { clearResults(); setStatus(""); input.blur(); } });
+  input.focus();
 };

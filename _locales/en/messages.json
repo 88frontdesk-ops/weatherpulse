@@ -173,7 +173,7 @@
       "message": "by Lexi"
    },
    "calendarPageTitle": {
-      "message": "UV Weather | $1, $2, ",
+      "message": "WeatherPulse | $1, $2, ",
       "placeholders": {
          "city": {
             "content": "$1"
@@ -310,7 +310,7 @@
       "message": "Exclusive Offer"
    },
    "card1Text": {
-      "message": "Get unlimited access to the UV Weather Pro package with premium features."
+      "message": "Get unlimited access to the WeatherPulse Pro package with premium features."
    },
    "card1Title": {
       "message": "Unlock Pro Features"
@@ -813,7 +813,7 @@
       }
    },
    "lunarPageTitle": {
-      "message": "UV Weather | $1 Moon Phase",
+      "message": "WeatherPulse | $1 Moon Phase",
       "placeholders": {
          "year": {
             "content": "$1"
@@ -1031,7 +1031,7 @@
       "message": "Reduce time in the sun"
    },
    "regionNotSupported": {
-      "message": "UV Weather isn't currently supported in your region. Stay tuned!"
+      "message": "WeatherPulse isn't currently supported in your region. Stay tuned!"
    },
    "reportAirQuality": {
       "message": "Air quality in the area is within $1 levels.",
@@ -1295,8 +1295,8 @@
    "settingUvIndex": {
       "message": "UV Index"
    },
-   "settingUvWeatherVersion": {
-      "message": "UV Weather $1",
+   "settingWeatherPulseVersion": {
+      "message": "WeatherPulse $1",
       "placeholders": {
          "ver": {
             "content": "$1"
@@ -1525,7 +1525,7 @@
       "message": "Unlock Hourly AQI"
    },
    "unlockProDesc": {
-      "message": "Unlimited UV weather package with 30-day forecasts, live radar, AI reports, and premium features."
+      "message": "Unlimited WeatherPulse package with 30-day forecasts, live radar, AI reports, and premium features."
    },
    "unlockProFeatures": {
       "message": "Unlock Pro Features"
@@ -1538,9 +1538,6 @@
    },
    "upgradeMoreLocations": {
       "message": "Upgrade Now for More Locations"
-   },
-   "upgradeToUVPro": {
-      "message": "Upgrade to UV Weather Pro"
    },
    "urgency": {
       "message": "Urgency"

@@ -86,7 +86,5 @@ const preserveBadgeDataSourceSelection = (handler) => {
   };
 };
 
-if (typeof basicUser === "function") basicUser = preserveBadgeDataSourceSelection(basicUser);
-if (typeof proUser === "function") proUser = preserveBadgeDataSourceSelection(proUser);
 
 globalThis.popup = globalThis.popup || (() => window.location.reload());

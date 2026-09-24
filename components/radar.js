@@ -32,7 +32,7 @@ const removeLayerById = (map, layerId) => {
         [
           "zoomWeather",
           "TimeFormat",
-          "subscriptionActive",
+          "weatherpulseFullAccess",
           "radarSnow",
           "isSatellite",
           "theme",
@@ -86,7 +86,7 @@ const removeLayerById = (map, layerId) => {
                 intervalDelayRadar,
                 opacityRadar,
                 data.TimeFormat,
-                data.subscriptionActive,
+                data.weatherpulseFullAccess,
                 radarSnow,
                 isSatellite,
               );
@@ -201,7 +201,7 @@ const removeLayerById = (map, layerId) => {
     intervalDelayRadar,
     opacityRadar,
     TimeFormat,
-    subscriptionActive,
+    weatherpulseFullAccess,
     radarSnow,
     isSatellite,
   ) => {
@@ -212,7 +212,7 @@ const removeLayerById = (map, layerId) => {
         (radarFrames = api.radar?.past || []),
         (radarFrames = [
           ...radarFrames,
-          ...(subscriptionActive && api.radar?.nowcast
+          ...(weatherpulseFullAccess && api.radar?.nowcast
             ? api.radar.nowcast
             : []),
         ]),

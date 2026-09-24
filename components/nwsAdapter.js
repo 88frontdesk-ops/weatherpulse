@@ -21,6 +21,25 @@
     return { currentWeather: { temperature: current.temperature_2m ?? 0, pressure: current.pressure_msl ?? 1013.25, pressureTrend: "", windDirection: directionToDegrees(current.wind_direction_10m), visibility: current.visibility ?? 16093, temperatureDewPoint: current.temperature_2m ?? 0, humidity: clamp01((current.relative_humidity_2m ?? 0) / 100), windSpeed: current.wind_speed_10m ?? 0, windGust: current.wind_gusts_10m ?? 0, cloudCover: clamp01((current.cloud_cover ?? 0) / 100), uvIndex: current.uv_index ?? 0, daylight: Boolean(current.is_day), conditionCode: conditionFromOpenMeteo(current.weather_code), description: openMeteoDescription(current.weather_code), asOf: localTimeToIso(current.time) || new Date().toISOString() }, forecastHourly: { hours }, forecastDaily: { days }, weatherAlerts: { alerts: [] } };
   };
 
+  const fetchOpenMeteoHistoricalDay = async (latitude, longitude, timezone, date) => {
+    const url = new URL("https://archive-api.open-meteo.com/v1/archive");
+    url.search = new URLSearchParams({
+      latitude,
+      longitude,
+      start_date: date,
+      end_date: date,
+      timezone: timezone || "auto",
+      hourly: "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,uv_index",
+      daily: "temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,uv_index_max,weather_code"
+    });
+    const data = await requestJson(url.toString());
+    return data;
+  };
+
+  globalThis.weatherpulseFetchHistoricalDay = fetchOpenMeteoHistoricalDay;
+  globalThis.weatherpulseConditionFromOpenMeteo = conditionFromOpenMeteo;
+  globalThis.weatherpulseOpenMeteoDescription = openMeteoDescription;
+
   const fetchNwsForecast = async (latitude, longitude) => {
     try {
       const headers = { Accept: "application/geo+json", "User-Agent": "Weather Pulse weather extension" };

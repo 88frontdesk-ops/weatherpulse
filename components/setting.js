@@ -1,13 +1,5 @@
 const setting = () => {
-  ((document.getElementById("title_version_setting").textContent =
-    chrome.i18n.getMessage("settingWeatherPulseVersion", [
-      chrome.runtime.getManifest().version,
-    ])),
-    (document.getElementById("chrome_version_setting").textContent =
-      chrome.i18n.getMessage("settingChromeVersion", [
-        getChromeVersion().pieces,
-      ])),
-    chrome.storage.local.get(
+  (chrome.storage.local.get(
       [
         "IntervalUpdate",
         "WeatherCacheMinutes",

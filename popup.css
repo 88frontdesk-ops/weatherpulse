@@ -2153,93 +2153,6 @@ input[type="radio"]:checked ~ label {
   display: none;
 }
 
-.app_information_Class {
-  position: absolute;
-  left: 0;
-  top: 527px;
-  width: 250px;
-  margin-left: 50px;
-}
-
-.support_Class {
-  position: absolute;
-  top: 547px;
-  width: 120px;
-  left: 350px;
-  text-align: left;
-}
-
-.madein_Class {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.25em;
-  color: var(--font-color);
-  pointer-events: none;
-  filter: brightness(225%) !important;
-  margin-bottom: 5px !important;
-}
-
-.attribution_Class {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 13px;
-  text-decoration: none !important;
-  opacity: 0.7;
-}
-
-.email_text1_Class {
-  margin-bottom: 5px !important;
-  pointer-events: none;
-}
-
-.email_text2_Class {
-  font-size: 12px;
-  line-height: 1.15em;
-  color: var(--font-color);
-}
-
-.hyperlink_text {
-  color: var(--font-color);
-  pointer-events: auto;
-}
-
-.madein_heart_Class {
-  display: inline-block;
-  position: relative;
-  width: 13px;
-  height: 13px;
-  background: url("/images/heart.svg") center/cover no-repeat;
-  vertical-align: middle;
-  margin: -6px 2px -2px 2px;
-  filter: invert(15%) sepia(81%) saturate(6402%) hue-rotate(3deg)
-    brightness(102%) contrast(123%);
-}
-
-.apple_logo_Class {
-  display: inline-block;
-  position: relative;
-  width: 14px;
-  height: 14px;
-  background: url("/images/apple.svg") center/cover no-repeat;
-  vertical-align: middle;
-  margin: -7px -3px -2px 0;
-  filter: var(--icon-color);
-  cursor: pointer;
-}
-
-.microsoft_logo_Class {
-  display: inline-block;
-  position: relative;
-  width: 12px;
-  height: 12px;
-  background: url("/images/microsoft.svg") center/cover no-repeat;
-  vertical-align: middle;
-  margin: -6px 0 -2px 0;
-  filter: var(--icon-color);
-  cursor: pointer;
-}
-
 .madein_flag_Class {
   display: inline-block;
   position: relative;
@@ -5935,3 +5848,6 @@ input:checked + .slider_setting_radar:before {
   box-sizing: border-box;
   line-height: 1.35;
 }
+
+/* Removed unsupported legacy radar/forecast dependencies. */
+.radar_page, .aqi_forecast_page { display: none !important; }

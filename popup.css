@@ -1834,6 +1834,12 @@ input[type="checkbox"]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
   margin-left: 9px;
 }
 
+#setting_defualt_button_f_all {
+  margin-left: 9px;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
 .setting_wind_section_Class {
   display: inline-block;
   position: relative;
@@ -2084,6 +2090,7 @@ i {
 
 .setting_section_iner_Class label {
   position: relative;
+  cursor: pointer;
   padding: 10px 0 5px 5px;
   margin: 0 15px 0 15px;
   transition: all 0.25s linear;
@@ -5870,7 +5877,7 @@ input:checked + .slider_setting_radar:before {
 .location_search_result:hover { background:rgba(255,102,43,.28); }
 .location_search_status { font-size:12px; opacity:.7; margin-top:4px; color:var(--font-color); }
 .geocoder { top:92px !important; z-index:4 !important; }
-.forecast_icon_modal_Class { overflow:visible !important; background-image:none !important; }
+.forecast_icon_modal_Class { overflow:visible !important; }
 /* Final Daily icon positioning: the legacy class positioned these 350px away from the card. */
 .popDaily_group_Class .forecast_icon_modal_Class {
   position: relative !important;

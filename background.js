@@ -24,7 +24,8 @@ if (!self.document) {
         theme: "dark",
         animatedIcon: "1",
         badgeDataSource: "realtime",
-        IntervalUpdate: "15",
+        IntervalUpdate: "5",
+        WeatherCacheMinutes: "5",
         badgeAlert: true,
       });
       badgeTempUV(location.latlong, location.country, location.timezone);
@@ -70,29 +71,20 @@ if (!self.document) {
       timeZoneBadge = getTimezoneOffset(timezone);
       chrome.storage.local.get(
         ["badgeDataSource", "IntervalUpdate"],
-        (data) => {
-          const requiresFreshData =
-            data.badgeDataSource === "realtime" ||
-            ["15", "30"].includes(String(data.IntervalUpdate));
-          if (requiresFreshData) {
-            chrome.storage.local.remove("wCast", () =>
-              weCast(latlong, country, timezone),
-            );
-          } else {
-            weCast(latlong, country, timezone);
-          }
+        () => {
+          weCast(latlong, country, timezone);
         },
       );
     };
 
     const intervalUpdate = () => {
       chrome.storage.local.get("IntervalUpdate", (data) => {
-        const interval = parseInt(data.IntervalUpdate, 10) || 60;
+        const interval = parseInt(data.IntervalUpdate, 10) || 5;
         if (!data.IntervalUpdate)
-          chrome.storage.local.set({ IntervalUpdate: "60" });
+          chrome.storage.local.set({ IntervalUpdate: "5" });
         chrome.alarms.create("intervalUpdateTimes", {
           delayInMinutes: 0.05,
-          periodInMinutes: Math.max(15, interval),
+          periodInMinutes: Math.max(5, interval),
         });
       });
     };
@@ -118,7 +110,7 @@ if (!self.document) {
 
     chrome.runtime.onInstalled.addListener((details) => {
       if (details.reason === "install") {
-        chrome.storage.local.set({ setSettingFC: "c", TimeFormat: "12h" });
+        chrome.storage.local.set({ setSettingFC: "c", TimeFormat: "12h", IntervalUpdate: "5", WeatherCacheMinutes: "5" });
         initializeLocation();
       } else if (details.reason === "update") {
         chrome.storage.local.get(["latlong", "country"], (data) => {

@@ -177,6 +177,10 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
             (document.getElementById(
               `forecast_${i}_hourly_condition`,
             ).textContent =
+              (Number.isFinite(Number(wCast.forecastHourly.hours[i].weatherCode)) &&
+                globalThis.weatherpulseOpenMeteoDescription
+                ? globalThis.weatherpulseOpenMeteoDescription(Number(wCast.forecastHourly.hours[i].weatherCode))
+                : null) ||
               wCast.forecastHourly.hours[i].description ||
               getWeDescription(wCast.forecastHourly.hours[i].conditionCode)),
             "c" === data.setSettingFC
@@ -199,19 +203,16 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
               forecast_hours_cloudCover,
             )),
             hourlyTimelineIcon.push(forecast_hours_icon));
-          let rainValuePopHourly =
-              5 *
-              Math.round(
-                (100 * wCast.forecastHourly.hours[i].precipitationChance) / 5,
-              ),
+          let rainValuePopHourly = Math.round(
+              100 * Number(wCast.forecastHourly.hours[i].precipitationChance ?? 0),
+            ),
             forecastRainPopHourly = document.getElementById(
               `forecast_${i}_hours_rain`,
             );
-          ("rain" != getWeSnowRain(forecast_hours_condition) &&
-            "snow" != getWeSnowRain(forecast_hours_condition)) ||
-          0 === i
-            ? (forecastRainPopHourly.textContent = "")
-            : (forecastRainPopHourly.textContent = rainValuePopHourly + "%");
+          forecastRainPopHourly.textContent =
+            0 === i
+              ? ""
+              : rainValuePopHourly + "%";
           const updateIcon = (i, iconFileName) => {
             ((document.querySelector(
               `.forecast_${i}_hours_icon_Class`,

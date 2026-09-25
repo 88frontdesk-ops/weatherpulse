@@ -106,14 +106,16 @@ document.addEventListener("DOMContentLoaded", () => {
           return fallback || "clear";
         };
         (wCast.forecastHourly.hours || []).forEach((hour, index) => {
-          set(`forecast_${index}_hourly_condition`, description(hour));
-          set(`forecast_${index}_hours_rain`, fmtPop(hour.precipitationChance));
+          const apiCondition = Number.isFinite(Number(hour.weatherCode)) && globalThis.weatherpulseOpenMeteoDescription
+            ? globalThis.weatherpulseOpenMeteoDescription(Number(hour.weatherCode))
+            : description(hour);
+          set(`forecast_${index}_hourly_condition`, apiCondition);
+          set(`forecast_${index}_hours_rain`, fmtPop(Number(hour.precipitationChance)));
           set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
           set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
-          const code = conditionFromDescription(
-              hour.description,
-              hour.conditionCode,
-            ),
+          const code = Number.isFinite(Number(hour.weatherCode))
+              ? globalThis.weatherpulseConditionFromOpenMeteo(Number(hour.weatherCode))
+              : conditionFromDescription(hour.description, hour.conditionCode),
             icon = getWeIcon(code, hour.daylight, hour.cloudCover),
             map = {
               "clear-day": "b_sun.svg",
@@ -197,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
           (function (latlong, country, timezone) {
             return new Promise((resolve, reject) => {
               wCast = [];
-              // Let weCast decide whether the 15-minute cache is still valid.
+              // Let weCast decide whether the configured cache duration is still valid.
               // Do not delete the cache on every popup open.
               weCast(latlong, country, timezone, resolve, reject, false);
             });
@@ -238,8 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
         sunMoonPath(data.latlong);
         alert(wCast);
         hazard(wCast);
+        // Refresh every forecast view from the same fresh weather payload.
+        // These renderers can safely update hidden tabs, so a manual refresh
+        // does not depend on which tab happens to be open.
         daily(wCast);
-        requestAnimationFrame(() => requestAnimationFrame(() => { if (typeof daily === "function" && wCast) daily(wCast); }));
         hourly(wCast);
         minutely(wCast);
         home();
@@ -320,4 +324,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     mp_event("Popup Open");
   }, 2e3);
+  globalThis.refreshPopup = refreshPopup;
 });

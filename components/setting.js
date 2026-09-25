@@ -10,6 +10,7 @@ const setting = () => {
     chrome.storage.local.get(
       [
         "IntervalUpdate",
+        "WeatherCacheMinutes",
         "windUnit",
         "pressureUnit",
         "windDirUnit",
@@ -55,10 +56,20 @@ const setting = () => {
             60: "setting_defualt_button_60",
             30: "setting_defualt_button_30",
             15: "setting_defualt_button_15",
+            5: "setting_defualt_button_5",
           },
           selectedInterval =
-            data.IntervalUpdate in intervalMap ? data.IntervalUpdate : "60";
-        document.getElementById(intervalMap[selectedInterval]).checked = !0;
+            data.IntervalUpdate in intervalMap ? data.IntervalUpdate : "5";
+        if (data.IntervalUpdate === undefined) chrome.storage.local.set({ IntervalUpdate: "5" });
+        const intervalButton = document.getElementById(intervalMap[selectedInterval]);
+        if (intervalButton) intervalButton.checked = !0;
+
+        const cacheMinutes = [5, 15, 30, 60].includes(Number(data.WeatherCacheMinutes))
+          ? Number(data.WeatherCacheMinutes)
+          : 5;
+        if (data.WeatherCacheMinutes === undefined) chrome.storage.local.set({ WeatherCacheMinutes: "5" });
+        const cacheButton = document.getElementById(`setting_cache_${cacheMinutes}`);
+        if (cacheButton) cacheButton.checked = !0;
         const defaultOptionWindUnit = [
           "mph",
           "kmh",
@@ -225,3 +236,20 @@ const setting = () => {
       },
     ));
 };
+
+document.addEventListener("click", (event) => {
+  const option = event.target.closest(
+    "#setting_cache_5_all, #setting_cache_15_all, #setting_cache_30_all, #setting_cache_60_all",
+  );
+  if (!option) return;
+  const match = option.id.match(/setting_cache_(5|15|30|60)_all/);
+  if (!match) return;
+  const minutes = match[1];
+  chrome.storage.local.set({ WeatherCacheMinutes: minutes }, () => {
+    chrome.storage.local.remove(["wCast", "wCastCachedAt"], () => {
+      const button = document.getElementById(`setting_cache_${minutes}`);
+      if (button) button.checked = true;
+      if (typeof globalThis.popup === "function") globalThis.popup();
+    });
+  });
+});

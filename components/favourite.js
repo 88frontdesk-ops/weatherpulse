@@ -14,12 +14,16 @@ const favourite = () => {
           ? (closeAllPopup(),
             displayModal(),
             (modal7days.style.display = "block"),
-            // Daily must be rendered after reopening the popup; otherwise the
-            // hidden modal can retain unloaded icon resources until tab switch.
-            typeof daily === "function" && daily(wCast),
             (favIcon_daily.style.display = "block"),
-            // Render once more on the next paint after the Daily modal is visible.
-            requestAnimationFrame(() => requestAnimationFrame(() => { if (typeof daily === "function" && wCast) daily(wCast); })), 
+            // Render Daily only after its modal is visible. Rendering while the
+            // modal is hidden can leave the image resources/layout stale until
+            // the user switches tabs and comes back.
+            setTimeout(() => {
+              if (typeof daily === "function" && wCast) {
+                daily(wCast);
+                requestAnimationFrame(() => daily(wCast));
+              }
+            }, 50), 
             (favIcon_daily.style.backgroundImage =
               'url("/images/favourite-active.svg")'),
             dailyIcon.classList.add("sub_menu_icon_active_Class"),

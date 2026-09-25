@@ -29,7 +29,8 @@ const daily = (wCast) => {
         );
       } catch (_) {}
       const fileName = iconNames[iconName] || (daylight ? "c_sun" : "c_moon");
-      return `<img src="${chrome.runtime.getURL(`images/weather_icon/${fileName}.svg`)}" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;
+      const src = chrome.runtime.getURL(`images/weather_icon/${fileName}.svg`);
+      return `<img src="${src}" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync" style="display:block!important;visibility:visible!important;opacity:1!important;">`;
     };
     return ((dailyForecastItem.innerHTML = `
       <button class="accordion">
@@ -123,6 +124,38 @@ const daily = (wCast) => {
       </div>
     `), dailyForecastItem);
   };
+  // Keep the five Daily cards on the main screen in sync with the Daily tab.
+  // These cards use forecast_0..4_homePage_icon_Class and are otherwise only
+  // populated by the Hourly/Outlook renderers, which caused blank icons on a
+  // fresh popup until another tab was visited.
+  for (let i = 0; i < Math.min(5, wCast.forecastDaily.days.length); i++) {
+    const dayRecord = wCast.forecastDaily.days[i] || {};
+    const forecast = dayRecord.daytimeForecast || {};
+    const iconName = getWeIcon(
+      forecast.conditionCode || "clear",
+      true,
+      Number(forecast.cloudCover) || 0,
+    );
+    const iconFile = {
+      "clear-day": "b_sun.svg",
+      "clear-night": "b_moon.svg",
+      rain: "b_cloud_rain.svg",
+      snow: "b_cloud_snow.svg",
+      sleet: "b_cloud_snow_alt.svg",
+      wind: "b_wind.svg",
+      fog: "b_cloud_fog_alt.svg",
+      cloudy: "b_cloud.svg",
+      "partly-cloudy-day": "b_cloud_sun.svg",
+      "partly-cloudy-night": "b_cloud_moon.svg",
+    }[iconName] || "b_sun.svg";
+    const homeIcon = document.querySelector(`.forecast_${i}_homePage_icon_Class`);
+    if (homeIcon) {
+      homeIcon.style.backgroundImage = `url("images/weather_icon/${iconFile}")`;
+      homeIcon.style.backgroundRepeat = "no-repeat";
+      homeIcon.style.backgroundPosition = "center";
+      homeIcon.style.backgroundSize = "contain";
+    }
+  }
   (() => {
     const dailyForecastTable = document.getElementById("daily_table");
     dailyForecastTable.innerHTML = "";
@@ -143,6 +176,29 @@ const daily = (wCast) => {
         const arrow = button.querySelector(".more_down_icon_Class");
         if (arrow) arrow.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
       };
+    });
+    // Force a post-paint repair. The Daily modal can be made visible immediately
+    // before this function runs; rendering the SVGs once more on the next frame
+    // guarantees they are attached to the visible popup on a fresh open.
+    const repairDailyIcons = () => {
+      dailyForecastTable.querySelectorAll(".forecast_icon_modal_Class").forEach((el) => {
+        const img = el.querySelector("img.forecast_daily_daynight_icon");
+        if (!img) return;
+        img.style.setProperty("display", "block", "important");
+        img.style.setProperty("visibility", "visible", "important");
+        img.style.setProperty("opacity", "1", "important");
+        img.style.setProperty("width", "22px", "important");
+        img.style.setProperty("height", "22px", "important");
+        if (!img.src) {
+          const isNight = el.classList.contains("daily_night_icon_Class");
+          img.src = chrome.runtime.getURL(`images/weather_icon/${isNight ? "c_moon" : "c_sun"}.svg`);
+        }
+      });
+    };
+    repairDailyIcons();
+    requestAnimationFrame(() => {
+      repairDailyIcons();
+      requestAnimationFrame(repairDailyIcons);
     });
   })();
   const dailySparkline = async (dayIndex, dayHours, icons, tempUnit, timeFormat) => {
@@ -208,7 +264,16 @@ const daily = (wCast) => {
           el.textContent = "";
           el.innerHTML = `<img src="${src}" alt="${daylight ? "Day" : "Night"} weather" class="forecast_daily_daynight_icon" width="22" height="22" decoding="sync">`;
           const img = el.querySelector("img");
-          if (img) { img.style.display = "block"; img.style.width = "22px"; img.style.height = "22px"; img.style.visibility = "visible"; }
+          if (img) {
+            img.style.display = "block";
+            img.style.width = "22px";
+            img.style.height = "22px";
+            img.style.visibility = "visible";
+            img.onload = () => {
+              img.style.display = "block";
+              img.style.visibility = "visible";
+            };
+          }
         };
         setDailyIcon(`.forecast_${i}_daily_day_icon_Class`, dayRecord.daytimeForecast, true);
         setDailyIcon(`.forecast_${i}_daily_night_icon_Class`, dayRecord.overnightForecast, false);

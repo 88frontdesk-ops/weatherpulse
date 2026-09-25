@@ -1,6 +1,14 @@
 const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = false) => {
   const [lat, lng] = String(latlong || "").split(",").map(Number);
-  const CACHE_TTL_MS = 15 * 60 * 1000;
+  const getCacheSettings = async () => new Promise((resolve) => {
+    chrome.storage.local.get("WeatherCacheMinutes", (data) => {
+      const minutes = [5, 15, 30, 60].includes(Number(data.WeatherCacheMinutes))
+        ? Number(data.WeatherCacheMinutes)
+        : 5;
+      if (data.WeatherCacheMinutes === undefined) chrome.storage.local.set({ WeatherCacheMinutes: "5" });
+      resolve(minutes);
+    });
+  });
   const useCache = async () => chrome.storage.local.get(["wCast", "wCastCachedAt", "weatherpulseFullAccess"]);
 
   const applyWeather = (wCast) => {
@@ -77,10 +85,10 @@ const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = fals
     });
   };
 
-  useCache().then((cached) => {
+  Promise.all([useCache(), getCacheSettings()]).then(([cached, cacheMinutes]) => {
     const cachedWeather = cached?.wCast;
     const cachedAt = Number(cached?.wCastCachedAt) || 0;
-    const cacheIsFresh = cachedWeather && cachedAt > 0 && (Date.now() - cachedAt) < CACHE_TTL_MS;
+    const cacheIsFresh = cachedWeather && cachedAt > 0 && (Date.now() - cachedAt) < cacheMinutes * 60 * 1000;
     if (!forceRefresh && cacheIsFresh) {
       try { const result = applyWeather(cachedWeather); resolve && resolve(result); return; } catch (error) { console.warn("Cached weather data invalid; fetching fresh data.", error); }
     }

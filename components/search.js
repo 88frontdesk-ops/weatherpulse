@@ -19,7 +19,7 @@ const searchMap = async () => {
     const selectedCity = item.name || item.admin2 || item.admin1 || "Selected location";
     const selectedTimezone = item.timezone || tzlookup(latitude, longitude);
     latlong = `${latitude},${longitude}`; citys = selectedCity; country = selectedCountry; timezone = selectedTimezone;
-    chrome.storage.local.set({ latlong, citys, country, timezone, IntervalUpdate: "60", selectedLocationUpdated: 1 }, () => {
+    chrome.storage.local.set({ latlong, citys, country, timezone, selectedLocationUpdated: 1 }, () => {
       selectedLocations(selectedLocation); clearResults(); input.value = `${selectedCity}${selectedCountry ? `, ${selectedCountry}` : ""}`; setStatus("Location added");
     });
   };

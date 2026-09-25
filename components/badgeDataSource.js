@@ -41,7 +41,7 @@ const loadDailyDetailedForecastRenderer = () => {
 document.addEventListener("click", (event) => {
   const sourceOption = event.target.closest(
     "#setting_badge_source_realtime_all, #setting_badge_source_modeled_all, " +
-      "#setting_defualt_button_15_all, #setting_defualt_button_30_all",
+      "#setting_defualt_button_5_all, #setting_defualt_button_15_all, #setting_defualt_button_30_all",
   );
   if (!sourceOption) return;
   event.preventDefault();
@@ -49,6 +49,7 @@ document.addEventListener("click", (event) => {
 
   if (sourceOption.id === "setting_badge_source_realtime_all") refreshBadgeDataSource("realtime");
   else if (sourceOption.id === "setting_badge_source_modeled_all") refreshBadgeDataSource("modeled");
+  else if (sourceOption.id.includes("_5_")) refreshBadgeInterval("5");
   else refreshBadgeInterval(sourceOption.id.includes("_15_") ? "15" : "30");
 }, true);
 
@@ -67,11 +68,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   chrome.storage.local.get("IntervalUpdate", (data) => {
-    const interval = data.IntervalUpdate === undefined ? "15" : String(data.IntervalUpdate);
+    const interval = data.IntervalUpdate === undefined ? "5" : String(data.IntervalUpdate);
     const intervalButton = document.getElementById(`setting_defualt_button_${interval}`);
     if (intervalButton) intervalButton.checked = true;
     if (data.IntervalUpdate === undefined) {
-      chrome.storage.local.set({ IntervalUpdate: "15" });
+      chrome.storage.local.set({ IntervalUpdate: "5" });
       chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" });
     }
   });

@@ -14,9 +14,10 @@ const clickEvents = () => {
           displayModal(),
           chrome.storage.local.set({ setAsHome: 1 }),
           (modal7days.style.display = "block"),
-          // Render Daily after the modal is visible so image resources are
-          // resolved on popup reopen instead of waiting for another tab click.
+          // Render only after the Daily modal is visible, then repair the icon
+          // nodes on the next paint. This also handles a fresh popup open.
           typeof daily === "function" && daily(wCast),
+          requestAnimationFrame(() => typeof daily === "function" && daily(wCast)),
           (favIcon_daily.style.display = "block"),
           chrome.storage.local.get("setAsHomepage", (data) => {
             "daily" == data.setAsHomepage &&
@@ -44,9 +45,10 @@ const clickEvents = () => {
           displayModal(),
           chrome.storage.local.set({ setAsHome: 1 }),
           (modal7days.style.display = "block"),
-          // Render Daily after the modal is visible so image resources are
-          // resolved on popup reopen instead of waiting for another tab click.
+          // Render only after the Daily modal is visible, then repair the icon
+          // nodes on the next paint. This also handles a fresh popup open.
           typeof daily === "function" && daily(wCast),
+          requestAnimationFrame(() => typeof daily === "function" && daily(wCast)),
           (favIcon_daily.style.display = "block"),
           chrome.storage.local.get("setAsHomepage", (data) => {
             "daily" == data.setAsHomepage &&
@@ -237,6 +239,20 @@ const clickEvents = () => {
               releaseButtons());
           });
         }),
+      document.getElementById("setting_defualt_button_f").addEventListener("change", function () {
+        if (!this.checked) return;
+        chrome.storage.local.set({ setSettingFC: "f" }, function () {
+          refreshPopup(wCast);
+          setBadge(daylight, iconBadge, temperature, updateTime, citys, uvIndex, isWeatherAlert);
+        });
+      }),
+      document.getElementById("setting_defualt_button_c").addEventListener("change", function () {
+        if (!this.checked) return;
+        chrome.storage.local.set({ setSettingFC: "c" }, function () {
+          refreshPopup(wCast);
+          setBadge(daylight, iconBadge, temperature, updateTime, citys, uvIndex, isWeatherAlert);
+        });
+      }),
       (searchPage = () => {
         (document.getElementById("kid_icon_hover") &&
           (document.getElementById("kid_icon_hover").style.pointerEvents = "auto"),
@@ -766,99 +782,19 @@ const clickEvents = () => {
             delayButtons(),
             releaseButtons());
         }),
-      document
-        .getElementById("setting_defualt_button_15_all")
-        .addEventListener("click", (e) => {
-          chrome.storage.local.get("weatherpulseFullAccess", (_ref5) => {
-            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref5;
-            weatherpulseFullAccess
-              ? (mp_setting("Interval Update", "15"),
-                chrome.storage.local.set({ IntervalUpdate: "15" }),
-                (wCast = []),
-                chrome.storage.local.remove("wCast"),
-                chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" }),
-                ["15", "30", "60", "90", "120"].forEach(function (time) {
-                  document.getElementById(
-                    `setting_defualt_button_${time}_all`,
-                  ).style.pointerEvents = "none";
-                }),
-                (document.getElementById("setting_defualt_button_15").checked =
-                  !0),
-                releaseButtons())
-              : vipPage();
-          });
-        }),
-      document
-        .getElementById("setting_defualt_button_30_all")
-        .addEventListener("click", (e) => {
-          chrome.storage.local.get("weatherpulseFullAccess", (_ref6) => {
-            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref6;
-            weatherpulseFullAccess
-              ? (mp_setting("Interval Update", "30"),
-                chrome.storage.local.set({ IntervalUpdate: "30" }),
-                (wCast = []),
-                chrome.storage.local.remove("wCast"),
-                chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" }),
-                ["15", "30", "60", "90", "120"].forEach(function (time) {
-                  document.getElementById(
-                    `setting_defualt_button_${time}_all`,
-                  ).style.pointerEvents = "none";
-                }),
-                (document.getElementById("setting_defualt_button_30").checked =
-                  !0),
-                releaseButtons())
-              : vipPage();
-          });
-        }),
-      document
-        .getElementById("setting_defualt_button_60_all")
-        .addEventListener("click", (e) => {
-          (mp_setting("Interval Update", "60"),
-            chrome.storage.local.set({ IntervalUpdate: "60" }),
-            (wCast = []),
-            chrome.storage.local.remove("wCast"),
-            chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" }),
-            ["15", "30", "60", "90", "120"].forEach(function (time) {
-              document.getElementById(
-                `setting_defualt_button_${time}_all`,
-              ).style.pointerEvents = "none";
-            }),
-            (document.getElementById("setting_defualt_button_60").checked = !0),
-            releaseButtons());
-        }),
-      document
-        .getElementById("setting_defualt_button_90_all")
-        .addEventListener("click", (e) => {
-          (mp_setting("Interval Update", "90"),
-            chrome.storage.local.set({ IntervalUpdate: "90" }),
-            (wCast = []),
-            chrome.storage.local.remove("wCast"),
-            chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" }),
-            ["15", "30", "60", "90", "120"].forEach(function (time) {
-              document.getElementById(
-                `setting_defualt_button_${time}_all`,
-              ).style.pointerEvents = "none";
-            }),
-            (document.getElementById("setting_defualt_button_90").checked = !0),
-            releaseButtons());
-        }),
-      document
-        .getElementById("setting_defualt_button_120_all")
-        .addEventListener("click", (e) => {
-          (mp_setting("Interval Update", "120"),
-            chrome.storage.local.set({ IntervalUpdate: "120" }),
-            (wCast = []),
-            chrome.storage.local.remove("wCast"),
-            chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" }),
-            ["15", "30", "60", "90", "120"].forEach(function (time) {
-              document.getElementById(
-                `setting_defualt_button_${time}_all`,
-              ).style.pointerEvents = "none";
-            }),
-            (document.getElementById("setting_defualt_button_120").checked =
-              !0),
-            releaseButtons());
-        }),
+      [5, 15, 30, 60, 90, 120].forEach((time) => {
+        const option = document.getElementById(`setting_defualt_button_${time}_all`);
+        if (!option) return;
+        option.addEventListener("click", () => {
+          mp_setting("Interval Update", String(time));
+          chrome.storage.local.set({ IntervalUpdate: String(time) });
+          wCast = [];
+          chrome.storage.local.remove(["wCast", "wCastCachedAt"]);
+          chrome.runtime.sendMessage({ msg: "intervalUpdateMessage" });
+          document.getElementById(`setting_defualt_button_${time}`).checked = true;
+          releaseButtons();
+        });
+      }),
       document
         .getElementById("outlook_link_mainPage")
         .addEventListener("click", (e) => {

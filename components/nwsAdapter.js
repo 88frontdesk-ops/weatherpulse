@@ -139,10 +139,63 @@
         humidity: clamp01((hourly.relative_humidity_2m?.[index] ?? 0) / 100),
       };
     });
+    const severityRank = (code) => {
+      const n = Number(code);
+      if ([95, 96, 99].includes(n)) return 7;
+      if ([65, 67, 75, 82, 86].includes(n)) return 6;
+      if ([63, 66, 73, 81, 85].includes(n)) return 5;
+      if ([61, 71, 80].includes(n)) return 4;
+      if ([56, 57].includes(n)) return 3;
+      if ([51, 53, 55, 77].includes(n)) return 2;
+      if ([45, 48].includes(n)) return 1;
+      if (n === 3) return 0.8;
+      if (n === 2) return 0.5;
+      return 0;
+    };
+    const representativeForecast = (
+      date,
+      daylight,
+      fallbackCode,
+      fallbackDescription,
+      fallback,
+    ) => {
+      const dateHours = hours.filter(
+        (h) =>
+          h.forecastStart &&
+          h.forecastStart.slice(0, 10) === date &&
+          h.daylight === daylight &&
+          Number.isFinite(Number(h.weatherCode)),
+      );
+      if (!dateHours.length)
+        return {
+          ...fallback,
+          conditionCode: conditionFromOpenMeteo(fallbackCode),
+          description: fallbackDescription,
+        };
+      const best = dateHours.reduce(
+        (winner, h) =>
+          severityRank(h.weatherCode) > severityRank(winner.weatherCode)
+            ? h
+            : winner,
+        dateHours[0],
+      );
+      return {
+        ...fallback,
+        conditionCode: best.conditionCode,
+        description: best.description,
+        cloudCover: best.cloudCover,
+        humidity: best.humidity,
+        precipitationChance: best.precipitationChance,
+        precipitationAmount: best.precipitationAmount,
+        windSpeed: best.windSpeed,
+        windGustSpeedMax: best.windGust,
+        windDirection: best.windDirection,
+      };
+    };
     const days = (daily.time || []).map((date, index) => {
       const code = daily.weather_code?.[index];
       const description = openMeteoDescription(code);
-      const dayForecast = {
+      const baseDay = {
         forecastStart: localDateToIso(date),
         temperature: daily.temperature_2m_max?.[index] ?? 0,
         conditionCode: conditionFromOpenMeteo(code),
@@ -157,10 +210,24 @@
         windGustSpeedMax: daily.wind_gusts_10m_max?.[index] ?? 0,
         windDirection: daily.wind_direction_10m_dominant?.[index] ?? 0,
       };
-      const nightForecast = {
-        ...dayForecast,
+      const baseNight = {
+        ...baseDay,
         temperature: daily.temperature_2m_min?.[index] ?? 0,
       };
+      const dayForecast = representativeForecast(
+        date,
+        true,
+        code,
+        description,
+        baseDay,
+      );
+      const nightForecast = representativeForecast(
+        date,
+        false,
+        code,
+        description,
+        baseNight,
+      );
       return {
         forecastStart: localDateToIso(date),
         temperatureMax: daily.temperature_2m_max?.[index] ?? 0,

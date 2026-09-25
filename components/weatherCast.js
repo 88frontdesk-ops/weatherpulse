@@ -44,7 +44,7 @@ const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = fals
     uvIndex = Number(hour.uvIndex) || Number(current.uvIndex) || 0;
     maxUvIndex = Number(day.maxUvIndex) || 0;
     daylight = hour.daylight !== false;
-    condition = hour.conditionCode || current.conditionCode || "clear";
+    condition = current.conditionCode || hour.conditionCode || "clear";
     icon = getWeIcon(condition, daylight, cloudCover);
     iconBadge = getIconBadge(condition, daylight, cloudCover);
     conditionId = getWeDescriptionId(condition);

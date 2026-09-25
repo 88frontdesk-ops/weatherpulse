@@ -77,12 +77,17 @@
     };
     return descriptions[code] || "Unknown";
   };
-  const conditionFromOpenMeteo = (code) => {
+  const conditionFromOpenMeteo = (code, windSpeed = 0) => {
     if ([95, 96, 99].includes(code)) return "thunderstorms";
     if ([71, 73, 75, 77, 85, 86].includes(code)) return "snow";
     if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code))
       return "rain";
     if ([45, 48].includes(code)) return "foggy";
+    // Open-Meteo has no standalone "windy" WMO code. WeatherPulse derives
+    // a Windy condition from sustained wind for otherwise non-precipitating
+    // clear/cloudy conditions. Threshold: 10 m/s (about 22 mph / 36 km/h).
+    const windy = Number(windSpeed) >= 10 && [0, 1, 2, 3].includes(code);
+    if (windy) return "windy";
     if (code === 2) return "partlycloudy";
     if (code === 3) return "cloudy";
     return "clear";
@@ -125,9 +130,9 @@
         temperature: hourly.temperature_2m?.[index] ?? 0,
         uvIndex: hourly.uv_index?.[index] ?? 0,
         daylight: Boolean(hourly.is_day?.[index]),
-        conditionCode: conditionFromOpenMeteo(code),
+        conditionCode: conditionFromOpenMeteo(code, hourly.wind_speed_10m?.[index] ?? 0),
         weatherCode: code,
-        description: openMeteoDescription(code),
+        description: conditionFromOpenMeteo(code, hourly.wind_speed_10m?.[index] ?? 0) === "windy" ? "Windy" : openMeteoDescription(code),
         cloudCover: clamp01((hourly.cloud_cover?.[index] ?? 0) / 100),
         windSpeed: hourly.wind_speed_10m?.[index] ?? 0,
         windGust: hourly.wind_gusts_10m?.[index] ?? 0,
@@ -169,8 +174,8 @@
       if (!dateHours.length)
         return {
           ...fallback,
-          conditionCode: conditionFromOpenMeteo(fallbackCode),
-          description: fallbackDescription,
+          conditionCode: conditionFromOpenMeteo(fallbackCode, fallback?.windSpeed ?? 0),
+          description: conditionFromOpenMeteo(fallbackCode, fallback?.windSpeed ?? 0) === "windy" ? "Windy" : fallbackDescription,
         };
       const best = dateHours.reduce(
         (winner, h) =>
@@ -198,8 +203,8 @@
       const baseDay = {
         forecastStart: localDateToIso(date),
         temperature: daily.temperature_2m_max?.[index] ?? 0,
-        conditionCode: conditionFromOpenMeteo(code),
-        description,
+        conditionCode: conditionFromOpenMeteo(code, daily.wind_speed_10m_max?.[index] ?? 0),
+        description: conditionFromOpenMeteo(code, daily.wind_speed_10m_max?.[index] ?? 0) === "windy" ? "Windy" : description,
         cloudCover: 0,
         humidity: 0,
         precipitationChance: clamp01(
@@ -264,8 +269,8 @@
         cloudCover: clamp01((current.cloud_cover ?? 0) / 100),
         uvIndex: current.uv_index ?? 0,
         daylight: Boolean(current.is_day),
-        conditionCode: conditionFromOpenMeteo(current.weather_code),
-        description: openMeteoDescription(current.weather_code),
+        conditionCode: conditionFromOpenMeteo(current.weather_code, current.wind_speed_10m ?? 0),
+        description: conditionFromOpenMeteo(current.weather_code, current.wind_speed_10m ?? 0) === "windy" ? "Windy" : openMeteoDescription(current.weather_code),
         asOf: localTimeToIso(current.time) || new Date().toISOString(),
       },
       forecastHourly: { hours },

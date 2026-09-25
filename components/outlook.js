@@ -122,25 +122,11 @@ const outlook = (wCast) => {
         for (let i = 0; i < 5; i++) {
           document.querySelector(`.forecast_${i}_date`).textContent =
             getTimeOfDay(window[`greetingIndex_${i}`]);
-          const weatherImageMap = {
-              "clear-day": "b_sun",
-              "clear-night": "b_moon",
-              rain: "b_cloud_rain",
-              snow: "b_cloud_snow",
-              sleet: "b_cloud_snow_alt",
-              wind: "b_wind",
-              fog: "b_cloud_fog_alt",
-              cloudy: "b_cloud",
-              "partly-cloudy-day": "b_cloud_sun",
-              "partly-cloudy-night": "b_cloud_moon",
-            },
-            iconImage = weatherImageMap[outlookIconArray[i]]
-              ? weatherImageMap[outlookIconArray[i]]
-              : "b_sun";
+          const iconImage = getColorWeatherIcon(outlookIconArray[i]);
           document.querySelector(
             `.forecast_${i}_homePage_icon_Class`,
           ).style.backgroundImage =
-            `url('images/weather_icon/${iconImage}.svg')`;
+            `url('images/weather_icon/${iconImage}')`;
         }
       }
       if (!data.weeklySelected && !data.hourlySelected)

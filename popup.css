@@ -1067,7 +1067,7 @@ input[type="checkbox"]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
   border: none;
   line-height: 20px;
   color: transparent;
-  filter: var(--icon-color);
+  filter: none;
 }
 
 .tooltip .tooltiptext {
@@ -5877,7 +5877,11 @@ input:checked + .slider_setting_radar:before {
 .location_search_result:hover { background:rgba(255,102,43,.28); }
 .location_search_status { font-size:12px; opacity:.7; margin-top:4px; color:var(--font-color); }
 .geocoder { top:92px !important; z-index:4 !important; }
-.forecast_icon_modal_Class { overflow:visible !important; }
+.forecast_icon_modal_Class {
+  overflow: visible !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
 /* Final Daily icon positioning: the legacy class positioned these 350px away from the card. */
 .popDaily_group_Class .forecast_icon_modal_Class {
   position: relative !important;

@@ -117,23 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
               ? globalThis.weatherpulseConditionFromOpenMeteo(Number(hour.weatherCode))
               : conditionFromDescription(hour.description, hour.conditionCode),
             icon = getWeIcon(code, hour.daylight, hour.cloudCover),
-            map = {
-              "clear-day": "b_sun.svg",
-              "clear-night": "b_moon.svg",
-              rain: "b_cloud_rain.svg",
-              snow: "b_cloud_snow.svg",
-              sleet: "b_cloud_snow_alt.svg",
-              wind: "b_wind.svg",
-              fog: "b_cloud_fog_alt.svg",
-              cloudy: "b_cloud.svg",
-              "partly-cloudy-day": "b_cloud_sun.svg",
-              "partly-cloudy-night": "b_cloud_moon.svg",
-            },
             node = document.querySelector(
               `.forecast_${index}_hours_icon_Class`,
             );
           if (node)
-            node.style.backgroundImage = `url("images/weather_icon/${map[icon] || "b_sun.svg"}")`;
+            node.style.backgroundImage = `url("images/weather_icon/${getColorWeatherIcon(icon)}")`;
         });
         (wCast.forecastDaily.days || []).forEach((day, index) => {
           const d = day.daytimeForecast || {},

@@ -26,13 +26,7 @@ function loadLib(urls) {
   );
 }
 window._loadedLibs = window._loadedLibs || {};
-const MAPBOX_LIBS = [
-    "/libraries/mapbox-gl.js",
-    "/libraries/mapbox-gl.css",
-    "/libraries/mapbox-gl-geocoder.min.js",
-    "/libraries/mapbox-gl-geocoder.css",
-  ],
-  HTML2CANVAS_LIB = "/libraries/html2canvas.min.js",
+const HTML2CANVAS_LIB = "/libraries/html2canvas.min.js",
   COLORIS_LIBS = ["/libraries/coloris.js", "/libraries/coloris.css"];
 function loadCharts() {
   return loadLib("/libraries/chart.umd.min.js").then(() =>

@@ -105,50 +105,46 @@ const bgLocal = (iconName, daylight) => {
       default:
         galleryID = "72157711948824252";
     }
-    var f_url = `?gallery_id=${galleryID}`;
+    // Use Flickr's public photo feed directly. The old relative proxy URL
+    // returned popup.html (HTML), which caused JSON parse errors.
+    const tagMap = {
+      "clear-day": "sunny,clear-sky,weather",
+      "clear-night": "night-sky,stars,weather",
+      "rain": "rain,storm,weather",
+      "snow": "snow,winter,weather",
+      "sleet": "sleet,freezing-rain,weather",
+      "wind": "wind,windy,weather",
+      "fog": "fog,mist,weather",
+      "cloudy": "cloudy,overcast,weather",
+      "partly-cloudy-day": "partly-cloudy,clouds,weather",
+      "partly-cloudy-night": "night-clouds,weather"
+    };
+    const tags = encodeURIComponent(tagMap[iconName] || "weather,sky");
+    const f_url = `https://www.flickr.com/services/feeds/photos_public.gne?tags=${tags}&tagmode=all&format=json&nojsoncallback=1`;
     new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error("Request timed out"));
-      }, 2e3);
-      fetch(f_url, { method: "GET", headers: { "X-Extension-Auth": "" } })
-        .then((resultFlickr) => {
-          if (
-            (clearTimeout(timeout), resultFlickr && 200 === resultFlickr.status)
-          )
-            return resultFlickr.json();
-          reject(new Error("Response error"));
+      const timeout = setTimeout(() => reject(new Error("Request timed out")), 5000);
+      fetch(f_url, { method: "GET", headers: { Accept: "application/json" } })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Flickr request failed: ${response.status}`);
+          return response.json();
         })
-        .then((resultFlickr) => {
-          const ImageNum = Math.floor(10 * Math.random()),
-            photoData = resultFlickr.photos.photo[ImageNum];
-          if (void 0 !== photoData && "ok" === resultFlickr.stat) {
-            const flickrID = photoData.hasOwnProperty("id")
-                ? photoData.id
-                : void 0,
-              owner = photoData.hasOwnProperty("owner")
-                ? photoData.owner
-                : void 0,
-              url_c = photoData.hasOwnProperty("url_c")
-                ? photoData.url_c
-                : void 0;
-            if (!flickrID || !owner || !url_c)
-              throw new Error("Required photo information missing");
-            resolve({ flickrID: flickrID, owner: owner, url_c: url_c });
-          } else reject(new Error("Invalid photo data or status not OK"));
+        .then((feed) => {
+          clearTimeout(timeout);
+          const items = Array.isArray(feed.items) ? feed.items : [];
+          if (!items.length) throw new Error("No Flickr photos found");
+          const photoData = items[Math.floor(Math.random() * items.length)];
+          const url_c = photoData?.media?.m;
+          const flickrID = photoData?.link?.match(/\/photos\/[^/]+\/(\d+)/)?.[1];
+          const owner = photoData?.author_id;
+          if (!url_c || !flickrID || !owner) throw new Error("Required Flickr photo information missing");
+          resolve({ flickrID, owner, url_c, link: photoData.link });
         })
-        .catch((error) => {
-          reject(error);
-        });
+        .catch((error) => { clearTimeout(timeout); reject(error); });
     })
       .then((data) => {
-        ((imageBackground.style.backgroundImage = `url(${data.url_c})`),
-          (document.getElementById("photo_credit").href =
-            `https://www.flickr.com/photos/${data.owner}/${data.flickrID}/`),
-          homeSub.classList.contains("sub_menu_current_Class")
-            ? (photo_credit_flickr.style.visibility = "visible")
-            : (photo_credit_flickr.style.visibility = "hidden"));
+        imageBackground.style.backgroundImage = `url("${data.url_c}")`;
+        document.getElementById("photo_credit").href = data.link || `https://www.flickr.com/photos/${data.owner}/${data.flickrID}/`;
+        photo_credit_flickr.style.visibility = homeSub.classList.contains("sub_menu_current_Class") ? "visible" : "hidden";
       })
-      .catch((err) => {
-        bgLocal(iconName, daylight);
-      });
+      .catch(() => bgLocal(iconName, daylight));
   };

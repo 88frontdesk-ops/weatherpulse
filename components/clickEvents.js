@@ -29,17 +29,6 @@ const clickEvents = () => {
           dailySub.classList.add("sub_menu_current_Class"),
           mp_event("Daily Page"));
       }),
-      (worldPage = () => {
-        ((document.getElementById("world_popup").style.display = "block"),
-          (document.querySelector(".world_Class").style.visibility = "visible"),
-          closeAllPopup(),
-          setTimeout(() => {
-            worldClose.style.visibility = "visible";
-          }, 200),
-          world(wCast),
-          (mapInnerWorld.style.visibility = "visible"),
-          mp_event("World page"));
-      }),
       (dailyPage = () => {
         (closeAllPopup(),
           displayModal(),
@@ -270,10 +259,8 @@ const clickEvents = () => {
             }, 300),
             searchMap(mapStyle),
             setTimeout(() => {
-              ((document.getElementById("addLocation_popup").style.visibility =
-                "visible"),
-                (document.getElementById("world_popup").style.display =
-                  "none"));
+              (document.getElementById("addLocation_popup").style.visibility =
+                "visible");
             }, 300)),
           mp_event("Search Page"));
       }),
@@ -327,11 +314,6 @@ const clickEvents = () => {
       document.querySelectorAll(".extended_radar_forecast").forEach((item) => {
         item.addEventListener("click", (event) => {
           vipPage();
-        });
-      }),
-      document.querySelectorAll("#world_page").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          worldPage();
         });
       }),
       document.querySelectorAll(".calendar_page").forEach((item) => {
@@ -434,12 +416,6 @@ const clickEvents = () => {
         .addEventListener("click", (e) => {
           (stopRadarAnimation(),
             (document.getElementById("map_popup").style.display = "none"),
-            closeAllPopup());
-        }),
-      document
-        .getElementById("world_popup_close")
-        .addEventListener("click", (e) => {
-          ((document.getElementById("world_popup").style.display = "none"),
             closeAllPopup());
         }),
       document

@@ -1,19 +1,48 @@
 let resultCalendar;
-const calendar_api = (latlong) =>
-    new Promise((resolve, reject) => {
-      const optionsCalendar = {
-        method: "GET",
-        headers: { Accept: "application/json", "User-Agent": " (info@)" },
-      };
-      fetchPlus(() => fetch(`?${latlong}`, optionsCalendar))
-        .then((response) => response.json())
-        .then((resultCalendar_api) => {
-          ((resultCalendar = resultCalendar_api),
-            resultCalendar
-              ? resolve({ resultCalendar: resultCalendar })
-              : reject("Error message"));
-        });
-    }),
+const calendar_api = async (latlong) => {
+  const parts = String(latlong || "").split(/[;,\s]+/).filter(Boolean);
+  const latitude = Number(parts[0]);
+  const longitude = Number(parts[1]);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude))
+    throw new Error("Invalid calendar coordinates");
+
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.search = new URLSearchParams({
+    latitude: String(latitude), longitude: String(longitude), timezone: "auto",
+    forecast_days: "16",
+    daily: "weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max"
+  });
+  const response = await fetch(url.toString(), { method: "GET", headers: { Accept: "application/json" }, cache: "no-store" });
+  if (!response.ok) throw new Error(`Open-Meteo calendar request failed: ${response.status}`);
+  const data = await response.json();
+  const d = data.daily || {};
+  const codeToIcon = (code) => {
+    if ([0].includes(code)) return 1;
+    if ([1].includes(code)) return 2;
+    if ([2].includes(code)) return 3;
+    if ([3].includes(code)) return 7;
+    if ([45,48].includes(code)) return 11;
+    if ([51,53,55].includes(code)) return 18;
+    if ([56,57].includes(code)) return 24;
+    if ([61,63,65,80,81,82].includes(code)) return 12;
+    if ([66,67].includes(code)) return 26;
+    if ([71,73,75,77,85,86].includes(code)) return 22;
+    if ([95,96,99].includes(code)) return 15;
+    return 7;
+  };
+  const forecasts = (d.time || []).map((date, i) => ({
+    date,
+    day: {
+      iconCode: codeToIcon(Number(d.weather_code?.[i])),
+      wind: { speed: { value: Number(d.wind_speed_10m_max?.[i] || 0) / 3.6 } }
+    },
+    temperature: {
+      maximum: { value: Number(d.temperature_2m_max?.[i] || 0) },
+      minimum: { value: Number(d.temperature_2m_min?.[i] || 0) }
+    }
+  }));
+  return { resultCalendar: { forecasts } };
+},
   calendar = (resultCalendar, wCast) => {
     const weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     function createCalendarItem(index) {

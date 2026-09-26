@@ -34,7 +34,10 @@
   "host_permissions": [
     "https://api.weather.gov/*",
     "https://api.open-meteo.com/*",
-    "https://geocoding-api.open-meteo.com/*"
+    "https://geocoding-api.open-meteo.com/*",
+    "https://www.flickr.com/*",
+    "https://air-quality-api.open-meteo.com/*",
+    "https://archive-api.open-meteo.com/*"
   ],
   "version": "2.0.67",
   "web_accessible_resources": [

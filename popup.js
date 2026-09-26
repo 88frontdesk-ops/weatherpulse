@@ -219,8 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (1 == data.verUpdate) {
             imageBackground.classList.remove("hidden");
             chrome.storage.local.set({ verUpdate: 2 });
-            bgLocal(icon, daylight);
-          } else bgFlickr(icon);
+            bgBackground(icon, daylight);
+          } else bgBackground(icon, daylight);
         }
         if ("c" === data.setSettingFC) ctemp(wCast);
         else ftemp(wCast);

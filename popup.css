@@ -4633,35 +4633,7 @@ table {
   display: none;
 }
 
-.photo_credit {
-  position: absolute;
-  bottom: 30px;
-  right: -28px;
-  color: #ffffff;
-  padding: 5px;
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 300;
-  z-index: 10;
-  transform: rotate(-90deg);
-  white-space: nowrap;
-  opacity: 0.5;
-  cursor: pointer;
-  visibility: hidden;
-}
 
-.photo_credit::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  bottom: -5px;
-  left: -5px;
-}
-
-.photo_credit:hover {
-  cursor: pointer;
-}
 
 .map_button {
   position: absolute;

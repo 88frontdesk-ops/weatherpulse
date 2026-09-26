@@ -149,7 +149,6 @@ const getElements = () => {
       ".sameTimeYesterday_accufeel_shade",
     )),
     (currentAccufeelHome = document.querySelector(".current_accufeel_home")),
-    (photo_credit_flickr = document.getElementById("photo_credit")),
     (toggleButtonRadar = document.getElementById("toggleButtonRadar")),
     (backwardButtonRadar = document.getElementById("backwardButtonRadar")),
     (forwardButtonRadar = document.getElementById("forwardButtonRadar")),

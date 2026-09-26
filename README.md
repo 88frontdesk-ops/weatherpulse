@@ -17,9 +17,20 @@ Weather Pulse displays current conditions, hourly and daily forecasts, UV inform
 - The existing Badge and Current icon systems remain intact.
 
 
-Flickr backgrounds: data/flickr-backgrounds.json. Runtime Flickr API/feed requests are disabled. The manifest contains 160 condition slots; currently 28 distinct verified Flickr CDN URLs are reused where the web-accessible Flickr sources did not expose enough distinct licensed images.
+Local weather backgrounds: `data/backgrounds.json`. Backgrounds are fully local and require no remote image service. Each weather condition has separate day/night pools with two images to start; add more files to `images/background/` and list them in the corresponding pool in `data/backgrounds.json`.
 
 
-## Local Flickr background manifest v2
 
-The bundled Flickr manifest now includes additional verified CC0 and CC BY weather photographs. It records per-photo Flickr attribution metadata where available. The manifest currently contains 52 unique Flickr image URLs; it is not yet a full 160-unique-photo collection.
+## Local background images
+
+- Location: `images/background/`
+- Configuration: `data/backgrounds.json`
+- Current set: 32 images (2 per condition/day-night pool).
+- Filenames do not have to follow a special naming rule. The filename only needs to match the path listed in `data/backgrounds.json`.
+- Recommended naming: `<condition>-<day|night>-<number>.jpg`, for example `rain-night-03.jpg`.
+- To add another image, copy it into `images/background/` and add its relative path to the appropriate array in `data/backgrounds.json`.
+- The selector avoids immediately repeating the previously displayed image when a pool has more than one image.
+
+
+## Local weather backgrounds
+Each weather/day-night pool contains four local images. The selector uses the current weather condition plus the current `daylight` state; missing `daylight` now falls back to the current global daylight state instead of being treated as night. Rain-day backgrounds were replaced with brighter daytime rain scenes.

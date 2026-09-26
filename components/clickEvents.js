@@ -466,7 +466,7 @@ const clickEvents = () => {
             imageBackground.classList.remove("hidden"),
             (defaultImageButton.checked = !0),
             (icon = getWeIcon(condition, daylight, cloudCover)),
-            bgFlickr(icon),
+            bgBackground(icon, daylight),
             mp_setting("Background Type", "Image"),
             delayButtons(),
             releaseButtons());

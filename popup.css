@@ -1067,7 +1067,7 @@ input[type="checkbox"]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
   border: none;
   line-height: 20px;
   color: transparent;
-  filter: var(--icon-color);
+  filter: none;
 }
 
 .tooltip .tooltiptext {
@@ -2151,93 +2151,6 @@ input[type="radio"]:checked ~ label {
 
 .badge_size_switch_setting input {
   display: none;
-}
-
-.app_information_Class {
-  position: absolute;
-  left: 0;
-  top: 527px;
-  width: 250px;
-  margin-left: 50px;
-}
-
-.support_Class {
-  position: absolute;
-  top: 547px;
-  width: 120px;
-  left: 350px;
-  text-align: left;
-}
-
-.madein_Class {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.25em;
-  color: var(--font-color);
-  pointer-events: none;
-  filter: brightness(225%) !important;
-  margin-bottom: 5px !important;
-}
-
-.attribution_Class {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 13px;
-  text-decoration: none !important;
-  opacity: 0.7;
-}
-
-.email_text1_Class {
-  margin-bottom: 5px !important;
-  pointer-events: none;
-}
-
-.email_text2_Class {
-  font-size: 12px;
-  line-height: 1.15em;
-  color: var(--font-color);
-}
-
-.hyperlink_text {
-  color: var(--font-color);
-  pointer-events: auto;
-}
-
-.madein_heart_Class {
-  display: inline-block;
-  position: relative;
-  width: 13px;
-  height: 13px;
-  background: url("/images/heart.svg") center/cover no-repeat;
-  vertical-align: middle;
-  margin: -6px 2px -2px 2px;
-  filter: invert(15%) sepia(81%) saturate(6402%) hue-rotate(3deg)
-    brightness(102%) contrast(123%);
-}
-
-.apple_logo_Class {
-  display: inline-block;
-  position: relative;
-  width: 14px;
-  height: 14px;
-  background: url("/images/apple.svg") center/cover no-repeat;
-  vertical-align: middle;
-  margin: -7px -3px -2px 0;
-  filter: var(--icon-color);
-  cursor: pointer;
-}
-
-.microsoft_logo_Class {
-  display: inline-block;
-  position: relative;
-  width: 12px;
-  height: 12px;
-  background: url("/images/microsoft.svg") center/cover no-repeat;
-  vertical-align: middle;
-  margin: -6px 0 -2px 0;
-  filter: var(--icon-color);
-  cursor: pointer;
 }
 
 .madein_flag_Class {
@@ -4720,35 +4633,7 @@ table {
   display: none;
 }
 
-.photo_credit {
-  position: absolute;
-  bottom: 30px;
-  right: -28px;
-  color: #ffffff;
-  padding: 5px;
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 300;
-  z-index: 10;
-  transform: rotate(-90deg);
-  white-space: nowrap;
-  opacity: 0.5;
-  cursor: pointer;
-  visibility: hidden;
-}
 
-.photo_credit::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  bottom: -5px;
-  left: -5px;
-}
-
-.photo_credit:hover {
-  cursor: pointer;
-}
 
 .map_button {
   position: absolute;
@@ -5099,9 +4984,7 @@ input:checked + .slider_setting_radar:before {
   cursor: pointer;
 }
 
-#world_popup {
-  display: none;
-}
+
 
 .favourite_icon_world_inactive_Class {
   position: absolute;
@@ -5115,73 +4998,17 @@ input:checked + .slider_setting_radar:before {
   z-index: 20;
 }
 
-.modal_world_close {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 16px;
-  height: 16px;
-  background: url("/images/left-arrow.svg") center/cover no-repeat;
-  filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(186deg)
-    brightness(104%) contrast(107%);
-  cursor: pointer;
-  visibility: hidden;
-  z-index: 15;
-  border-radius: 50%;
-  margin: 10px;
-  padding: 10px;
-}
 
-.modal_world_close:hover {
-  filter: invert(48%) sepia(52%) saturate(2544%) hue-rotate(342deg)
-    brightness(101%) contrast(101%) !important;
-}
 
-.modal_world_title {
-  position: absolute;
-  top: 130px;
-  right: 12px;
-  width: 450px;
-  height: 15px;
-  font-size: 12px;
-  color: #ffffff;
-  pointer-events: auto;
-  margin: 0 auto;
-  transform-origin: right;
-  transform: rotate(270deg);
-  z-index: 23;
-  opacity: 0;
-  transition: opacity 0.8s ease-out;
-}
 
-.get_forecast_world {
-  position: absolute;
-  top: 552px;
-  left: 25px;
-  z-index: 30;
-  opacity: 0;
-  transition: opacity 0.8s ease-out;
-}
 
-.world_Class {
-  position: absolute;
-  left: 0;
-  top: 0;
-  /* padding-top: 375px; */
-  width: 100%;
-  height: 600px;
-  visibility: hidden;
-  transition: opacity 0.8s ease-out;
-  z-index: 13;
-  background-color: #0b0b19;
-}
 
-.world_marker_container {
-  display: flex !important;
-  align-items: center !important;
-  flex-direction: row;
-  align-content: center;
-}
+
+
+
+
+
+
 
 .world_black_dot_marker {
   background-color: black;
@@ -5191,35 +5018,13 @@ input:checked + .slider_setting_radar:before {
   margin-right: 10px;
 }
 
-.world_Class .mapboxgl-popup {
-  pointer-events: none; /* This will prevent the popup from being clickable and hideable */
-}
 
-.world_Class .mapboxgl-popup-content {
-  display: flex !important;
-  align-items: center !important;
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
-  width: auto !important;
-  max-width: 160px;
-  white-space: nowrap;
-  margin-bottom: 8px;
-}
 
-.world_Class .mapboxgl-popup-tip {
-  display: none; /* Hides the popup's tip arrow */
-}
 
-.world_marker_popup {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: none;
-  height: 20px;
-}
+
+
+
+
 
 .world_temp {
   background-color: rgb(46, 46, 46);
@@ -5548,15 +5353,9 @@ input:checked + .slider_setting_radar:before {
   height: 85px;
 }
 
-.world_home_icon_Class {
-  width: 18px;
-  height: 18px;
-}
 
-.world_home_icon_Class:hover {
-  filter: invert(48%) sepia(52%) saturate(2544%) hue-rotate(342deg)
-    brightness(101%) contrast(101%) !important;
-}
+
+
 
 .aqiHealthInfo_Class {
   position: absolute;
@@ -5877,7 +5676,11 @@ input:checked + .slider_setting_radar:before {
 .location_search_result:hover { background:rgba(255,102,43,.28); }
 .location_search_status { font-size:12px; opacity:.7; margin-top:4px; color:var(--font-color); }
 .geocoder { top:92px !important; z-index:4 !important; }
-.forecast_icon_modal_Class { overflow:visible !important; }
+.forecast_icon_modal_Class {
+  overflow: visible !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
 /* Final Daily icon positioning: the legacy class positioned these 350px away from the card. */
 .popDaily_group_Class .forecast_icon_modal_Class {
   position: relative !important;
@@ -5931,3 +5734,6 @@ input:checked + .slider_setting_radar:before {
   box-sizing: border-box;
   line-height: 1.35;
 }
+
+/* Removed unsupported legacy radar/forecast dependencies. */
+.radar_page, .aqi_forecast_page { display: none !important; }

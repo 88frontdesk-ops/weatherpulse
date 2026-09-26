@@ -10,6 +10,7 @@ const current = () => {
     }),
     (document.getElementById("current_uv_note").textContent =
       " " + getUvNote(uvIndex, daylight)),
+    applyUvIconState(uvIndex),
     (document.getElementById("current_cloud").textContent = cloudCover + "%"),
     chrome.storage.local.get(
       [

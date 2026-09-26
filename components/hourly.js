@@ -226,21 +226,7 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
                 ).style.backgroundImage =
                   `url("images/weather_icon/${iconFileName}")`));
           };
-          updateIcon(
-            i,
-            {
-              "clear-day": "b_sun.svg",
-              "clear-night": "b_moon.svg",
-              rain: "b_cloud_rain.svg",
-              snow: "b_cloud_snow.svg",
-              sleet: "b_cloud_snow_alt.svg",
-              wind: "b_wind.svg",
-              fog: "b_cloud_fog_alt.svg",
-              cloudy: "b_cloud.svg",
-              "partly-cloudy-day": "b_cloud_sun.svg",
-              "partly-cloudy-night": "b_cloud_moon.svg",
-            }[forecast_hours_icon] || "b_sun.svg",
-          );
+          updateIcon(i, getColorWeatherIcon(forecast_hours_icon));
         }
         hourlyTimelineSide(hourlyTimelineIcon);
       },

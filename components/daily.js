@@ -136,18 +136,7 @@ const daily = (wCast) => {
       true,
       Number(forecast.cloudCover) || 0,
     );
-    const iconFile = {
-      "clear-day": "b_sun.svg",
-      "clear-night": "b_moon.svg",
-      rain: "b_cloud_rain.svg",
-      snow: "b_cloud_snow.svg",
-      sleet: "b_cloud_snow_alt.svg",
-      wind: "b_wind.svg",
-      fog: "b_cloud_fog_alt.svg",
-      cloudy: "b_cloud.svg",
-      "partly-cloudy-day": "b_cloud_sun.svg",
-      "partly-cloudy-night": "b_cloud_moon.svg",
-    }[iconName] || "b_sun.svg";
+    const iconFile = getColorWeatherIcon(iconName);
     const homeIcon = document.querySelector(`.forecast_${i}_homePage_icon_Class`);
     if (homeIcon) {
       homeIcon.style.backgroundImage = `url("images/weather_icon/${iconFile}")`;

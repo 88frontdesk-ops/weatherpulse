@@ -29,17 +29,6 @@ const clickEvents = () => {
           dailySub.classList.add("sub_menu_current_Class"),
           mp_event("Daily Page"));
       }),
-      (worldPage = () => {
-        ((document.getElementById("world_popup").style.display = "block"),
-          (document.querySelector(".world_Class").style.visibility = "visible"),
-          closeAllPopup(),
-          setTimeout(() => {
-            worldClose.style.visibility = "visible";
-          }, 200),
-          world(wCast),
-          (mapInnerWorld.style.visibility = "visible"),
-          mp_event("World page"));
-      }),
       (dailyPage = () => {
         (closeAllPopup(),
           displayModal(),
@@ -270,10 +259,8 @@ const clickEvents = () => {
             }, 300),
             searchMap(mapStyle),
             setTimeout(() => {
-              ((document.getElementById("addLocation_popup").style.visibility =
-                "visible"),
-                (document.getElementById("world_popup").style.display =
-                  "none"));
+              (document.getElementById("addLocation_popup").style.visibility =
+                "visible");
             }, 300)),
           mp_event("Search Page"));
       }),
@@ -329,34 +316,6 @@ const clickEvents = () => {
           vipPage();
         });
       }),
-      (radarPage = () => {
-        ((document.getElementById("map_popup").style.display = "block"),
-          chrome.storage.local.get("setAsHomepage", (data) => {
-            "radar" == data.setAsHomepage &&
-              (favIcon_map.style.backgroundImage =
-                'url("/images/favourite-active.svg")');
-          }),
-          setTimeout(() => {
-            ((mapClose.style.visibility = "visible"),
-              (favIcon_map.style.display = "block"),
-              (mapLegend.style.visibility = "visible"),
-              (mapLegendText.style.visibility = "visible"));
-          }, 600),
-          radar(),
-          (mapInner.style.visibility = "visible"),
-          closeAllPopup(),
-          mp_event("Radar page"));
-      }),
-      document.querySelectorAll(".radar_page").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          radarPage();
-        });
-      }),
-      document.querySelectorAll("#world_page").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          worldPage();
-        });
-      }),
       document.querySelectorAll(".calendar_page").forEach((item) => {
         item.addEventListener("click", (event) => {
           chrome.storage.local.get(
@@ -374,23 +333,6 @@ const clickEvents = () => {
                 : vipPage();
             },
           );
-        });
-      }),
-      document.querySelectorAll(".aqi_forecast_page").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          chrome.storage.local.get("weatherpulseFullAccess", (_ref4) => {
-            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref4;
-            weatherpulseFullAccess
-              ? (closeAllPopup(),
-                aqi_forecast(),
-                (document.getElementById(
-                  "aqi_forecast_popup_close",
-                ).style.visibility = "visible"),
-                (modalAqiForecast.style.visibility = "visible"),
-                (modalAqiForecast.style.display = "block"),
-                mp_event("AQI Forecast Page"))
-              : vipPage();
-          });
         });
       }),
       document.querySelectorAll(".lunar_page").forEach((item) => {
@@ -477,12 +419,6 @@ const clickEvents = () => {
             closeAllPopup());
         }),
       document
-        .getElementById("world_popup_close")
-        .addEventListener("click", (e) => {
-          ((document.getElementById("world_popup").style.display = "none"),
-            closeAllPopup());
-        }),
-      document
         .getElementById("calendar_popup_close")
         .addEventListener("click", (e) => {
           ((calendarClose.style.transition = "all 0s"),
@@ -530,7 +466,7 @@ const clickEvents = () => {
             imageBackground.classList.remove("hidden"),
             (defaultImageButton.checked = !0),
             (icon = getWeIcon(condition, daylight, cloudCover)),
-            bgFlickr(icon),
+            bgBackground(icon, daylight),
             mp_setting("Background Type", "Image"),
             delayButtons(),
             releaseButtons());
@@ -1090,34 +1026,6 @@ const clickEvents = () => {
             (alertPopup.style.visibility = "hidden"),
             (alertPopupClose.style.transition = "all 0s"),
             (alertPopupClose.style.visibility = "hidden"));
-        }),
-      document
-        .getElementById("weatherReport_button")
-        .addEventListener("click", () => {
-          ((document.getElementById(
-            "weatherReport_button",
-          ).style.pointerEvents = "none"),
-            chrome.storage.local.get("weatherpulseFullAccess", (_ref1) => {
-              let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref1;
-              (setTimeout(
-                () => {
-                  ((document.getElementById(
-                    "weatherReport_button",
-                  ).style.pointerEvents = "auto"),
-                    weatherpulseFullAccess &&
-                      (weatherReportTitles.textContent = chrome.i18n.getMessage(
-                        "weatherReportByLexi",
-                      )));
-                },
-                weatherpulseFullAccess ? 6e4 : 1e3,
-              ),
-                weatherpulseFullAccess
-                  ? (getWeatherReport(wCast), mp_event("Weather Report"))
-                  : (weatherReportTooltips.forEach((item) => {
-                      item.style.display = "none";
-                    }),
-                    vipPage()));
-            }));
         }),
       document
         .getElementById("report_popup_close")

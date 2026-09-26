@@ -1,101 +1,117 @@
-{
-  "version": 2,
-  "entries": {
-    "clear-day": [
-      "images/background/clear-day-01.jpg",
-      "images/background/clear-day-02.jpg",
-      "images/background/clear-day-03.jpg",
-      "images/background/clear-day-04.jpg"
-    ],
-    "clear-night": [
-      "images/background/clear-night-01.jpg",
-      "images/background/clear-night-02.jpg",
-      "images/background/clear-night-03.jpg",
-      "images/background/clear-night-04.jpg"
-    ],
-    "partly-cloudy-day": [
-      "images/background/partly-cloudy-day-01.jpg",
-      "images/background/partly-cloudy-day-02.jpg",
-      "images/background/partly-cloudy-day-03.jpg",
-      "images/background/partly-cloudy-day-04.jpg"
-    ],
-    "partly-cloudy-night": [
-      "images/background/partly-cloudy-night-01.jpg",
-      "images/background/partly-cloudy-night-02.jpg",
-      "images/background/partly-cloudy-night-03.jpg",
-      "images/background/partly-cloudy-night-04.jpg"
-    ],
-    "cloudy-day": [
-      "images/background/cloudy-day-01.jpg",
-      "images/background/cloudy-day-02.jpg",
-      "images/background/cloudy-day-03.jpg",
-      "images/background/cloudy-day-04.jpg"
-    ],
-    "cloudy-night": [
-      "images/background/cloudy-night-01.jpg",
-      "images/background/cloudy-night-02.jpg",
-      "images/background/cloudy-night-03.jpg",
-      "images/background/cloudy-night-04.jpg"
-    ],
-    "rain-day": [
-      "images/background/rain-day-01.jpg",
-      "images/background/rain-day-02.jpg",
-      "images/background/rain-day-03.jpg",
-      "images/background/rain-day-04.jpg"
-    ],
-    "rain-night": [
-      "images/background/rain-night-01.jpg",
-      "images/background/rain-night-02.jpg",
-      "images/background/rain-night-03.jpg",
-      "images/background/rain-night-04.jpg"
-    ],
-    "snow-day": [
-      "images/background/snow-day-01.jpg",
-      "images/background/snow-day-02.jpg",
-      "images/background/snow-day-03.jpg",
-      "images/background/snow-day-04.jpg"
-    ],
-    "snow-night": [
-      "images/background/snow-night-01.jpg",
-      "images/background/snow-night-02.jpg",
-      "images/background/snow-night-03.jpg",
-      "images/background/snow-night-04.jpg"
-    ],
-    "sleet-day": [
-      "images/background/sleet-day-01.jpg",
-      "images/background/sleet-day-02.jpg",
-      "images/background/sleet-day-03.jpg",
-      "images/background/sleet-day-04.jpg"
-    ],
-    "sleet-night": [
-      "images/background/sleet-night-01.jpg",
-      "images/background/sleet-night-02.jpg",
-      "images/background/sleet-night-03.jpg",
-      "images/background/sleet-night-04.jpg"
-    ],
-    "wind-day": [
-      "images/background/wind-day-01.jpg",
-      "images/background/wind-day-02.jpg",
-      "images/background/wind-day-03.jpg",
-      "images/background/wind-day-04.jpg"
-    ],
-    "wind-night": [
-      "images/background/wind-night-01.jpg",
-      "images/background/wind-night-02.jpg",
-      "images/background/wind-night-03.jpg",
-      "images/background/wind-night-04.jpg"
-    ],
-    "fog-day": [
-      "images/background/fog-day-01.jpg",
-      "images/background/fog-day-02.jpg",
-      "images/background/fog-day-03.jpg",
-      "images/background/fog-day-04.jpg"
-    ],
-    "fog-night": [
-      "images/background/fog-night-01.jpg",
-      "images/background/fog-night-02.jpg",
-      "images/background/fog-night-03.jpg",
-      "images/background/fog-night-04.jpg"
-    ]
-  }
+﻿{
+    "version":  3,
+    "entries":  {
+                    "clear":  {
+                                  "day":  [
+                                              "images/background/clear/day/clear-day-01.jpg",
+                                              "images/background/clear/day/clear-day-02.jpg",
+                                              "images/background/clear/day/clear-day-03.jpg",
+                                              "images/background/clear/day/clear-day-04.jpg"
+                                          ],
+                                  "night":  [
+                                                "images/background/clear/night/clear-night-01.jpg",
+                                                "images/background/clear/night/clear-night-02.jpg",
+                                                "images/background/clear/night/clear-night-03.jpg",
+                                                "images/background/clear/night/clear-night-04.jpg"
+                                            ]
+                              },
+                    "partly-cloudy":  {
+                                          "day":  [
+                                                      "images/background/partly-cloudy/day/partly-cloudy-day-01.jpg",
+                                                      "images/background/partly-cloudy/day/partly-cloudy-day-02.jpg",
+                                                      "images/background/partly-cloudy/day/partly-cloudy-day-03.jpg",
+                                                      "images/background/partly-cloudy/day/partly-cloudy-day-04.jpg"
+                                                  ],
+                                          "night":  [
+                                                        "images/background/partly-cloudy/night/partly-cloudy-night-01.jpg",
+                                                        "images/background/partly-cloudy/night/partly-cloudy-night-02.jpg",
+                                                        "images/background/partly-cloudy/night/partly-cloudy-night-03.jpg",
+                                                        "images/background/partly-cloudy/night/partly-cloudy-night-04.jpg"
+                                                    ]
+                                      },
+                    "cloudy":  {
+                                   "day":  [
+                                               "images/background/cloudy/day/cloudy-day-01.jpg",
+                                               "images/background/cloudy/day/cloudy-day-02.jpg",
+                                               "images/background/cloudy/day/cloudy-day-03.jpg",
+                                               "images/background/cloudy/day/cloudy-day-04.jpg"
+                                           ],
+                                   "night":  [
+                                                 "images/background/cloudy/night/cloudy-night-01.jpg",
+                                                 "images/background/cloudy/night/cloudy-night-02.jpg",
+                                                 "images/background/cloudy/night/cloudy-night-03.jpg",
+                                                 "images/background/cloudy/night/cloudy-night-04.jpg"
+                                             ]
+                               },
+                    "rain":  {
+                                 "day":  [
+                                             "images/background/rain/day/rain-day-01.jpg",
+                                             "images/background/rain/day/rain-day-02.jpg",
+                                             "images/background/rain/day/rain-day-03.jpg",
+                                             "images/background/rain/day/rain-day-04.jpg"
+                                         ],
+                                 "night":  [
+                                               "images/background/rain/night/rain-night-01.jpg",
+                                               "images/background/rain/night/rain-night-02.jpg",
+                                               "images/background/rain/night/rain-night-03.jpg",
+                                               "images/background/rain/night/rain-night-04.jpg"
+                                           ]
+                             },
+                    "snow":  {
+                                 "day":  [
+                                             "images/background/snow/day/snow-day-01.jpg",
+                                             "images/background/snow/day/snow-day-02.jpg",
+                                             "images/background/snow/day/snow-day-03.jpg",
+                                             "images/background/snow/day/snow-day-04.jpg"
+                                         ],
+                                 "night":  [
+                                               "images/background/snow/night/snow-night-01.jpg",
+                                               "images/background/snow/night/snow-night-02.jpg",
+                                               "images/background/snow/night/snow-night-03.jpg",
+                                               "images/background/snow/night/snow-night-04.jpg"
+                                           ]
+                             },
+                    "sleet":  {
+                                  "day":  [
+                                              "images/background/sleet/day/sleet-day-01.jpg",
+                                              "images/background/sleet/day/sleet-day-02.jpg",
+                                              "images/background/sleet/day/sleet-day-03.jpg",
+                                              "images/background/sleet/day/sleet-day-04.jpg"
+                                          ],
+                                  "night":  [
+                                                "images/background/sleet/night/sleet-night-01.jpg",
+                                                "images/background/sleet/night/sleet-night-02.jpg",
+                                                "images/background/sleet/night/sleet-night-03.jpg",
+                                                "images/background/sleet/night/sleet-night-04.jpg"
+                                            ]
+                              },
+                    "wind":  {
+                                 "day":  [
+                                             "images/background/wind/day/wind-day-01.jpg",
+                                             "images/background/wind/day/wind-day-02.jpg",
+                                             "images/background/wind/day/wind-day-03.jpg",
+                                             "images/background/wind/day/wind-day-04.jpg"
+                                         ],
+                                 "night":  [
+                                               "images/background/wind/night/wind-night-01.jpg",
+                                               "images/background/wind/night/wind-night-02.jpg",
+                                               "images/background/wind/night/wind-night-03.jpg",
+                                               "images/background/wind/night/wind-night-04.jpg"
+                                           ]
+                             },
+                    "fog":  {
+                                "day":  [
+                                            "images/background/fog/day/fog-day-01.jpg",
+                                            "images/background/fog/day/fog-day-02.jpg",
+                                            "images/background/fog/day/fog-day-03.jpg",
+                                            "images/background/fog/day/fog-day-04.jpg"
+                                        ],
+                                "night":  [
+                                              "images/background/fog/night/fog-night-01.jpg",
+                                              "images/background/fog/night/fog-night-02.jpg",
+                                              "images/background/fog/night/fog-night-03.jpg",
+                                              "images/background/fog/night/fog-night-04.jpg"
+                                          ]
+                            }
+                }
 }

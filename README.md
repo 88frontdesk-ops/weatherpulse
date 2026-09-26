@@ -17,14 +17,14 @@ Weather Pulse displays current conditions, hourly and daily forecasts, UV inform
 - The existing Badge and Current icon systems remain intact.
 
 
-Local weather backgrounds: `data/backgrounds.json`. Backgrounds are fully local and require no remote image service. Each weather condition has separate day/night pools with two images to start; add more files to `images/background/` and list them in the corresponding pool in `data/backgrounds.json`.
+Local weather backgrounds are fully local and require no remote image service. Images are organized by condition and period: `images/background/<condition>/day/` and `images/background/<condition>/night/`. The filename has no semantic meaning; condition and day/night come from the directory. `data/backgrounds.json` is a generated index of the files in those folders.
 
 
 
 ## Local background images
 
 - Location: `images/background/`
-- Configuration: `data/backgrounds.json`
+- Background index: `data/backgrounds.json`
 - Current set: 32 images (2 per condition/day-night pool).
 - Filenames do not have to follow a special naming rule. The filename only needs to match the path listed in `data/backgrounds.json`.
 - Recommended naming: `<condition>-<day|night>-<number>.jpg`, for example `rain-night-03.jpg`.
@@ -34,3 +34,22 @@ Local weather backgrounds: `data/backgrounds.json`. Backgrounds are fully local 
 
 ## Local weather backgrounds
 Each weather/day-night pool contains four local images. The selector uses the current weather condition plus the current `daylight` state; missing `daylight` now falls back to the current global daylight state instead of being treated as night. Rain-day backgrounds were replaced with brighter daytime rain scenes.
+
+## Building WeatherPulse v18
+
+Background images are organized by folder:
+
+`images/background/<condition>/<day|night>/`
+
+The filename does not matter. To add a new image, put it in the appropriate folder.
+
+To regenerate `data/backgrounds.json` and create the packaged extension ZIP, double-click:
+
+`build-weatherpulse.bat`
+
+The script automatically:
+1. Scans all background folders for JPG/JPEG/PNG/WebP images.
+2. Regenerates `data/backgrounds.json`.
+3. Creates `dist/weatherpulse.zip`.
+
+No manual editing of `data/backgrounds.json` is required.

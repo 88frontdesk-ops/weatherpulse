@@ -18,3 +18,8 @@ Weather Pulse displays current conditions, hourly and daily forecasts, UV inform
 
 
 Flickr backgrounds: data/flickr-backgrounds.json. Runtime Flickr API/feed requests are disabled. The manifest contains 160 condition slots; currently 28 distinct verified Flickr CDN URLs are reused where the web-accessible Flickr sources did not expose enough distinct licensed images.
+
+
+## Local Flickr background manifest v2
+
+The bundled Flickr manifest now includes additional verified CC0 and CC BY weather photographs. It records per-photo Flickr attribution metadata where available. The manifest currently contains 52 unique Flickr image URLs; it is not yet a full 160-unique-photo collection.

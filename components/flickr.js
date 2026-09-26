@@ -79,8 +79,15 @@ const bgLocal = (iconName, daylight) => {
       imageBackground.dataset.flickrUrl = url;
       imageBackground.style.backgroundImage = `url("${url}")`;
       const credit = document.getElementById("photo_credit");
+      const photoInfo = manifest.photoInfo?.[url];
       if (credit) {
-        credit.href = "https://www.flickr.com/creativecommons/";
+        credit.href = photoInfo?.photoUrl || "https://www.flickr.com/creativecommons/";
+        if (photoInfo?.photographer) {
+          credit.textContent = `Photo: ${photoInfo.photographer}`;
+        }
+        credit.title = photoInfo
+          ? `${photoInfo.photographer} — ${photoInfo.license}`
+          : "Flickr Creative Commons";
       }
       photo_credit_flickr.style.visibility = homeSub.classList.contains("sub_menu_current_Class") ? "visible" : "hidden";
     } catch (error) {

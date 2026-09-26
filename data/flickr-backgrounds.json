@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generatedFor": "WeatherPulse",
   "entries": {
     "clear-day": [
@@ -12,7 +12,10 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/7719/17866167810_7c97020e74.jpg",
+      "https://live.staticflickr.com/7733/17584717133_00b8d9392d.jpg",
+      "https://live.staticflickr.com/5450/17729639408_5a83ba4a8f.jpg"
     ],
     "clear-night": [
       "https://live.staticflickr.com/5254/5468126150_36ca79bf7c_h.jpg",
@@ -24,7 +27,8 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/747/22185426583_5e2cd8b9f4.jpg"
     ],
     "rain-day": [
       "https://live.staticflickr.com/5254/5468126150_36ca79bf7c_h.jpg",
@@ -36,7 +40,8 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/305/19914776809_7d1642a47b.jpg"
     ],
     "rain-night": [
       "https://live.staticflickr.com/5254/5468126150_36ca79bf7c_h.jpg",
@@ -48,7 +53,8 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/7382/9688106256_0824977c8b.jpg"
     ],
     "snow-day": [
       "https://live.staticflickr.com/65535/53333438286_50747f3879_z.jpg",
@@ -60,7 +66,12 @@
       "https://live.staticflickr.com/65535/52046974941_77a4effac8_z.jpg",
       "https://live.staticflickr.com/65535/51949900240_b26543c385.jpg",
       "https://live.staticflickr.com/65535/51843225562_a40de12cb3_z.jpg",
-      "https://live.staticflickr.com/65535/51531332338_2db58904ca_z.jpg"
+      "https://live.staticflickr.com/65535/51531332338_2db58904ca_z.jpg",
+      "https://live.staticflickr.com/7788/18388023062_34657fd05e.jpg",
+      "https://live.staticflickr.com/7675/16662196134_44e1bf8836.jpg",
+      "https://live.staticflickr.com/5454/17866235220_2fdd5e44f4.jpg",
+      "https://live.staticflickr.com/3686/19425903768_de16b42de2.jpg",
+      "https://live.staticflickr.com/8839/17817242288_76717d42a5.jpg"
     ],
     "snow-night": [
       "https://live.staticflickr.com/65535/53333438286_50747f3879_z.jpg",
@@ -72,7 +83,8 @@
       "https://live.staticflickr.com/65535/52046974941_77a4effac8_z.jpg",
       "https://live.staticflickr.com/65535/51949900240_b26543c385.jpg",
       "https://live.staticflickr.com/65535/51843225562_a40de12cb3_z.jpg",
-      "https://live.staticflickr.com/65535/51531332338_2db58904ca_z.jpg"
+      "https://live.staticflickr.com/65535/51531332338_2db58904ca_z.jpg",
+      "https://live.staticflickr.com/747/22185426583_5e2cd8b9f4.jpg"
     ],
     "sleet-day": [
       "https://live.staticflickr.com/2254/1892542343_12b78ed202_o.jpg",
@@ -132,7 +144,12 @@
       "https://live.staticflickr.com/8475/8363249742_79c923b31e_h.jpg",
       "https://live.staticflickr.com/6239/6256610125_1d44bf13a6_h.jpg",
       "https://live.staticflickr.com/7007/6417395877_dbeff5a5ce_h.jpg",
-      "https://live.staticflickr.com/6001/6209248538_f798e5e557_h.jpg"
+      "https://live.staticflickr.com/6001/6209248538_f798e5e557_h.jpg",
+      "https://live.staticflickr.com/425/18656926332_1e87308bb2.jpg",
+      "https://live.staticflickr.com/526/20326227000_a6ede246ef.jpg",
+      "https://live.staticflickr.com/286/17885834034_7365588753.jpg",
+      "https://live.staticflickr.com/5817/22194341120_ee9696565d.jpg",
+      "https://live.staticflickr.com/5460/17831905239_96cb17bd06.jpg"
     ],
     "fog-night": [
       "https://live.staticflickr.com/8504/8449860565_84c807bda4_h.jpg",
@@ -156,7 +173,11 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/7382/9688106256_0824977c8b.jpg",
+      "https://live.staticflickr.com/3682/9501334606_e278519007.jpg",
+      "https://live.staticflickr.com/7375/9449674579_ff82b49c74.jpg",
+      "https://live.staticflickr.com/3777/9074046267_94aa56077f.jpg"
     ],
     "cloudy-night": [
       "https://live.staticflickr.com/5254/5468126150_36ca79bf7c_h.jpg",
@@ -168,7 +189,9 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/747/22185426583_5e2cd8b9f4.jpg",
+      "https://live.staticflickr.com/3682/9501334606_e278519007.jpg"
     ],
     "partly-cloudy-day": [
       "https://live.staticflickr.com/5254/5468126150_36ca79bf7c_h.jpg",
@@ -180,7 +203,9 @@
       "https://live.staticflickr.com/5176/5527253456_b0c350b282_h.jpg",
       "https://live.staticflickr.com/6144/6209247846_55c0ddbfc6_h.jpg",
       "https://live.staticflickr.com/8049/8116532251_b7b01c663e_h.jpg",
-      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg"
+      "https://live.staticflickr.com/4097/5395472660_214fc401e5_z.jpg",
+      "https://live.staticflickr.com/7382/9688106256_0824977c8b.jpg",
+      "https://live.staticflickr.com/7719/17866167810_7c97020e74.jpg"
     ],
     "partly-cloudy-night": [
       "https://live.staticflickr.com/5254/5468126150_36ca79bf7c_h.jpg",
@@ -201,6 +226,122 @@
     "wind": "CC BY 3.0 - Cornelia Kopp (Alice Popkorn), attribution required.",
     "rain": "Flickr page states Creative Commons availability for all sizes."
   },
-  "uniqueUrlCount": 33,
-  "entryCount": 160
+  "uniqueUrlCount": 52,
+  "entryCount": 185,
+  "photoInfo": {
+    "https://live.staticflickr.com/425/18656926332_1e87308bb2.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/18656926332/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/526/20326227000_a6ede246ef.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/20326227000/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/286/17885834034_7365588753.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17885834034/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/5817/22194341120_ee9696565d.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/22194341120/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/5460/17831905239_96cb17bd06.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17831905239/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/7788/18388023062_34657fd05e.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/18388023062/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/7675/16662196134_44e1bf8836.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/16662196134/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/5454/17866235220_2fdd5e44f4.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17866235220/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/3686/19425903768_de16b42de2.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/19425903768/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/8839/17817242288_76717d42a5.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17817242288/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/7719/17866167810_7c97020e74.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17866167810/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/7733/17584717133_00b8d9392d.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17584717133/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/5450/17729639408_5a83ba4a8f.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/17729639408/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/747/22185426583_5e2cd8b9f4.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/22185426583/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/305/19914776809_7d1642a47b.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/image-catalog/19914776809/",
+      "photographer": "Image Catalog",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "https://live.staticflickr.com/7382/9688106256_0824977c8b.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/seeminglee/9688106256/",
+      "photographer": "See-ming Lee",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "https://live.staticflickr.com/3682/9501334606_e278519007.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/seeminglee/9501334606/",
+      "photographer": "See-ming Lee",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "https://live.staticflickr.com/7375/9449674579_ff82b49c74.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/seeminglee/9449674579/",
+      "photographer": "See-ming Lee",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "https://live.staticflickr.com/3777/9074046267_94aa56077f.jpg": {
+      "photoUrl": "https://www.flickr.com/photos/seeminglee/9074046267/",
+      "photographer": "See-ming Lee",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    }
+  }
 }

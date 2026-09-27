@@ -1,9 +1,10 @@
 const hourly = (wCast) => {
     ((hourlyTimelineIcon = []),
-      chrome.storage.local.get("weatherpulseFullAccess", (data) => {
+      chrome.storage.local.get(["weatherpulseFullAccess", "animatedIcon"], (data) => {
         let endOfHourly = data.weatherpulseFullAccess
           ? wCast.forecastHourly.hours.length
           : 48;
+        window.weatherpulseAnimatedIcon = "1" === data.animatedIcon;
         hourlyStructure().then(() => refreshHourly(0, endOfHourly));
       }));
   },
@@ -214,19 +215,22 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
               ? ""
               : rainValuePopHourly + "%";
           const updateIcon = (i, iconFileName) => {
-            ((document.querySelector(
-              `.forecast_${i}_hours_icon_Class`,
-            ).style.backgroundImage =
-              `url("images/weather_icon/${iconFileName}")`),
-              i < 5 &&
-                void 0 !== data.hourlySelected &&
-                data.hourlySelected &&
-                (document.querySelector(
-                  `.forecast_${i}_homePage_icon_Class`,
-                ).style.backgroundImage =
-                  `url("images/weather_icon/${iconFileName}")`));
+            const hourlyIcon = document.querySelector(`.forecast_${i}_hours_icon_Class`);
+            if (hourlyIcon) {
+              hourlyIcon.style.backgroundImage = `url("images/weather_icon/${iconFileName}")`;
+              hourlyIcon.classList.toggle("weather-icon-animated", !!window.weatherpulseAnimatedIcon);
+            }
+            if (i < 5 && void 0 !== data.hourlySelected && data.hourlySelected) {
+              const homeIcon = document.querySelector(`.forecast_${i}_homePage_icon_Class`);
+              if (homeIcon) {
+                homeIcon.style.backgroundImage = `url("images/weather_icon/${iconFileName}")`;
+                homeIcon.classList.toggle("weather-icon-animated", !!window.weatherpulseAnimatedIcon);
+              }
+            }
           };
-          updateIcon(i, getColorWeatherIcon(forecast_hours_icon));
+          updateIcon(i, window.weatherpulseAnimatedIcon
+            ? getAnimatedWeatherIcon(forecast_hours_icon)
+            : getColorWeatherIcon(forecast_hours_icon));
         }
         hourlyTimelineSide(hourlyTimelineIcon);
       },

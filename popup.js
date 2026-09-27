@@ -215,12 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
       (data) => {
         updateTime = toTimestamp(wCast.currentWeather.asOf);
         if ("image" == data.backgroundType) {
-          let icon = getWeIcon(condition, daylight, cloudCover);
-          if (1 == data.verUpdate) {
-            imageBackground.classList.remove("hidden");
-            chrome.storage.local.set({ verUpdate: 2 });
-            bgBackground(icon, daylight);
-          } else bgBackground(icon, daylight);
+          const icon = getWeIcon(condition, daylight, cloudCover);
+          bgLocal(icon, daylight);
         }
         if ("c" === data.setSettingFC) ctemp(wCast);
         else ftemp(wCast);

@@ -21,27 +21,11 @@ if errorlevel 1 (
 )
 
 echo.
-echo [2/2] Creating dist\weatherpulse.zip...
-if not exist "dist" mkdir "dist"
-if exist "dist\weatherpulse.zip" del /q "dist\weatherpulse.zip"
-
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$root=(Get-Location).Path; $zip=Join-Path $root 'dist\weatherpulse.zip'; $items=Get-ChildItem -LiteralPath $root -Force | Where-Object { $_.Name -notin @('dist','.git') }; Compress-Archive -Path ($items.FullName) -DestinationPath $zip -CompressionLevel Optimal -Force"
-if errorlevel 1 (
-    echo.
-    echo ERROR: Could not create dist\weatherpulse.zip.
-    echo.
-    pause
-    exit /b 1
-)
-
-echo.
 echo ========================================
 echo Build completed successfully.
 echo ========================================
 echo.
 echo Updated: data\backgrounds.json
-echo Created: %CD%\dist\weatherpulse.zip
 echo.
 echo Add images to the appropriate background folder and
 echo double-click this BAT again. No JSON editing is needed.

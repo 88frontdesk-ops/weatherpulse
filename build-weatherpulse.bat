@@ -12,5 +12,4 @@ echo Background index updated successfully.
 echo.
 echo WeatherPulse build preparation completed.
 echo You can now load the extension from this folder in Chrome.
-pause
 endlocal

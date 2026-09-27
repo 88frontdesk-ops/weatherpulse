@@ -76,7 +76,10 @@ const ICONS = [
       (modalReport.style.visibility = "hidden"),
       (modalReportClose.style.visibility = "hidden"),
       updateClassList(homeIcon, "add", ICON_CLASSES),
-      homeSub.classList.add("sub_menu_current_Class"));
+      homeSub.classList.add("sub_menu_current_Class"),
+      homeSub.classList.contains("sub_menu_current_Class")
+        ? (photo_credit_flickr.style.visibility = "visible")
+        : (photo_credit_flickr.style.visibility = "hidden"));
   },
   displayModal = () => {
     ((imageBackground.style.width = "300px"),
@@ -96,5 +99,8 @@ const ICONS = [
           updateStyle("spinner", {
             backgroundColor: isDark ? "#fff" : "#202124",
           }));
-      }));
+      }),
+      homeSub.classList.contains("sub_menu_current_Class")
+        ? (photo_credit_flickr.style.visibility = "visible")
+        : (photo_credit_flickr.style.visibility = "hidden"));
   };

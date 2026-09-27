@@ -136,10 +136,13 @@ const daily = (wCast) => {
       true,
       Number(forecast.cloudCover) || 0,
     );
-    const iconFile = getColorWeatherIcon(iconName);
+    const iconFile = window.weatherpulseAnimatedIcon
+      ? getAnimatedWeatherIcon(iconName)
+      : getColorWeatherIcon(iconName);
     const homeIcon = document.querySelector(`.forecast_${i}_homePage_icon_Class`);
     if (homeIcon) {
       homeIcon.style.backgroundImage = `url("images/weather_icon/${iconFile}")`;
+      homeIcon.classList.toggle("weather-icon-animated", !!window.weatherpulseAnimatedIcon);
       homeIcon.style.backgroundRepeat = "no-repeat";
       homeIcon.style.backgroundPosition = "center";
       homeIcon.style.backgroundSize = "contain";
@@ -185,6 +188,43 @@ const daily = (wCast) => {
       });
     };
     repairDailyIcons();
+    const applyDailyAnimatedIcons = (animated) => {
+      window.weatherpulseAnimatedIcon = animated;
+      dailyForecastTable.querySelectorAll(".forecast_icon_modal_Class").forEach((el) => {
+        const img = el.querySelector("img.forecast_daily_daynight_icon");
+        if (!img) return;
+        const isNight = el.classList.contains("forecast_daily_night_icon_Class");
+        const forecast = isNight
+          ? wCast.forecastDaily.days[Number((el.className.match(/forecast_(\d+)_daily_night_icon_Class/) || [])[1] || 0)]?.overnightForecast
+          : wCast.forecastDaily.days[Number((el.className.match(/forecast_(\d+)_daily_day_icon_Class/) || [])[1] || 0)]?.daytimeForecast;
+        let name = getWeIcon(forecast?.conditionCode || "clear", !isNight, Number(forecast?.cloudCover) || 0);
+        const file = animated
+          ? getAnimatedWeatherIcon(name)
+          : (iconNames[name] || (!isNight ? "c_sun.svg" : "c_moon.svg"));
+        img.src = chrome.runtime.getURL(`images/weather_icon/${file}`);
+        el.classList.toggle("weather-icon-animated", animated);
+      });
+    };
+    chrome.storage.local.get("animatedIcon", (settings) => {
+      const animated = "1" === settings.animatedIcon;
+      applyDailyAnimatedIcons(animated);
+      // The five Daily cards on the Home view are rendered before the async
+      // settings read above. Apply the same icon family once the preference is known.
+      for (let i = 0; i < Math.min(5, wCast.forecastDaily.days.length); i++) {
+        const dayRecord = wCast.forecastDaily.days[i] || {};
+        const forecast = dayRecord.daytimeForecast || {};
+        let name = getWeIcon(forecast.conditionCode || "clear", true, Number(forecast.cloudCover) || 0);
+        const file = animated ? getAnimatedWeatherIcon(name) : getColorWeatherIcon(name);
+        const homeIcon = document.querySelector(`.forecast_${i}_homePage_icon_Class`);
+        if (homeIcon) {
+          homeIcon.style.backgroundImage = `url("images/weather_icon/${file}")`;
+          homeIcon.style.backgroundRepeat = "no-repeat";
+          homeIcon.style.backgroundPosition = "center";
+          homeIcon.style.backgroundSize = "contain";
+          homeIcon.classList.toggle("weather-icon-animated", animated);
+        }
+      }
+    });
     requestAnimationFrame(() => {
       repairDailyIcons();
       requestAnimationFrame(repairDailyIcons);
@@ -247,7 +287,9 @@ const daily = (wCast) => {
           try {
             name = getWeIcon(forecast.conditionCode || "clear", daylight, Number(forecast.cloudCover) || 0);
           } catch (_) {}
-          const icon = iconNames[name] || (daylight ? "c_sun" : "c_moon");
+          const icon = window.weatherpulseAnimatedIcon
+            ? getAnimatedWeatherIcon(name).replace(/\.svg$/, "")
+            : (iconNames[name] || (daylight ? "c_sun" : "c_moon"));
           const src = chrome.runtime.getURL(`images/weather_icon/${icon}.svg`);
           el.style.backgroundImage = "none";
           el.textContent = "";

@@ -4,11 +4,11 @@ cd /d "%~dp0"
 
 echo.
 echo ========================================
-echo        WeatherPulse v18 Builder
+echo        WeatherPulse Builder
 echo ========================================
 echo.
 
-echo [1/2] Updating data\backgrounds.json automatically...
+echo Updating data\backgrounds.json automatically...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$root=(Get-Location).Path; $bg=Join-Path $root 'images\background'; $out=Join-Path $root 'data\backgrounds.json'; $conditions=@('clear','partly-cloudy','cloudy','rain','snow','sleet','wind','fog'); $periods=@('day','night'); $entries=[ordered]@{}; foreach($condition in $conditions){ $entries[$condition]=[ordered]@{}; foreach($period in $periods){ $folder=Join-Path $bg ($condition+'\'+$period); $files=@(); if(Test-Path -LiteralPath $folder){ $files=@(Get-ChildItem -LiteralPath $folder -File | Where-Object { $_.Extension -in @('.jpg','.jpeg','.png','.webp') } | Sort-Object Name | ForEach-Object { $_.FullName.Substring($root.Length+1).Replace([IO.Path]::DirectorySeparatorChar,'/').Replace([IO.Path]::AltDirectorySeparatorChar,'/') }); } $entries[$condition][$period]=$files; } } $json=[ordered]@{version=3;entries=$entries} | ConvertTo-Json -Depth 6; Set-Content -LiteralPath $out -Value $json -Encoding UTF8; Write-Host 'Background index updated.'"
 if errorlevel 1 (

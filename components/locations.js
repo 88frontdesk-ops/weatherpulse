@@ -9,10 +9,8 @@ closeAddLocation = () => {
       searchBoxGeocoder.removeChild(searchBoxGeocoder.firstChild),
     chrome.storage.local.get("selectedLocationNumber", (data) => {
       if (data.selectedLocationNumber > 1) {
-        nextLocationGroupId.style.visibility = "visible";
-        var selectedLN = data.selectedLocationNumber;
-        mp_setting("Selected Locations", selectedLN);
-      } else nextLocationGroupId.style.visibility = "hidden";
+        mp_setting("Selected Locations", data.selectedLocationNumber);
+      }
     }));
 };
 const loadLocations = () => {
@@ -26,11 +24,8 @@ const loadLocations = () => {
       ],
       (data) => {
         if (
-          (void 0 !== data.selectedLocationNumber &&
-            data.selectedLocationNumber > 1 &&
-            (nextLocationGroupId.style.visibility = "visible"),
           void 0 !== data.selectedLocation &&
-            void 0 === data.selectedLocationUpdated)
+          void 0 === data.selectedLocationUpdated
         ) {
           var selectedLocationNew = [];
           let selectedLocation = data.selectedLocation;
@@ -90,11 +85,8 @@ const loadLocations = () => {
         (data) => {
           (data.selectedLocationNumber >= data.selectedLocationMax &&
             ((searchBoxGeocoder.style.display = "none"),
-            (myLocationIp.style.display = "none"),
-            (maximumNumber.style.display = "none")),
-            data.selectedLocationNumber > 1
-              ? (nextLocationGroupId.style.visibility = "visible")
-              : (nextLocationGroupId.style.visibility = "hidden"));
+              (myLocationIp.style.display = "none"),
+              (maximumNumber.style.display = "none")));
         },
       ));
     let lat = latlong.split(",")[0],
@@ -149,9 +141,6 @@ const loadLocations = () => {
       (data) => {
         if (
           ((timeZoneBadge = getTimezoneOffset(data.timezone)),
-          void 0 !== data.selectedLocationNumber &&
-            data.selectedLocationNumber > 1 &&
-            (nextLocationGroupId.style.visibility = "visible"),
           void 0 !== data.selectedLocationNumber &&
             1 !== data.selectedLocationNumber)
         ) {

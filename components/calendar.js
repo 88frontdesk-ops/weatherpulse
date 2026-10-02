@@ -1,19 +1,18 @@
 let resultCalendar;
-const calendar_api = (latlong) =>
-    new Promise((resolve, reject) => {
-      const optionsCalendar = {
-        method: "GET",
-        headers: { Accept: "application/json", "User-Agent": " (info@)" },
-      };
-      fetchPlus(() => fetch(`?${latlong}`, optionsCalendar))
-        .then((response) => response.json())
-        .then((resultCalendar_api) => {
-          ((resultCalendar = resultCalendar_api),
-            resultCalendar
-              ? resolve({ resultCalendar: resultCalendar })
-              : reject("Error message"));
-        });
-    }),
+const calendar_api = async (latlong) => {
+  const optionsCalendar = {
+    method: "GET",
+    headers: { Accept: "application/json", "User-Agent": " (info@)" },
+  };
+  const response = await fetchPlus(() => fetch(`?${latlong}`, optionsCalendar));
+  if (!response.ok) throw new Error(`Calendar request failed: ${response.status}`);
+  const result = await response.json();
+  if (!Array.isArray(result?.forecasts)) {
+    throw new Error("Calendar response did not contain forecasts");
+  }
+  resultCalendar = result;
+  return { resultCalendar };
+},
   calendar = (resultCalendar, wCast) => {
     const weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     function createCalendarItem(index) {

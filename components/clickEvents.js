@@ -369,7 +369,7 @@ const clickEvents = () => {
                         (favIcon_calendar.style.backgroundImage =
                           'url("/images/favourite-active.svg")'),
                       calendar(result.resultCalendar, wCast));
-                  }),
+                      }).catch((error) => console.warn("Calendar data unavailable.", error)),
                   mp_event("30Days Page"))
                 : vipPage();
             },

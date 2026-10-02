@@ -29,6 +29,8 @@ const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = fals
     const current = wCast.currentWeather;
     const hour = wCast.forecastHourly.hours[0];
     const day = wCast.forecastDaily.days[0];
+    const numberOr = (value, fallback = 0) =>
+      Number.isFinite(Number(value)) ? Number(value) : fallback;
 
     updateTime = toTimestamp(current.asOf);
     temperature = (Number(current.temperature) || 0) + 273.15;
@@ -38,12 +40,14 @@ const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = fals
     visibility = Number(current.visibility) || 16093;
     dewPoint = (Number(current.temperatureDewPoint) || Number(current.temperature) || 0) + 273.15;
     humidity = typeof current.humidity === "number" ? Math.round(current.humidity * 100) : 0;
-    windSpeed = (Number(hour.windSpeed) || Number(current.windSpeed) || 0) * (1e3 / 3600);
-    windGust = (Number(hour.windGust) || Number(current.windGust) || 0) * (1e3 / 3600);
-    cloudCover = Math.floor(100 * (Number(hour.cloudCover) || Number(current.cloudCover) || 0));
-    uvIndex = Number(hour.uvIndex) || Number(current.uvIndex) || 0;
+    windSpeed = numberOr(current.windSpeed, numberOr(hour.windSpeed)) * (1e3 / 3600);
+    windGust = numberOr(current.windGust, numberOr(hour.windGust)) * (1e3 / 3600);
+    cloudCover = Math.floor(100 * numberOr(current.cloudCover, numberOr(hour.cloudCover)));
+    uvIndex = numberOr(current.uvIndex, numberOr(hour.uvIndex));
     maxUvIndex = Number(day.maxUvIndex) || 0;
-    daylight = hour.daylight !== false;
+    daylight = current.daylight !== undefined
+      ? current.daylight !== false
+      : hour.daylight !== false;
     condition = current.conditionCode || hour.conditionCode || "clear";
     icon = getWeIcon(condition, daylight, cloudCover);
     iconBadge = getIconBadge(condition, daylight, cloudCover);
@@ -94,9 +98,21 @@ const weCast = (latlong, country, timezone, resolve, reject, forceRefresh = fals
     }
     return loadWeatherData({ latitude: lat, longitude: lng, country, timezone })
       .then((weather) => {
-        chrome.storage.local.set({ wCastCachedAt: Date.now() });
         const result = applyWeather(weather);
+        chrome.storage.local.set({ wCastCachedAt: Date.now() });
         resolve && resolve(result);
+      }).catch((error) => {
+        if (cachedWeather) {
+          try {
+            console.warn("Weather refresh failed; using cached weather data.", error);
+            const result = applyWeather(cachedWeather);
+            resolve && resolve(result);
+            return;
+          } catch (cacheError) {
+            console.warn("Cached weather data is unavailable.", cacheError);
+          }
+        }
+        throw error;
       });
   }).catch((error) => { console.error("Weather provider request failed.", error); reject && reject(error); });
 };

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Illustrated rain day weather landscape">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#456b7a"/><stop offset="1" stop-color="#9ba9a8"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#ffeab1" stop-opacity=".42"/><stop offset="1" stop-color="#ffeab1" stop-opacity="0"/></radialGradient>
+    <linearGradient id="shade" x2="0" y2="1"><stop stop-color="#07101b" stop-opacity="0"/><stop offset="1" stop-color="#07101b" stop-opacity=".24"/></linearGradient>
+    <pattern id="grain" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="4" cy="8" r=".8" fill="#fff" opacity=".12"/><circle cx="25" cy="26" r=".7" fill="#07101b" opacity=".08"/></pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  
+  
+  <g transform="translate(102 111) scale(1.22)" fill="#87999d" opacity="0.94">
+    <path d="M10 55c-16 0-24-10-24-23 0-12 10-22 23-22 5-18 20-29 39-29 20 0 34 12 39 30 19-5 38 8 38 28 0 10-6 18-17 21z"/>
+    <path d="M4 54h95" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="3"/>
+  </g>
+    <g stroke="#b5d8d9" stroke-width="4" stroke-linecap="round" opacity=".75">
+      <path d="M183 202l-17 43M228 207l-17 50M276 202l-17 43M326 208l-17 50M376 202l-17 44M426 207l-17 49M476 203l-17 44M526 208l-17 48M576 202l-17 44"/>
+    </g>
+    <path d="M58 452q155-32 309 2t375-8v154H58z" fill="#315a66" opacity=".48"/>
+  <path d="M0 404 105 298l68 65 126-158 104 128 112-96 93 82 108-124 84 114v291H0z" fill="#415962" opacity=".76"/>
+    <path d="m242 241 57-36 44 53-39-16-27 20zM525 319l93-124 84 114-70-54-30 38z" fill="#d9e6e5" opacity=".58"/>
+    <path d="M0 427q139-70 280-14t250-8 270-6v201H0z" fill="#2e474e"/>
+    <path d="M0 490q183-73 358-2t442-35v147H0z" fill="#657c7a"/><path d="M0 525q145-55 289 5t274-12 237-5v87H0z" fill="#315b64"/><path d="M0 554q171-36 329 7t471-21" fill="none" stroke="#9ec1b8" stroke-width="4" opacity=".58"/>
+  <path d="M0 430q181-76 354-13t446-35" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="2"/>
+  <rect width="800" height="600" fill="url(#shade)"/>
+  <rect width="800" height="600" fill="url(#grain)"/>
+</svg>

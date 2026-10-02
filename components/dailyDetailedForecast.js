@@ -13,12 +13,25 @@
       const row = document.createElement("div");
       row.className = "daily_sub_row nws_detailed_forecast_row";
       row.style.marginTop = "12px";
-      row.innerHTML = `
-        <span class="daily_element_title">NWS Forecast</span>
-        <div style="width:100%;">
-          ${details.day ? `<div class="forecast_daily_description_Class"><strong>Day:</strong> ${details.day}</div>` : ""}
-          ${details.night ? `<div class="forecast_daily_description_Class" style="margin-top:8px;"><strong>Night:</strong> ${details.night}</div>` : ""}
-        </div>`;
+      const title = document.createElement("span");
+      title.className = "daily_element_title";
+      title.textContent = "NWS Forecast";
+      const content = document.createElement("div");
+      content.style.width = "100%";
+      if (details.day) {
+        const dayText = document.createElement("div");
+        dayText.className = "forecast_daily_description_Class";
+        dayText.textContent = `Day: ${details.day}`;
+        content.appendChild(dayText);
+      }
+      if (details.night) {
+        const nightText = document.createElement("div");
+        nightText.className = "forecast_daily_description_Class";
+        nightText.style.marginTop = "8px";
+        nightText.textContent = `Night: ${details.night}`;
+        content.appendChild(nightText);
+      }
+      row.append(title, content);
       panel.querySelector(".panel_sub_daily")?.appendChild(row);
     });
     return true;

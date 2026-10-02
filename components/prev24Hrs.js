@@ -37,7 +37,7 @@ const prev24Hrs = async () => {
     const conditionCode = weatherpulseConditionFromOpenMeteo(value("weather_code"));
     const currentConditionId = getWeDescriptionId(conditionCode);
     const summary = getWeDescription(conditionCode) || weatherpulseOpenMeteoDescription(value("weather_code"));
-    const dewPoint = temperature;
+    const dewPoint = value("dew_point_2m", temperature);
 
     const humidityPercent = Math.round(100 * humidity);
     let humidityValue;

@@ -20,7 +20,16 @@ const bgLocal = async (iconName, isDaylight) => {
     const index = await response.json();
     const files = index?.entries?.[condition]?.[period] || [];
     if (!files.length) throw new Error(`No background for ${condition}/${period}`);
-    const file = files[Math.floor(Math.random() * files.length)];
+    const illustrations = files.filter((file) => /\/illustrated-[^/]+\.svg$/i.test(file));
+    const choices = [...illustrations, ...files.filter((file) => !illustrations.includes(file))];
+    const rotationKey = `backgroundRotation_${condition}_${period}`;
+    const stored = await new Promise((resolve) => chrome.storage.local.get(rotationKey, resolve));
+    const savedIndex = Number(stored?.[rotationKey]);
+    const selectedIndex = Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < choices.length
+      ? savedIndex
+      : 0;
+    const file = choices[selectedIndex];
+    chrome.storage.local.set({ [rotationKey]: (selectedIndex + 1) % choices.length });
     imageBackground.style.backgroundImage = `url("${file}")`;
     imageBackground.classList.remove("hidden");
   } catch (error) {

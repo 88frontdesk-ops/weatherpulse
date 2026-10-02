@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Illustrated fog night weather landscape">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#203749"/><stop offset="1" stop-color="#737b7d"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#b9d0d3" stop-opacity=".42"/><stop offset="1" stop-color="#b9d0d3" stop-opacity="0"/></radialGradient>
+    <linearGradient id="shade" x2="0" y2="1"><stop stop-color="#07101b" stop-opacity="0"/><stop offset="1" stop-color="#07101b" stop-opacity=".24"/></linearGradient>
+    <pattern id="grain" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="4" cy="8" r=".8" fill="#fff" opacity=".12"/><circle cx="25" cy="26" r=".7" fill="#07101b" opacity=".08"/></pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  
+  <g fill="#d4dddd" opacity=".62"><path d="M-20 282q126-26 260-2t292-1 290 0v39q-131-24-270 1t-283 0-289 4z"/><path d="M-20 336q153-21 298 1t272-2 272 3v43q-128-22-273 0t-291-2-278 2z"/><path d="M-20 400q128-18 260 1t289-1 293 1v38q-148-15-284 1t-286-1-272 1z"/></g>
+  <path d="M0 404 105 298l68 65 126-158 104 128 112-96 93 82 108-124 84 114v291H0z" fill="#2c414e" opacity=".76"/>
+    <path d="m242 241 57-36 44 53-39-16-27 20zM525 319l93-124 84 114-70-54-30 38z" fill="#d3d8d4" opacity=".58"/>
+    <path d="M0 427q139-70 280-14t250-8 270-6v201H0z" fill="#1c303e"/>
+    <path d="M0 490q183-73 358-2t442-35v147H0z" fill="#879394"/><g fill="#667c80" opacity=".8"><path d="m68 491 24-95 25 95h-16l22 41H61l22-41z"/><path d="m126 513 18-70 20 70h-13l18 31h-46l17-31z"/><path d="m711 497 26-103 27 103h-17l22 39h-63l23-39z"/><path d="m654 519 18-70 20 70h-12l17 29h-44l16-29z"/></g>
+  <path d="M0 430q181-76 354-13t446-35" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="2"/>
+  <rect width="800" height="600" fill="url(#shade)"/>
+  <rect width="800" height="600" fill="url(#grain)"/>
+</svg>

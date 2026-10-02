@@ -79,8 +79,8 @@ const favourite = () => {
                         (closeAllPopup(),
                           (favIcon_calendar.style.backgroundImage =
                             'url("/images/favourite-active.svg")'),
-                          calendar(result.resultCalendar, wCast));
-                      })
+                            calendar(result.resultCalendar, wCast));
+                          }).catch((error) => console.warn("Calendar data unavailable.", error))
                     : "lunar" == data.setAsHomepage
                       ? (closeAllPopup(),
                         (favIcon_lunar.style.backgroundImage =

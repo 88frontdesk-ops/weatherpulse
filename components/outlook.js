@@ -1,6 +1,6 @@
 const outlook = (wCast) => {
   chrome.storage.local.get(
-    ["outlookSelected", "setSettingFC", "weeklySelected", "hourlySelected"],
+    ["outlookSelected", "setSettingFC", "weeklySelected", "hourlySelected", "animatedIcon"],
     (data) => {
       ((hourlyTimeArray = []),
         (hourlyIconArray = []),
@@ -119,14 +119,19 @@ const outlook = (wCast) => {
               `forecast_day_vertical_${i + 1}`,
             ).style.visibility = "visible");
         });
+        const animated = "1" === data.animatedIcon;
         for (let i = 0; i < 5; i++) {
           document.querySelector(`.forecast_${i}_date`).textContent =
             getTimeOfDay(window[`greetingIndex_${i}`]);
-          const iconImage = getColorWeatherIcon(outlookIconArray[i]);
-          document.querySelector(
+          const icon = document.querySelector(
             `.forecast_${i}_homePage_icon_Class`,
-          ).style.backgroundImage =
-            `url('images/weather_icon/${iconImage}')`;
+          );
+          const iconImage = getColorWeatherIcon(outlookIconArray[i]);
+          icon.style.backgroundImage = `url('images/weather_icon/${iconImage}')`;
+          icon.style.backgroundRepeat = "no-repeat";
+          icon.style.backgroundPosition = "center";
+          icon.style.backgroundSize = "contain";
+          icon.classList.toggle("weather-icon-animated", animated);
         }
       }
       if (!data.weeklySelected && !data.hourlySelected)

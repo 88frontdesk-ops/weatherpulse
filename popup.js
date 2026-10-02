@@ -230,6 +230,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if ("c" === data.setSettingFC) ctemp(wCast);
         else ftemp(wCast);
         timeFormat(wCast);
+        if (typeof globalThis.updateFetchTimeLabel === "function") {
+          globalThis.updateFetchTimeLabel();
+        }
         sunMoonPath(data.latlong);
         alert(wCast);
         hazard(wCast);

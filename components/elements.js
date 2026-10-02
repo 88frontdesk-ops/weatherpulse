@@ -31,7 +31,6 @@ const getElements = () => {
     (favIcon_aqi = document.getElementById("favourite_icon_aqi")),
     (favIcon_calendar = document.getElementById("favourite_icon_calendar")),
     (favIcon_current = document.getElementById("favourite_icon_current")),
-    (favIcon_map = document.getElementById("favourite_icon_map")),
     (favIcon_hourly = document.getElementById("favourite_icon_hourly")),
     (favIcon_daily = document.getElementById("favourite_icon_daily")),
     (favIcon_solar = document.getElementById("favourite_icon_solar")),
@@ -45,12 +44,6 @@ const getElements = () => {
     (badgeRedDot = document.getElementById("checkbox_redBadge")),
     (checkboxNotification = document.getElementById("checkbox_notification")),
     (linkLockVipClasses = document.querySelectorAll(".link_lock_vip_Class")),
-    (mapClose = document.getElementById("map_popup_close")),
-    (worldClose = document.getElementById("world_popup_close")),
-    (mapInner = document.getElementById("weatherMap")),
-    (mapInnerWorld = document.getElementById("weatherWorld")),
-    (mapLegend = document.getElementById("legend_image")),
-    (mapLegendText = document.getElementById("legend_text")),
     (maximumNumberClasses = document.querySelectorAll(".maximumNumber_Class")),
     (maximumNumber = document.getElementById("maximumNumber")),
     (mins60Button = document.getElementsByClassName("tooltipMins60")),
@@ -63,8 +56,6 @@ const getElements = () => {
     (modalCurrent = document.getElementById("current_popup")),
     (modalLunar = document.getElementById("lunar_popup")),
     (modalLunarClose = document.getElementById("lunar_popup_close")),
-    (modalReport = document.querySelector(".report_popup_Class")),
-    (modalReportClose = document.querySelector(".report_popup_close_Class")),
     (modalSearch = document.getElementById("search_popup")),
     (modalSetting = document.getElementById("setting_popup")),
     (modalSolar = document.getElementById("solar_popup")),
@@ -118,10 +109,6 @@ const getElements = () => {
     (toggleSwitchWhiteIcon = document.querySelector(
       '.theme_switch_setting input[type="checkbox"]',
     )),
-    (weatherReportTitles = document.getElementById("weatherReport_link_title")),
-    (weatherReportTooltips = document.querySelectorAll(
-      "#tooltip_weatherReport",
-    )),
     (currentVisibility = document.getElementById("current_visibility")),
     (sameTimeYesterdayVisibility = document.getElementById(
       "sameTimeYesterday_visibility",
@@ -150,6 +137,11 @@ const getElements = () => {
       ".sameTimeYesterday_accufeel_shade",
     )),
     (currentAccufeelHome = document.querySelector(".current_accufeel_home")),
+    (cardUpdate = document.querySelector(".cardUpdate_Class")),
+    (cardUpdateHeading = document.getElementById("cardUpdate_heading")),
+    (cardUpdateTitle = document.getElementById("cardUpdate_title")),
+    (cardUpdateText = document.getElementById("cardUpdate_text")),
+    (cardUpdateButtonText = document.getElementById("cardUpdate_buttonText")),
     (toggleButtonRadar = document.getElementById("toggleButtonRadar")),
     (backwardButtonRadar = document.getElementById("backwardButtonRadar")),
     (forwardButtonRadar = document.getElementById("forwardButtonRadar")),
@@ -162,14 +154,5 @@ const getElements = () => {
     (toggleSwitchKind = document.querySelector(
       '.radar_switch_setting_kind input[type="checkbox"]',
     )),
-    (titleMinRadar = document.getElementById("map_popup_title_min")),
-    (titleTimeRadar = document.getElementById("map_popup_title_time")),
-    (reportLoadongGroup = document.querySelector(".report_loadong_group")),
-    (cardUpdate = document.querySelector(".cardUpdate_Class")),
-    (cardUpdateHeading = document.getElementById("cardUpdate_heading")),
-    (cardUpdateTitle = document.getElementById("cardUpdate_title")),
-    (cardUpdateText = document.getElementById("cardUpdate_text")),
-    (cardUpdateButtonText = document.getElementById("cardUpdate_buttonText")),
-    (cardUpdateButton = document.querySelector(".cardUpdate_button_Class")),
-    (mapboxAccess = null));
+    (cardUpdateButton = document.querySelector(".cardUpdate_button_Class")));
 };

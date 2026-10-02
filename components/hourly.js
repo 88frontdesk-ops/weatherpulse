@@ -211,9 +211,7 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
               `forecast_${i}_hours_rain`,
             );
           forecastRainPopHourly.textContent =
-            0 === i
-              ? ""
-              : rainValuePopHourly + "%";
+            rainValuePopHourly + "%";
           const updateIcon = (i, iconFileName) => {
             const hourlyIcon = document.querySelector(`.forecast_${i}_hours_icon_Class`);
             if (hourlyIcon) {
@@ -228,9 +226,7 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
               }
             }
           };
-          updateIcon(i, window.weatherpulseAnimatedIcon
-            ? getAnimatedWeatherIcon(forecast_hours_icon)
-            : getColorWeatherIcon(forecast_hours_icon));
+          updateIcon(i, getColorWeatherIcon(forecast_hours_icon));
         }
         hourlyTimelineSide(hourlyTimelineIcon);
       },

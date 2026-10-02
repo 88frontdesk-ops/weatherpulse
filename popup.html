@@ -50,10 +50,7 @@
         <script type="text/javascript" src="/components/minutely.js"></script>
         <script type="text/javascript" src="/components/hazard.js"></script>
         <script type="text/javascript" src="/components/comparison.js"></script>
-        <script type="text/javascript" src="/components/report.js"></script>
         <script type="text/javascript" src="/components/lunar.js"></script>
-        <script type="text/javascript" src="/components/radar.js"></script>
-        <script type="text/javascript" src="/components/world.js"></script>
         <script type="text/javascript" src="/components/locations.js"></script>
         <script type="text/javascript" src="/components/search.js"></script>
         <script type="text/javascript" src="/components/alert.js"></script>
@@ -229,19 +226,6 @@
                                 <div id="alert_sender_0" class="alert_sender_Class">sender_name</div>
                         </div>
                 </div>
-                <div id="report_popup" class="report_popup_Class">
-                        <div id="report_popup_close" class="report_popup_close_Class"></div>
-                        <div class="report_header_Class"><span id="report_header"
-                                        class="title_page_fix_Class">__MSG_weatherReport__<sup
-                                                class="supBeta">__MSG_byLexi__</sup></span></div>
-                        <div class="title_subtitle_modal_Class update_time_subTitle_report"></div>
-                        <div id="report_group" class="report_group_Class">
-                                <div id="report_body" class="report_body_Class" style="overflow-y:scroll">
-                                        __MSG_reportLoading__</div>
-                        </div>
-                        <div id="reportLoadingBar" class="report_loadong_group"></div>
-                        <div id="report_leftSide" class="report_leftSide_group"></div>
-                </div>
                 <div style="position:absolute;top:75px">
                         <div class="current_condition_group_Class"><span class="current_icon_update"
                                         data-html2canvas-ignore="true"></span> <span id="current_condition"
@@ -283,10 +267,7 @@
                                         src="images/alert-red.svg" class="alert_icon_Class"> <span
                                         id="alert_popup_text"><span class="tooltiptext toolTipTextAlertIcon"
                                                 style="top:0;left:50px;margin-top:20px!important;z-index:15000">__MSG_noWeatherAlerts__
-                                        </span></span></span><span class="tooltip radar_page"><img id="radar_icon"
-                                        src="images/radar.svg" class="radar_icon_Class"> <span
-                                        id="display_radar_popup"><span id="display_radar_text" class="tooltiptext"
-                                                style="margin-left:-50px;margin-top:20px!important;z-index:15000">__MSG_radarWeatherMap__</span></span></span>
+                                        </span></span></span>
                 </div>
                 <div class="arcsine_Class"><canvas id="sunPath_arc" width="300" height="300"></canvas>
                         <hr class="leftSide">
@@ -380,11 +361,6 @@
                 <div style="display:flex;flex-direction:row;margin-bottom:6px;font-weight:600;align-items:center"><span
                                 class="title_page_Class_mainPage search_page"><span class="location_name"></span> <img
                                         src="images/place.svg" class="icon_location_mainPage_Class"></span>
-                        <div class="tooltip" style="padding-left:10px;padding-top:8px"><a id="world_page"><img
-                                                src="images/world.svg" class="world_home_icon_Class"> </a><span
-                                        class="tooltiptext"
-                                        style="margin-left:-25px;margin-top:25px">__MSG_worldwideWeatherMap__</span>
-                        </div>
                 </div>
                 <div class="title_subtitle_modal_Class update_time_subTitle_mainPage"></div>
                 <div id="weather_api_source"
@@ -586,9 +562,8 @@
                         </div>
                         <div id="forecast_day_vertical_4" class="forecast_day_vertical_Class">__MSG_tomorrow__</div>
                 </span></div>
-        <div class="weatherReport_homePage_button"><span id="weatherReport_button"><span class="live_icon"></span> <span
-                                id="weatherReport_link_title"
-                                class="weatherReport_homePage_title">__MSG_weatherReportByLexi__</span></span></div>
+        <div class="weatherReport_homePage_label"><span
+                                class="weatherReport_homePage_title">__MSG_weatherReportByLexi__</span></div>
         <div id="main_menu" class="main_menu_home_Class">
                 <div class="main_menu_culumn_Class"><span id="sub_menu_daily" class="sub_menu_culumn_Class"><a
                                         class="daily_page_Class">
@@ -641,86 +616,13 @@
                         <div id="timeline_hourly"></div>
                 </div>
         </div>
-        <div id="map_popup">
-                <div id="favourite_icon_map" class="favourite_icon_map_inactive_Class favourite_icon_action tooltip">
-                        <span class="tooltiptext tooltip-left">__MSG_setDefaultHomepage__</span>
-                </div>
-                <div id="map_popup_close" class="modal_map_close"></div>
-                <div id="weatherMap" class="map_Class"></div>
-                <div id="map_popup_title" class="modal_map_title"><span>WeatherPulse | </span><span><a
-                                        href="https://www.rainviewer.com/api.html" target="_blank"
-                                        style="text-decoration:none;font-weight:400"><span
-                                                class="hyperlink_text">RainViewer | </span></a></span><span><a
-                                        href="https://www.mapbox.com" target="_blank"
-                                        style="text-decoration:none;font-weight:400"><span class="hyperlink_text">Mapbox
-                                                | </span></a></span><span id="map_popup_title_date"></span></div>
-                <div class="radar_legend_background"></div><span id="legend_text" class="legend_text_Class">
-                        <div id="legend_title_snow">__MSG_snow__</div>
-                        <div style="margin-top:23px">__MSG_rain__</div>
-                        <div
-                                style="display:flex;flex-direction:row;justify-content:space-between;margin-top:22px;font-size:11px!important">
-                                <span>__MSG_light__</span> <span>__MSG_medium__</span> <span>__MSG_heavy__</span>
-                        </div>
-                </span><img id="legend_image" class="legend_image_Class" src="images/legend.png">
-                <div id="radar_kind" class="radar_kind" style="display:none">
-                        <div id="setting_radar_kind" class="setting_kind_row"><span
-                                        class="setting_title_radar_kind">__MSG_cloudCoverage__ </span><label
-                                        class="radar_switch_setting_kind" for="checkbox_kind"><input type="checkbox"
-                                                id="checkbox_kind">
-                                        <div class="slider_setting_radar round"></div>
-                                </label></div>
-                </div>
-                <div id="radar_snow" class="radar_snow">
-                        <div id="setting_radar_snow" class="setting_snow_row"><span
-                                        class="setting_title_radar_snow">__MSG_snowPrecipitation__ </span><label
-                                        class="radar_switch_setting_snow" for="checkbox_snow"><input type="checkbox"
-                                                id="checkbox_snow">
-                                        <div class="slider_setting_radar round"></div>
-                                </label></div>
-                </div>
-                <div class="map_button">
-                        <div style="display:flex;flex-direction:row;padding-bottom:7px;margin-left:15px"><span
-                                        id="map_popup_title_min" class="map_button_min">120 min ago</span> <span
-                                        id="map_popup_title_time" class="map_button_time">--:--</span></div>
-                        <div class="map_button_double"><button type="button" id="backwardButtonRadar"
-                                        class="controlButtonsRadar button_clicked_radar"><svg width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 5.00003V2.21003C12 1.76003 11.46 1.54003 11.15 1.86003L7.35 5.65003C7.15 5.85003 7.15 6.16003 7.35 6.36003L11.14 10.15C11.46 10.46 12 10.24 12 9.79003V7.00003C15.73 7.00003 18.68 10.42 17.86 14.29C17.39 16.56 15.55 18.39 13.29 18.86C9.72 19.61 6.54 17.16 6.06 13.85C5.99 13.37 5.57 13 5.08 13C4.48 13 4 13.53 4.08 14.13C4.7 18.52 8.88 21.77 13.61 20.85C16.73 20.24 19.24 17.73 19.85 14.61C20.84 9.48003 16.94 5.00003 12 5.00003Z"
-                                                        fill="#323232"></path>
-                                        </svg></button> <button type="button" id="forwardButtonRadar"
-                                        class="controlButtonsRadar button_clicked_radar"><svg width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12.0759 5.00003V2.21003C12.0759 1.76003 12.6159 1.54003 12.9259 1.86003L16.7259 5.65003C16.9259 5.85003 16.9259 6.16003 16.7259 6.36003L12.9359 10.15C12.6159 10.46 12.0759 10.24 12.0759 9.79003V7.00003C8.3459 7.00003 5.3959 10.42 6.2159 14.29C6.6859 16.56 8.5259 18.39 10.7859 18.86C14.3559 19.61 17.5359 17.16 18.0159 13.85C18.0859 13.37 18.5059 13 18.9959 13C19.5959 13 20.0759 13.53 19.9959 14.13C19.3759 18.52 15.1959 21.77 10.4659 20.85C7.3459 20.24 4.8359 17.73 4.2259 14.61C3.2359 9.48003 7.1359 5.00003 12.0759 5.00003Z"
-                                                        fill="#323232"></path>
-                                        </svg></button> <span style="padding-left:50px"></span> <button type="button"
-                                        id="toggleButtonRadar" aria-label="Play"><img src="images/pause.svg" alt="Play"
-                                                class="radar_play_pause" id="toggleButtonImageRadar"
-                                                style="padding-right:3px"></button></div>
-                </div>
-                <div class="get_forecast_radar">
-                        <div class="hide_pro subtitle_upgrade_text"><a target="_blank">__MSG_unlockForecastRadar__ <img
-                                                id="link_lock_vip" src="images/crown.svg" style="padding-left:2px"
-                                                class="link_lock_vip_Class"></a></div>
-                </div>
-        </div>
-        <div id="world_popup" class="world_modal">
-                <div id="world_popup_close" class="modal_world_close"></div>
-                <div id="globe-overlay"
-                        style="z-index:15;position:absolute;top:0;right:0;bottom:0;left:0;background:#0b0b19;opacity:1.5;transition:opacity 2s ease">
-                </div>
-                <div id="weatherWorld" class="world_Class"></div>
-                <div id="world_popup_title" class="modal_world_title"><span>WeatherPulse | </span><span><a
-                                        href="https://www.mapbox.com" target="_blank"
-                                        style="text-decoration:none;font-weight:400"><span class="hyperlink_text"
-                                                style="color:#fff!important">Mapbox | </span></a></span><span><a
-                                        href="https://www.rainviewer.com/api.html" target="_blank"
-                                        style="text-decoration:none;font-weight:400"><span class="hyperlink_text"
-                                                style="color:#fff!important">RainViewer | </span></a></span><span
-                                id="world_popup_title_date"></span></div>
-                <div class="hide_pro get_forecast_world">
-                        <div class="subtitle_upgrade_text search_page" style="padding-top:3px"><a
-                                        target="_blank">__MSG_addMultipleLocations__</a></div>
-                </div>
+        <div hidden aria-hidden="true">
+                <button id="toggleButtonRadar" type="button"></button>
+                <button id="backwardButtonRadar" type="button"></button>
+                <button id="forwardButtonRadar" type="button"></button>
+                <img id="toggleButtonImageRadar" alt="">
+                <label class="radar_switch_setting_snow"><input id="checkbox_snow" type="checkbox"></label>
+                <label class="radar_switch_setting_kind"><input id="checkbox_kind" type="checkbox"></label>
         </div>
         <div id="current_popup" class="modal_current">
                 <div id="favourite_icon_current" class="favourite_icon_inactive_Class favourite_icon_action tooltip">
@@ -730,10 +632,7 @@
                 <div class="title_current_group_Class_current">
                         <div style="display:flex;flex-direction:row"><span id="title_current_text"
                                         class="title_page_Class search_page">__MSG_current__</span></div>
-                        <div class="title_subtitle_modal_Class"><span class="update_time_subTitle_current"></span> <span
-                                        class="hide_pro subtitle_upgrade_text" style="padding-top:5px"><a
-                                                target="_blank"
-                                                id="upgrade_subtitle_radar">__MSG_unlockForecastRadar__</a></span></div>
+                        <div class="title_subtitle_modal_Class"><span class="update_time_subTitle_current"></span></div>
                         <div class="current_table_Class">
                                 <div class="current_model_Class" style="padding-bottom:20px"><span
                                                 class="current_title_Class"></span> <span
@@ -841,13 +740,6 @@
                                                                         class="current_value_Class">-</span></span></span></span>
                                 </div>
                                 <hr class="hr_forecast_current">
-                                <div class="current_model_Class radar_page" style="cursor:pointer;margin-top:10px">
-                                        <div style="display:flex;align-items:center"><span
-                                                        style="color:#ff662b;font-size:18px;font-weight:800">+
-                                                </span><span
-                                                        class="current_radar_weather_map current_title_Class plus_hover"
-                                                        style="padding-left:5px">__MSG_radarMapLast2Hours__</span></div>
-                                </div>
                         </div>
                 </div>
         </div>
@@ -1507,9 +1399,7 @@
                 <div id="locationList" class="locationList_Class">
                         <div class="locationNameGroup_Class" id="locationNameGroup"></div>
                 </div>
-                <div class="addLocation_bottomText">Location search by Open-Meteo <a href="https://www.mapbox.com"
-                                target="_blank" style="text-decoration:none;font-weight:400"><span
-                                        class="hyperlink_text">Mapbox</span></a></div>
+                <div class="addLocation_bottomText">Location search by Open-Meteo</div>
         </div>
         <div id="maximumNumber" class="maximumNumber_Class">__MSG_toAddMoreRemoveSome__</div>
         <script src="/components/i18n-dom.js"></script>

@@ -20,8 +20,7 @@ const bgLocal = async (iconName, isDaylight) => {
     const index = await response.json();
     const files = index?.entries?.[condition]?.[period] || [];
     if (!files.length) throw new Error(`No background for ${condition}/${period}`);
-    const illustrations = files.filter((file) => /\/illustrated-[^/]+\.svg$/i.test(file));
-    const choices = [...illustrations, ...files.filter((file) => !illustrations.includes(file))];
+    const choices = files;
     const rotationKey = `backgroundRotation_${condition}_${period}`;
     const stored = await new Promise((resolve) => chrome.storage.local.get(rotationKey, resolve));
     const savedIndex = Number(stored?.[rotationKey]);

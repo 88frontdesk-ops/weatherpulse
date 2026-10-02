@@ -433,12 +433,9 @@
       Number(longitude),
       timezone,
     );
-    const periods = await fetchNwsForecast(Number(latitude), Number(longitude));
-    applyNwsDetailedForecasts(weather, periods, timezone);
-    if (
-      String(country || "").toUpperCase() === "US" ||
-      (Array.isArray(periods) && periods.length)
-    ) {
+    if (String(country || "").toUpperCase() === "US") {
+      const periods = await fetchNwsForecast(Number(latitude), Number(longitude));
+      applyNwsDetailedForecasts(weather, periods, timezone);
       weather.weatherAlerts = await fetchNwsAlerts(
         Number(latitude),
         Number(longitude),

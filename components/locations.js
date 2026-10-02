@@ -119,15 +119,12 @@ const loadLocations = () => {
       closeAddLocation());
   },
   myLocation = (selectedLocation) => {
-    const useCoordinates = (latitude, longitude, cityName = "Current location", countryCode = "US", timezoneName) => {
+    const useCoordinates = (latitude, longitude, cityName = "Current location", countryCode = "", timezoneName) => {
       const finish = (resolvedCity, resolvedCountry, resolvedTimezone) => {
-        citys = resolvedCity || cityName; country = resolvedCountry || countryCode || "US"; latlong = `${latitude},${longitude}`; timezone = resolvedTimezone || timezoneName || tzlookup(latitude, longitude);
+        citys = resolvedCity || cityName; country = resolvedCountry || countryCode || ""; latlong = `${latitude},${longitude}`; timezone = resolvedTimezone || timezoneName || tzlookup(latitude, longitude);
         chrome.storage.local.set({ timezone, citys, latlong, country, selectedLocationUpdated: 1 }, () => selectedLocations(selectedLocation));
       };
-      fetch(`https://api.weather.gov/points/${latitude.toFixed(4)},${longitude.toFixed(4)}`, { method: "GET", headers: { Accept: "application/geo+json", "User-Agent": "WeatherPulse extension" } })
-        .then((response) => response.ok ? response.json() : Promise.reject(new Error(`NWS points: ${response.status}`)))
-        .then((points) => { const rel = points?.properties?.relativeLocation?.properties; finish(rel?.city || cityName, "US", points?.properties?.timeZone || timezoneName); })
-        .catch(() => finish(cityName, countryCode, timezoneName));
+      finish(cityName, countryCode, timezoneName);
     };
     if (!navigator.geolocation) return myLocationAlter();
     navigator.geolocation.getCurrentPosition((position) => useCoordinates(position.coords.latitude, position.coords.longitude), () => myLocationAlter(), { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 });

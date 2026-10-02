@@ -907,12 +907,6 @@
          }
       }
    },
-   "nextUpdateMinute": {
-      "message": "Next weather update in 1 minute. Stay tuned!"
-   },
-   "nextWeatherUpdate": {
-      "message": "Next weather update in 1 minute. Stay tuned!"
-   },
    "night": {
       "message": "Night"
    },
@@ -1011,12 +1005,6 @@
    },
    "proMemberLogin": {
       "message": "Pro Member Login"
-   },
-   "radarMapLast2Hours": {
-      "message": "Radar Map Last 2 Hours"
-   },
-   "radarWeatherMap": {
-      "message": "Radar Weather Map"
    },
    "rain": {
       "message": "Rain"
@@ -1518,14 +1506,11 @@
    "unlock45Day": {
       "message": "Unlock 45-Day Forecast"
    },
-   "unlockForecastRadar": {
-      "message": "Unlock Forecast Radar Map"
-   },
    "unlockHourlyAqi": {
       "message": "Unlock Hourly AQI"
    },
    "unlockProDesc": {
-      "message": "Unlimited WeatherPulse package with 30-day forecasts, live radar, AI reports, and premium features."
+      "message": "Unlimited WeatherPulse package with 30-day forecasts, AI reports, and premium features."
    },
    "unlockProFeatures": {
       "message": "Unlock Pro Features"
@@ -1827,6 +1812,12 @@
    "weatherCondWintryMix": {
       "message": "Wintry mix"
    },
+   "weatherDataFor": {
+      "message": "Open-Meteo data for"
+   },
+   "weatherFetchedAt": {
+      "message": "Fetched"
+   },
    "weatherHealthSafety": {
       "message": "Weather Health Safety"
    },
@@ -1870,9 +1861,6 @@
    },
    "windGustsMax": {
       "message": "Wind Gusts (Max)"
-   },
-   "worldwideWeatherMap": {
-      "message": "Worldwide Weather Map"
    },
    "yesterday": {
       "message": "Yesterday"

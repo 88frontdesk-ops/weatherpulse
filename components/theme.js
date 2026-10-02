@@ -1,6 +1,5 @@
 const darkDisplay = () => {
     (document.documentElement.setAttribute("data-theme", "dark"),
-      (mapBoxStyle = "dusk"),
       (document.getElementById("setting_defualt_theme_d").checked = !0),
       (checkboxTheme.checked = !0),
       chrome.storage.local.set({ theme: "dark" }),
@@ -16,7 +15,6 @@ const darkDisplay = () => {
   },
   lightDisplay = () => {
     (document.documentElement.setAttribute("data-theme", "light"),
-      (mapBoxStyle = "dawn"),
       (document.getElementById("setting_defualt_theme_l").checked = !0),
       (checkboxTheme.checked = !1),
       chrome.storage.local.set({ theme: "light" }),

@@ -29,17 +29,6 @@ const clickEvents = () => {
           dailySub.classList.add("sub_menu_current_Class"),
           mp_event("Daily Page"));
       }),
-      (worldPage = () => {
-        ((document.getElementById("world_popup").style.display = "block"),
-          (document.querySelector(".world_Class").style.visibility = "visible"),
-          closeAllPopup(),
-          setTimeout(() => {
-            worldClose.style.visibility = "visible";
-          }, 200),
-          world(wCast),
-          (mapInnerWorld.style.visibility = "visible"),
-          mp_event("World page"));
-      }),
       (dailyPage = () => {
         (closeAllPopup(),
           displayModal(),
@@ -82,12 +71,11 @@ const clickEvents = () => {
             ["hourlySelected", "weeklySelected", "outlookSelected"],
             (data) => {
               // Outlook period cards represent hourly forecast details.
-              // Do not fall through to World, which still expects the removed legacy API.
               data.hourlySelected || data.outlookSelected
                 ? hourlyPage()
                 : data.weeklySelected
                   ? dailyPage()
-                  : worldPage();
+                  : hourlyPage();
             },
           );
         });
@@ -268,12 +256,10 @@ const clickEvents = () => {
               ((searchTitle.style.visibility = "visible"),
                 (searchInner.style.visibility = "visible"));
             }, 300),
-            searchMap(mapStyle),
+            searchMap(),
             setTimeout(() => {
-              ((document.getElementById("addLocation_popup").style.visibility =
-                "visible"),
-                (document.getElementById("world_popup").style.display =
-                  "none"));
+              document.getElementById("addLocation_popup").style.visibility =
+                "visible";
             }, 300)),
           mp_event("Search Page"));
       }),
@@ -324,39 +310,6 @@ const clickEvents = () => {
           });
         });
       }),
-      document.querySelectorAll(".extended_radar_forecast").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          vipPage();
-        });
-      }),
-      (radarPage = () => {
-        ((document.getElementById("map_popup").style.display = "block"),
-          chrome.storage.local.get("setAsHomepage", (data) => {
-            "radar" == data.setAsHomepage &&
-              (favIcon_map.style.backgroundImage =
-                'url("/images/favourite-active.svg")');
-          }),
-          setTimeout(() => {
-            ((mapClose.style.visibility = "visible"),
-              (favIcon_map.style.display = "block"),
-              (mapLegend.style.visibility = "visible"),
-              (mapLegendText.style.visibility = "visible"));
-          }, 600),
-          radar(),
-          (mapInner.style.visibility = "visible"),
-          closeAllPopup(),
-          mp_event("Radar page"));
-      }),
-      document.querySelectorAll(".radar_page").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          radarPage();
-        });
-      }),
-      document.querySelectorAll("#world_page").forEach((item) => {
-        item.addEventListener("click", (event) => {
-          worldPage();
-        });
-      }),
       document.querySelectorAll(".calendar_page").forEach((item) => {
         item.addEventListener("click", (event) => {
           chrome.storage.local.get(
@@ -369,7 +322,7 @@ const clickEvents = () => {
                         (favIcon_calendar.style.backgroundImage =
                           'url("/images/favourite-active.svg")'),
                       calendar(result.resultCalendar, wCast));
-                  }),
+                      }).catch((error) => console.warn("Calendar data unavailable.", error)),
                   mp_event("30Days Page"))
                 : vipPage();
             },
@@ -468,19 +421,6 @@ const clickEvents = () => {
         .getElementById("search_popup_close")
         .addEventListener("click", (e) => {
           (closeAllPopup(), closeAddLocation());
-        }),
-      document
-        .getElementById("map_popup_close")
-        .addEventListener("click", (e) => {
-          (stopRadarAnimation(),
-            (document.getElementById("map_popup").style.display = "none"),
-            closeAllPopup());
-        }),
-      document
-        .getElementById("world_popup_close")
-        .addEventListener("click", (e) => {
-          ((document.getElementById("world_popup").style.display = "none"),
-            closeAllPopup());
         }),
       document
         .getElementById("calendar_popup_close")
@@ -945,14 +885,6 @@ const clickEvents = () => {
                       'url("/images/favourite-active.svg")'),
                     chrome.storage.local.set({ setAsHomepage: "aqi" }),
                     (favouriteToggle = !1))
-                  : "visible" ==
-                        document.getElementById("weatherMap").style
-                          .visibility && favouriteToggle
-                    ? (mp_setting("Set as Homepage", "Radar"),
-                      (favIcon_map.style.backgroundImage =
-                        'url("/images/favourite-active.svg")'),
-                      chrome.storage.local.set({ setAsHomepage: "radar" }),
-                      (favouriteToggle = !1))
                     : "block" == modalCalendar.style.display && favouriteToggle
                       ? (mp_setting("Set as Homepage", "30Days"),
                         (favIcon_calendar.style.backgroundImage =
@@ -974,8 +906,6 @@ const clickEvents = () => {
                             'url("/images/favourite-inactive.svg")'),
                           (favIcon_daily.style.backgroundImage =
                             'url("/images/favourite-inactive.svg")'),
-                          (favIcon_map.style.backgroundImage =
-                            'url("/images/favourite-inactive-shadow.svg")'),
                           (favIcon_solar.style.backgroundImage =
                             'url("/images/favourite-inactive.svg")'),
                           (favIcon_aqi.style.backgroundImage =
@@ -1036,45 +966,6 @@ const clickEvents = () => {
             (alertPopup.style.visibility = "hidden"),
             (alertPopupClose.style.transition = "all 0s"),
             (alertPopupClose.style.visibility = "hidden"));
-        }),
-      document
-        .getElementById("weatherReport_button")
-        .addEventListener("click", () => {
-          ((document.getElementById(
-            "weatherReport_button",
-          ).style.pointerEvents = "none"),
-            chrome.storage.local.get("weatherpulseFullAccess", (_ref1) => {
-              let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref1;
-              (setTimeout(
-                () => {
-                  ((document.getElementById(
-                    "weatherReport_button",
-                  ).style.pointerEvents = "auto"),
-                    weatherpulseFullAccess &&
-                      (weatherReportTitles.textContent = chrome.i18n.getMessage(
-                        "weatherReportByLexi",
-                      )));
-                },
-                weatherpulseFullAccess ? 6e4 : 1e3,
-              ),
-                weatherpulseFullAccess
-                  ? (getWeatherReport(wCast), mp_event("Weather Report"))
-                  : (weatherReportTooltips.forEach((item) => {
-                      item.style.display = "none";
-                    }),
-                    vipPage()));
-            }));
-        }),
-      document
-        .getElementById("report_popup_close")
-        .addEventListener("click", (e) => {
-          (stopSpeech(),
-            closeAllPopup(),
-            (modalReport.style.visibility = "hidden"),
-            (modalReportClose.style.transition = "all 0s"),
-            (modalReportClose.style.visibility = "hidden"),
-            stopAudioPlayback(),
-            (document.querySelector(".fixed_audio").style.display = "none"));
         }),
       document
         .getElementById("aqi_forecast_popup_close")

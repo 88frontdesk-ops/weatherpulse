@@ -198,6 +198,15 @@ document.addEventListener("DOMContentLoaded", () => {
           fadeOutElement(preloader, 1, 0.3, 50);
           fadeOutElement(preloaderLocation, 0.9, 0.1, 50);
           if (favouriteCheck) favourite();
+        }).catch((error) => {
+          console.error("Weather popup could not load weather data.", error);
+          const errorPopup = document.getElementById(
+            navigator.onLine ? "overloaded_popup" : "noInternet_popup",
+          );
+          if (errorPopup) errorPopup.style.visibility = "visible";
+          document.querySelectorAll(".preloader, .preloaderLocation").forEach((item) => {
+            item.style.display = "none";
+          });
         });
       },
     );
@@ -221,6 +230,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if ("c" === data.setSettingFC) ctemp(wCast);
         else ftemp(wCast);
         timeFormat(wCast);
+        if (typeof globalThis.updateFetchTimeLabel === "function") {
+          globalThis.updateFetchTimeLabel();
+        }
         sunMoonPath(data.latlong);
         alert(wCast);
         hazard(wCast);

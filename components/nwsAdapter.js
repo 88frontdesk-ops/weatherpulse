@@ -86,7 +86,7 @@
     // Open-Meteo has no standalone "windy" WMO code. WeatherPulse derives
     // a Windy condition from sustained wind for otherwise non-precipitating
     // clear/cloudy conditions. Threshold: 10 m/s (about 22 mph / 36 km/h).
-    const windy = Number(windSpeed) >= 10 && [0, 1, 2, 3].includes(code);
+    const windy = Number(windSpeed) >= 36 && [0, 1, 2, 3].includes(code);
     if (windy) return "windy";
     if (code === 2) return "partlycloudy";
     if (code === 3) return "cloudy";
@@ -99,16 +99,26 @@
       latitude,
       longitude,
       timezone: timezone || "auto",
+      wind_speed_unit: "kmh",
       forecast_days: "10",
       forecast_hours: "240",
       current:
-        "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,uv_index,is_day",
+        "temperature_2m,dew_point_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,uv_index,is_day",
       hourly:
         "temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,rain,showers,snowfall,weather_code,cloud_cover,wind_speed_10m,wind_gusts_10m,wind_direction_10m,uv_index,is_day",
       daily:
         "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,moonrise,moonset",
     });
     const data = await requestJson(url.toString());
+    if (
+      !data?.current ||
+      !Array.isArray(data.hourly?.time) ||
+      !data.hourly.time.length ||
+      !Array.isArray(data.daily?.time) ||
+      !data.daily.time.length
+    ) {
+      throw new Error("Open-Meteo returned an incomplete forecast");
+    }
     setApiSource("Open-Meteo");
     const current = data.current || {};
     const hourly = data.hourly || {};
@@ -126,6 +136,7 @@
     const hours = times.map((time, index) => {
       const code = hourly.weather_code?.[index];
       return {
+        forecastDate: String(time).slice(0, 10),
         forecastStart: localTimeToIso(time),
         temperature: hourly.temperature_2m?.[index] ?? 0,
         uvIndex: hourly.uv_index?.[index] ?? 0,
@@ -167,7 +178,7 @@
       const dateHours = hours.filter(
         (h) =>
           h.forecastStart &&
-          h.forecastStart.slice(0, 10) === date &&
+          (h.forecastDate || h.forecastStart.slice(0, 10)) === date &&
           h.daylight === daylight &&
           Number.isFinite(Number(h.weatherCode)),
       );
@@ -197,7 +208,7 @@
         windDirection: best.windDirection,
       };
     };
-    const days = (daily.time || []).map((date, index) => {
+    const days = daily.time.map((date, index) => {
       const code = daily.weather_code?.[index];
       const description = openMeteoDescription(code);
       const baseDay = {
@@ -234,6 +245,7 @@
         baseNight,
       );
       return {
+        forecastDate: date,
         forecastStart: localDateToIso(date),
         temperatureMax: daily.temperature_2m_max?.[index] ?? 0,
         temperatureMin: daily.temperature_2m_min?.[index] ?? 0,
@@ -262,7 +274,7 @@
         pressureTrend: "",
         windDirection: directionToDegrees(current.wind_direction_10m),
         visibility: current.visibility ?? 16093,
-        temperatureDewPoint: current.temperature_2m ?? 0,
+        temperatureDewPoint: current.dew_point_2m ?? current.temperature_2m ?? 0,
         humidity: clamp01((current.relative_humidity_2m ?? 0) / 100),
         windSpeed: current.wind_speed_10m ?? 0,
         windGust: current.wind_gusts_10m ?? 0,
@@ -292,8 +304,9 @@
       start_date: date,
       end_date: date,
       timezone: timezone || "auto",
+      wind_speed_unit: "kmh",
       hourly:
-        "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,uv_index",
+        "temperature_2m,dew_point_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,uv_index",
       daily:
         "temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,uv_index_max,weather_code",
     });
@@ -327,7 +340,7 @@
     }
   };
 
-  const applyNwsDetailedForecasts = (weather, periods) => {
+  const applyNwsDetailedForecasts = (weather, periods, timezone) => {
     if (!Array.isArray(periods) || !periods.length) return weather;
     const periodByDate = new Map();
     periods.forEach((period) => {
@@ -338,7 +351,12 @@
       periodByDate.set(date, entry);
     });
     weather.forecastDaily.days = weather.forecastDaily.days.map((day) => {
-      const date = new Date(day.forecastStart).toISOString().slice(0, 10);
+      const date = day.forecastDate || new Intl.DateTimeFormat("en-CA", {
+        timeZone: timezone || "UTC",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(day.forecastStart));
       const periodsForDate = periodByDate.get(date);
       if (!periodsForDate) return day;
       const dayPeriod = periodsForDate.day;
@@ -415,12 +433,9 @@
       Number(longitude),
       timezone,
     );
-    const periods = await fetchNwsForecast(Number(latitude), Number(longitude));
-    applyNwsDetailedForecasts(weather, periods);
-    if (
-      String(country || "").toUpperCase() === "US" ||
-      (Array.isArray(periods) && periods.length)
-    ) {
+    if (String(country || "").toUpperCase() === "US") {
+      const periods = await fetchNwsForecast(Number(latitude), Number(longitude));
+      applyNwsDetailedForecasts(weather, periods, timezone);
       weather.weatherAlerts = await fetchNwsAlerts(
         Number(latitude),
         Number(longitude),

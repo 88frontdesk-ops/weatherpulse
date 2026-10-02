@@ -130,9 +130,6 @@ const setting = () => {
         ((document.getElementById(
           `setting_defualt_button_${defaultOptionHazard}`,
         ).checked = !0),
-          "dark" === data.theme
-            ? (mapStyle = "mapbox://styles/mapbox/dark-v11?optimize=true")
-            : (mapStyle = "mapbox://styles/mapbox/light-v11?optimize=true"),
           window.screen.width &&
             window.screen.height &&
             (mp_setting("Screen Width", window.screen.width),

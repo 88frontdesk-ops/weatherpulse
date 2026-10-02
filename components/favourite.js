@@ -2,7 +2,6 @@ const favourite = () => {
   ((favIcon_current.style.display = "none"),
     (favIcon_hourly.style.display = "none"),
     (favIcon_daily.style.display = "none"),
-    (favIcon_map.style.display = "none"),
     (favIcon_solar.style.display = "none"),
     (favIcon_aqi.style.display = "none"),
     (favIcon_calendar.style.display = "none"),
@@ -60,27 +59,13 @@ const favourite = () => {
                   aqiIcon.classList.add("sub_menu_icon_active_Class"),
                   aqiIcon.classList.add("sub_menu_current_icon_Class"),
                   aqiSub.classList.add("sub_menu_current_Class"))
-                : "radar" == data.setAsHomepage
-                  ? (closeAllPopup(),
-                    (document.getElementById("map_popup").style.display =
-                      "block"),
-                    setTimeout(() => {
-                      ((mapClose.style.visibility = "visible"),
-                        (favIcon_map.style.display = "block"),
-                        (favIcon_map.style.backgroundImage =
-                          'url("/images/favourite-active.svg")'),
-                        (mapLegend.style.visibility = "visible"),
-                        (mapLegendText.style.visibility = "visible"));
-                    }, 600),
-                    (mapInner.style.visibility = "visible"),
-                    radar())
-                  : "calendar" == data.setAsHomepage
+                : "calendar" == data.setAsHomepage
                     ? calendar_api(data.latlong).then((result) => {
                         (closeAllPopup(),
                           (favIcon_calendar.style.backgroundImage =
                             'url("/images/favourite-active.svg")'),
-                          calendar(result.resultCalendar, wCast));
-                      })
+                            calendar(result.resultCalendar, wCast));
+                          }).catch((error) => console.warn("Calendar data unavailable.", error))
                     : "lunar" == data.setAsHomepage
                       ? (closeAllPopup(),
                         (favIcon_lunar.style.backgroundImage =

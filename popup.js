@@ -106,15 +106,24 @@ document.addEventListener("DOMContentLoaded", () => {
           return fallback || "clear";
         };
         (wCast.forecastHourly.hours || []).forEach((hour, index) => {
-          const apiCondition = Number.isFinite(Number(hour.weatherCode)) && globalThis.weatherpulseOpenMeteoDescription
-            ? globalThis.weatherpulseOpenMeteoDescription(Number(hour.weatherCode))
-            : description(hour);
+          const apiCondition =
+            Number.isFinite(Number(hour.weatherCode)) &&
+            globalThis.weatherpulseOpenMeteoDescription
+              ? globalThis.weatherpulseOpenMeteoDescription(
+                  Number(hour.weatherCode),
+                )
+              : description(hour);
           set(`forecast_${index}_hourly_condition`, apiCondition);
-          set(`forecast_${index}_hours_rain`, fmtPop(Number(hour.precipitationChance)));
+          set(
+            `forecast_${index}_hours_rain`,
+            fmtPop(Number(hour.precipitationChance)),
+          );
           set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
           set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
           const code = Number.isFinite(Number(hour.weatherCode))
-              ? globalThis.weatherpulseConditionFromOpenMeteo(Number(hour.weatherCode))
+              ? globalThis.weatherpulseConditionFromOpenMeteo(
+                  Number(hour.weatherCode),
+                )
               : conditionFromDescription(hour.description, hour.conditionCode),
             icon = getWeIcon(code, hour.daylight, hour.cloudCover),
             node = document.querySelector(
@@ -192,22 +201,26 @@ document.addEventListener("DOMContentLoaded", () => {
               weCast(latlong, country, timezone, resolve, reject, false);
             });
           })(latlong, country, timezone),
-        ]).then((_ref) => {
-          let [wCast] = _ref;
-          refreshPopup(wCast);
-          fadeOutElement(preloader, 1, 0.3, 50);
-          fadeOutElement(preloaderLocation, 0.9, 0.1, 50);
-          if (favouriteCheck) favourite();
-        }).catch((error) => {
-          console.error("Weather popup could not load weather data.", error);
-          const errorPopup = document.getElementById(
-            navigator.onLine ? "overloaded_popup" : "noInternet_popup",
-          );
-          if (errorPopup) errorPopup.style.visibility = "visible";
-          document.querySelectorAll(".preloader, .preloaderLocation").forEach((item) => {
-            item.style.display = "none";
+        ])
+          .then((_ref) => {
+            let [wCast] = _ref;
+            refreshPopup(wCast);
+            fadeOutElement(preloader, 1, 0.3, 50);
+            fadeOutElement(preloaderLocation, 0.9, 0.1, 50);
+            if (favouriteCheck) favourite();
+          })
+          .catch((error) => {
+            console.error("Weather popup could not load weather data.", error);
+            const errorPopup = document.getElementById(
+              navigator.onLine ? "overloaded_popup" : "noInternet_popup",
+            );
+            if (errorPopup) errorPopup.style.visibility = "visible";
+            document
+              .querySelectorAll(".preloader, .preloaderLocation")
+              .forEach((item) => {
+                item.style.display = "none";
+              });
           });
-        });
       },
     );
   };
@@ -298,22 +311,35 @@ document.addEventListener("DOMContentLoaded", () => {
   favouriteCheck = !0;
   const manualRefreshButton = document.getElementById("manual_refresh_button");
   const manualRefreshStatus = document.getElementById("manual_refresh_status");
-  if (manualRefreshButton) manualRefreshButton.addEventListener("click", () => {
-    manualRefreshButton.disabled = true;
-    if (manualRefreshStatus) manualRefreshStatus.textContent = " Refreshing…";
-    chrome.storage.local.get(["latlong", "country", "timezone"], (data) => {
-      new Promise((resolve, reject) => {
-        weCast(data.latlong, data.country, data.timezone, resolve, reject, true);
-      }).then((freshWeather) => {
-        refreshPopup(freshWeather);
-        if (manualRefreshStatus) manualRefreshStatus.textContent = " Updated";
-      }).catch(() => {
-        if (manualRefreshStatus) manualRefreshStatus.textContent = " Refresh failed";
-      }).finally(() => {
-        manualRefreshButton.disabled = false;
+  if (manualRefreshButton)
+    manualRefreshButton.addEventListener("click", () => {
+      manualRefreshButton.disabled = true;
+      if (manualRefreshStatus) manualRefreshStatus.textContent = " Refreshing…";
+      chrome.storage.local.get(["latlong", "country", "timezone"], (data) => {
+        new Promise((resolve, reject) => {
+          weCast(
+            data.latlong,
+            data.country,
+            data.timezone,
+            resolve,
+            reject,
+            true,
+          );
+        })
+          .then((freshWeather) => {
+            refreshPopup(freshWeather);
+            if (manualRefreshStatus)
+              manualRefreshStatus.textContent = " Updated";
+          })
+          .catch(() => {
+            if (manualRefreshStatus)
+              manualRefreshStatus.textContent = " Refresh failed";
+          })
+          .finally(() => {
+            manualRefreshButton.disabled = false;
+          });
       });
     });
-  });
   popup();
   toggleActions();
   mp_visits();

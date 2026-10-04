@@ -30,14 +30,6 @@ const applyWeatherApiSource = (source) => {
   sourceElement.textContent = allowedSources.includes(source) ? `API: ${source}` : "API: Open-Meteo";
 };
 
-const loadDailyDetailedForecastRenderer = () => {
-  if (document.querySelector('script[src="/components/dailyDetailedForecast.js"]')) return;
-  const script = document.createElement("script");
-  script.src = "/components/dailyDetailedForecast.js";
-  script.async = false;
-  (document.head || document.documentElement).appendChild(script);
-};
-
 document.addEventListener("click", (event) => {
   const sourceOption = event.target.closest(
     "#setting_badge_source_realtime_all, #setting_badge_source_modeled_all, " +
@@ -54,7 +46,6 @@ document.addEventListener("click", (event) => {
 }, true);
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadDailyDetailedForecastRenderer();
   chrome.storage.local.remove("weatherApiSource");
   chrome.storage.local.get("weatherApiSource", (data) => applyWeatherApiSource(data.weatherApiSource));
 

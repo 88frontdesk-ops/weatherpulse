@@ -73,12 +73,13 @@
       86: "Heavy snow showers",
       95: "Thunderstorm",
       96: "Thunderstorm with slight hail",
+      97: "Heavy thunderstorm",
       99: "Thunderstorm with heavy hail",
     };
-    return descriptions[code] || "Unknown";
+    return descriptions[code] || `Unknown code (${code})`;
   };
   const conditionFromOpenMeteo = (code, windSpeed = 0) => {
-    if ([95, 96, 99].includes(code)) return "thunderstorms";
+    if ([95, 96, 97, 99].includes(code)) return "thunderstorms";
     if ([71, 73, 75, 77, 85, 86].includes(code)) return "snow";
     if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code))
       return "rain";
@@ -90,7 +91,8 @@
     if (windy) return "windy";
     if (code === 2) return "partlycloudy";
     if (code === 3) return "cloudy";
-    return "clear";
+    if (code === 0 || code === 1) return "clear";
+    return "unknown";
   };
 
   const fetchOpenMeteo = async (latitude, longitude, timezone) => {
@@ -157,7 +159,7 @@
     });
     const severityRank = (code) => {
       const n = Number(code);
-      if ([95, 96, 99].includes(n)) return 7;
+      if ([95, 96, 97, 99].includes(n)) return 7;
       if ([65, 67, 75, 82, 86].includes(n)) return 6;
       if ([63, 66, 73, 81, 85].includes(n)) return 5;
       if ([61, 71, 80].includes(n)) return 4;

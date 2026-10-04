@@ -760,9 +760,9 @@ const daily = (wCast) => {
         switch (
           (updateTemperatureElements(i, data.setSettingFC, wCast),
           (document.getElementById(`forecast_${i}_daily_uv`).textContent =
-            Math.floor(wCast.forecastDaily.days[i].maxUvIndex) +
+            Number(wCast.forecastDaily.days[i].maxUvIndex).toFixed(1) +
             " " +
-            getUvNoteDaily(Math.floor(wCast.forecastDaily.days[i].maxUvIndex))),
+            getUvNoteDaily(Number(wCast.forecastDaily.days[i].maxUvIndex))),
           data.humidityUnit)
         ) {
           case "gm3":

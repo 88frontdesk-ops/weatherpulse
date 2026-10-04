@@ -107,12 +107,10 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         (wCast.forecastHourly.hours || []).forEach((hour, index) => {
           const apiCondition =
-            Number.isFinite(Number(hour.weatherCode)) &&
-            globalThis.weatherpulseOpenMeteoDescription
-              ? globalThis.weatherpulseOpenMeteoDescription(
-                  Number(hour.weatherCode),
-                )
-              : description(hour);
+            hour.description ||
+            (typeof hour.conditionCode === "string"
+              ? getWeDescription(hour.conditionCode)
+              : description(hour));
           set(`forecast_${index}_hourly_condition`, apiCondition);
           set(
             `forecast_${index}_hours_rain`,
@@ -120,11 +118,14 @@ document.addEventListener("DOMContentLoaded", () => {
           );
           set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
           set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
-          const code = Number.isFinite(Number(hour.weatherCode))
+          const code =
+            hour.conditionCode ||
+            (Number.isFinite(Number(hour.weatherCode))
               ? globalThis.weatherpulseConditionFromOpenMeteo(
                   Number(hour.weatherCode),
+                  Number(hour.windSpeed) || 0,
                 )
-              : conditionFromDescription(hour.description, hour.conditionCode),
+              : conditionFromDescription(hour.description, hour.conditionCode)),
             icon = getWeIcon(code, hour.daylight, hour.cloudCover),
             node = document.querySelector(
               `.forecast_${index}_hours_icon_Class`,

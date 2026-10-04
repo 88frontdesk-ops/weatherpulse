@@ -174,14 +174,10 @@ const refreshHourly = (startTimeHourly, endTimeHourly) => {
                         `forecast_${i}_hours_meridian`,
                       ).textContent = "")),
             (document.getElementById(`forecast_${i}_hourly_uv`).textContent =
-              Math.floor(wCast.forecastHourly.hours[i].uvIndex)),
+              Number(wCast.forecastHourly.hours[i].uvIndex).toFixed(1)),
             (document.getElementById(
               `forecast_${i}_hourly_condition`,
             ).textContent =
-              (Number.isFinite(Number(wCast.forecastHourly.hours[i].weatherCode)) &&
-                globalThis.weatherpulseOpenMeteoDescription
-                ? globalThis.weatherpulseOpenMeteoDescription(Number(wCast.forecastHourly.hours[i].weatherCode))
-                : null) ||
               wCast.forecastHourly.hours[i].description ||
               getWeDescription(wCast.forecastHourly.hours[i].conditionCode)),
             "c" === data.setSettingFC

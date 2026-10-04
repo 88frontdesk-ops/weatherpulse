@@ -19,13 +19,13 @@ const comparison = async (latlong, country, timezone) => {
     const humidity = humidityValues.length ? Math.round(humidityValues.reduce((a,b) => a+b, 0) / humidityValues.length) : 0;
     const gust = Number(daily.wind_gusts_10m_max?.[0] ?? 0) / 3.6;
     const wind = Number(daily.wind_speed_10m_max?.[0] ?? 0) / 3.6;
-    const uv = Math.floor(Number(daily.uv_index_max?.[0] ?? 0));
+    const uv = Number(daily.uv_index_max?.[0] ?? 0);
     const tempMaxToday = today.temperatureMax + 273.15;
     const tempMinToday = today.temperatureMin + 273.15;
     const gustToday = (today.daytimeForecast?.windGustSpeedMax ?? 0) / 3.6;
     const windToday = (today.daytimeForecast?.windSpeed ?? 0) / 3.6;
     const humidityToday = Math.round(100 * (today.daytimeForecast?.humidity ?? 0));
-    const uvToday = Math.floor(today.maxUvIndex ?? 0);
+    const uvToday = Number(today.maxUvIndex ?? 0);
     set("compare_temp_max_t", data.setSettingFC === "c" ? `${k2c(tempMaxToday)}°` : `${k2f(tempMaxToday)}°`);
     set("compare_temp_min_t", data.setSettingFC === "c" ? `${k2c(tempMinToday)}°` : `${k2f(tempMinToday)}°`);
     set("compare_humi_t", `${humidityToday}%`);

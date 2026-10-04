@@ -8,17 +8,42 @@ const prev24Hrs = async () => {
 
     const [lat, lng] = data.latlong.split(",");
     const timezoneName = data.timezone || timezone || "auto";
-    const yesterdayDate = moment().tz(timezoneName).subtract(1, "day").format("YYYY-MM-DD");
+    const currentAsOf = wCast?.currentWeather?.asOf;
+    const currentLocal = currentAsOf
+      ? moment(currentAsOf).tz(timezoneName)
+      : moment().tz(timezoneName);
+
+    if (!currentLocal.isValid()) {
+      throw new Error("Invalid current weather observation time");
+    }
+
+    const yesterdayDate = currentLocal
+      .clone()
+      .subtract(1, "day")
+      .format("YYYY-MM-DD");
     const archive = await weatherpulseFetchHistoricalDay(lat, lng, timezoneName, yesterdayDate);
     const hourly = archive?.hourly;
     if (!hourly?.time?.length) throw new Error("No Open-Meteo historical hourly data returned");
 
-    const targetHour = moment().tz(timezoneName).subtract(1, "day").format("YYYY-MM-DDTHH:00");
+    const targetHour = currentLocal
+      .clone()
+      .subtract(1, "day")
+      .format("YYYY-MM-DDTHH:00");
+
     let index = hourly.time.indexOf(targetHour);
+
     if (index < 0) {
       index = hourly.time.reduce((best, value, i) => {
-        const bestDiff = Math.abs(Date.parse(`${hourly.time[best]}:00Z`) - Date.parse(`${targetHour}:00Z`));
-        const diff = Math.abs(Date.parse(`${value}:00Z`) - Date.parse(`${targetHour}:00Z`));
+        const bestDiff = Math.abs(
+          Date.parse(`${hourly.time[best]}:00Z`) -
+            Date.parse(`${targetHour}:00Z`),
+        );
+
+        const diff = Math.abs(
+          Date.parse(`${value}:00Z`) -
+            Date.parse(`${targetHour}:00Z`),
+        );
+
         return diff < bestDiff ? i : best;
       }, 0);
     }
@@ -32,9 +57,12 @@ const prev24Hrs = async () => {
     const windGust = value("wind_gusts_10m") / 3.6;
     const visibility = value("visibility", 16093);
     const cloudCover = value("cloud_cover") / 100;
-    const uv = Math.floor(value("uv_index"));
+    const uv = Number(value("uv_index")) || 0;
     const windCompass = value("wind_direction_10m");
-    const conditionCode = weatherpulseConditionFromOpenMeteo(value("weather_code"));
+    const conditionCode = weatherpulseConditionFromOpenMeteo(
+      value("weather_code"),
+      value("wind_speed_10m"),
+    );
     const currentConditionId = getWeDescriptionId(conditionCode);
     const summary = getWeDescription(conditionCode) || weatherpulseOpenMeteoDescription(value("weather_code"));
     const dewPoint = value("dew_point_2m", temperature);
@@ -69,14 +97,12 @@ const prev24Hrs = async () => {
     document.querySelectorAll(".sameTimeYesterday_humidity").forEach((item) => {
       item.textContent = `${humidityValue} (${"c" === data.setSettingFC ? `${k2c(dewPointK)}°C` : `${k2f(dewPointK)}°F`})`;
     });
-    document.querySelectorAll(".sameTimeYesterday_uv").forEach((item) => { item.textContent = uv; });
     document.querySelectorAll(".sameTimeYesterday_air_temp").forEach((item) => { item.textContent = tempText; });
     document.querySelectorAll(".sameTimeYesterday_accufeel").forEach((item) => { item.textContent = accufeelText; });
     setText("sameTimeYesterday_condition", summary.length > 21 ? `${summary.slice(0, 19)}.` : summary);
-    setText("sameTimeYesterday_uv_note", ` ${getUvNote(uv, false)}`);
     setText("sameTimeYesterday_cloud", `${Math.round(cloudCover * 100)}%`);
-    setText("sameTimeYesterday_accufeel_shade", uv > 0 ? `(${accufeelShadeText})` : "");
-    setText("sameTimeYesterday_visibility", data.visibilityUnit === "mi" ? toMi(visibility) : toKm(visibility));
+    setText("sameTimeYesterday_accufeel_shade", "");
+    setText("sameTimeYesterday_visibility", toMi(visibility));
 
     const pressureEl = document.getElementById("sameTimeYesterday_pressure");
     if (pressureEl) {

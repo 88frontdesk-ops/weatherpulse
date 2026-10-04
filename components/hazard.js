@@ -84,7 +84,7 @@ const hazard = (wCast) => {
           (1e3 / 3600)),
         (hourlyUVArray = []));
       for (let i = 0; i < 48; i++) {
-        let uvHourly = Math.round(wCast.forecastHourly.hours[i].uvIndex);
+        let uvHourly = Number(wCast.forecastHourly.hours[i].uvIndex) || 0;
         hourlyUVArray.push(uvHourly);
       }
       let arrayLenghthToday =

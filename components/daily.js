@@ -115,13 +115,6 @@ const daily = (wCast) => {
             <div id="daily_${index}_timeline" class="daily_timeline_bar"></div>
           </div>
 
-          <div class="daily_sub_row nws_detailed_forecast_row" style="display:none; margin-top:12px;">
-            <span class="daily_element_title">NWS Forecast</span>
-            <div style="width:100%;">
-              <div id="forecast_${index}_nws_day_detailed" class="forecast_daily_description_Class"></div>
-              <div id="forecast_${index}_nws_night_detailed" class="forecast_daily_description_Class" style="margin-top:8px;"></div>
-            </div>
-          </div>
         </div>
       </div>
     `),
@@ -478,30 +471,6 @@ const daily = (wCast) => {
             data.TimeFormat || "12h",
           );
         }
-        const detailed = wCast.forecastDaily.days[i].nwsDetailedForecast || {};
-        const detailedRow = document.querySelector(
-          `.nws_detailed_forecast_row:nth-of-type(1)`,
-        );
-        const dayDetailedEl = document.getElementById(
-          `forecast_${i}_nws_day_detailed`,
-        );
-        const nightDetailedEl = document.getElementById(
-          `forecast_${i}_nws_night_detailed`,
-        );
-        if (
-          dayDetailedEl &&
-          nightDetailedEl &&
-          (detailed.day || detailed.night)
-        ) {
-          dayDetailedEl.textContent = detailed.day
-            ? `Day: ${detailed.day}`
-            : "";
-          nightDetailedEl.textContent = detailed.night
-            ? `Night: ${detailed.night}`
-            : "";
-          const row = dayDetailedEl.closest(".nws_detailed_forecast_row");
-          if (row) row.style.display = "block";
-        }
         const elementIdWind = `forecast_${i}_daily_wind`,
           elementIdWindNight = `forecast_${i}_daily_night_wind`,
           elementIdWindGust = `forecast_${i}_daily_wind_gust`,
@@ -760,9 +729,9 @@ const daily = (wCast) => {
         switch (
           (updateTemperatureElements(i, data.setSettingFC, wCast),
           (document.getElementById(`forecast_${i}_daily_uv`).textContent =
-            Math.floor(wCast.forecastDaily.days[i].maxUvIndex) +
+            Number(wCast.forecastDaily.days[i].maxUvIndex).toFixed(1) +
             " " +
-            getUvNoteDaily(Math.floor(wCast.forecastDaily.days[i].maxUvIndex))),
+            getUvNoteDaily(Number(wCast.forecastDaily.days[i].maxUvIndex))),
           data.humidityUnit)
         ) {
           case "gm3":

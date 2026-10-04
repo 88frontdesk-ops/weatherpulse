@@ -293,6 +293,9 @@ const capitalize = (s) =>
       case "clear":
         iconName = daylight ? "clear-day" : "clear-night";
         break;
+      case "unknown":
+        iconName = "unknown";
+        break;
       default:
         iconName = "clear-day";
     }
@@ -696,24 +699,24 @@ const capitalize = (s) =>
   },
   getUvNote = (uvIndex, daylight) =>
     daylight
-      ? uvIndex <= 2
+      ? uvIndex < 3
         ? chrome.i18n.getMessage("uvLow")
-        : uvIndex <= 5
+        : uvIndex < 6
           ? chrome.i18n.getMessage("uvModerate")
-          : uvIndex <= 7
+          : uvIndex < 8
             ? chrome.i18n.getMessage("uvHigh")
-            : uvIndex <= 10
+            : uvIndex < 11
               ? chrome.i18n.getMessage("uvVeryHigh")
               : chrome.i18n.getMessage("uvExtreme")
       : chrome.i18n.getMessage("uvNight"),
   getUvNoteDaily = (uvIndex) =>
-    uvIndex <= 2
+    uvIndex < 3
       ? chrome.i18n.getMessage("uvLow")
-      : uvIndex <= 5
+      : uvIndex < 6
         ? chrome.i18n.getMessage("uvModerate")
-        : uvIndex <= 7
+        : uvIndex < 8
           ? chrome.i18n.getMessage("uvHigh")
-          : uvIndex <= 10
+          : uvIndex < 11
             ? chrome.i18n.getMessage("uvVeryHigh")
             : chrome.i18n.getMessage("uvExtreme"),
   getUvRecommended = (uvIndex) =>

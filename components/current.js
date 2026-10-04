@@ -42,7 +42,7 @@ const current = () => {
             item.textContent = humidityValue + " (" + dewPointValue + ")";
           }),
           (currentVisibility.textContent =
-            "mi" == data.visibilityUnit ? toMi(visibility) : toKm(visibility)),
+            toMi(visibility)),
           (document.getElementById("current_pressure_trend").textContent =
             "(" + pressureTrendIcon(pressureTrend) + ")"),
           data.pressureUnit)

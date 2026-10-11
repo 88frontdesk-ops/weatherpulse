@@ -226,3 +226,7 @@ Open-Meteo does not provide a standalone WMO `windy` condition. Weather Pulse de
 ## Data-source policy
 
 Weather Pulse weather data is provided by Open-Meteo and, for U.S. forecast/alert information, the National Weather Service. Legacy UVW/UVWeather weather APIs are not required by the extension.
+
+## Animated weather backgrounds
+
+The popup now draws lightweight weather effects on a transparent canvas above the existing local background image: rain, snow, wind, daytime sun glow, and fog. Existing background images and weather data requests are unchanged. The effects respect the operating system reduced-motion preference.

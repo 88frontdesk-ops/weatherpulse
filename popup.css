@@ -420,6 +420,16 @@ input[type="checkbox"]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
   z-index: 0;
 }
 
+.weather-background-animation {
+  position: absolute;
+  inset: 0;
+  width: 800px;
+  height: 600px;
+  z-index: 1;
+  pointer-events: none;
+  display: block;
+}
+
 .image_background_Class::before {
   content: "";
   display: block;
@@ -5343,3 +5353,8 @@ button:focus {
 .manual_refresh_status_hidden {
   display: none !important;
 }
+
+/* Keep existing weather UI and controls above the animated foreground. */
+.image_background_Class > span:not(.weather-background-animation),
+.image_background_Class > div:not(.weather-background-animation),
+.image_background_Class > section:not(.weather-background-animation) { position: relative; z-index: 2; }

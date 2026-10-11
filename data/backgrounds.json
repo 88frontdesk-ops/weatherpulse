@@ -55,17 +55,16 @@
                                },
                     "rain":  {
                                  "day":  [
-                                             "images/background/rain/day/rain-1.webp",
-                                             "images/background/rain/day/rain-11.webp",
                                              "images/background/rain/day/rain-12.webp",
                                              "images/background/rain/day/rain-2.webp",
                                              "images/background/rain/day/rain-3.webp",
-                                             "images/background/rain/day/rain-4.webp",
                                              "images/background/rain/day/rain-7.webp",
                                              "images/background/rain/day/rain-8.webp",
                                              "images/background/rain/day/rain-day.jpg"
                                          ],
                                  "night":  [
+                                               "images/background/rain/night/rain-11.webp",
+                                               "images/background/rain/night/rain-4.webp",
                                                "images/background/rain/night/rain-night.jpg"
                                            ]
                              },

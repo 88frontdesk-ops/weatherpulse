@@ -228,8 +228,9 @@ const capitalize = (s) =>
       case "clear":
         iconBadge = daylight ? "sunny" : "starry";
         break;
+      case "unknown":
       default:
-        iconBadge = "starry";
+        iconBadge = "unknown";
     }
     return iconBadge;
   },
@@ -430,18 +431,28 @@ const capitalize = (s) =>
           ? ""
           : "-cold"
         : "";
-    let baseIconName;
-    ("sunny" !== icon || daylight || (icon = "starry"),
-      1 !== whiteIcon || daylight
-        ? daylight || (mainSuffix = "night")
-        : (mainSuffix = "dark"),
-      1 === whiteIcon && daylight
-        ? (mainSuffix = "dark")
-        : daylight && (mainSuffix = "day"),
-      (baseIconName = `${icon}-${mainSuffix}${tempSuffix}`));
-    const iconName = `${baseIconName}-128.png`;
-    chrome.action.setIcon({ path: { 128: `images/badge/${iconName}` } });
+
+    // A clear night uses the starry/moon icon family.
+    if ("sunny" === icon && !daylight) {
+      icon = "starry";
+    }
+
+    // Select the appropriate image for the time of day.
+    // The dark-icon setting applies to daytime only.
+    const mainSuffix = daylight
+      ? 1 === whiteIcon
+        ? "dark"
+        : "day"
+      : "night";
+
+    const iconName = `${icon}-${mainSuffix}${tempSuffix}-128.png`;
+
+    chrome.action.setIcon({
+      path: { 128: `images/badge/${iconName}` }
+    });
   },
+
+
   setBadgeBgColor = (
     daylight,
     iconBadge,
@@ -522,12 +533,16 @@ const capitalize = (s) =>
           : 'url("images/weather_icon/a_partly-cloudy-night.svg")';
       case "partly-cloudy-night":
         return 'url("images/weather_icon/a_partly-cloudy-night.svg")';
+      case "unknown":
+        return 'url("images/weather_icon/unknown.svg")';
       default:
         return 'url("images/weather_icon/a_clear-day.svg")';
     }
   },
   iconCurrent = (iconName) => {
     switch (iconName) {
+      case "unknown":
+        return 'url("images/weather_icon/unknown.svg")';
       case "clear-day":
       default:
         return 'url("images/weather_icon/wi_sun.svg")';

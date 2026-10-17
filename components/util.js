@@ -137,6 +137,8 @@ function applyUvIconState(uvIndex) {
   }
 }
 
+let weatherBadgeRenderToken = 0;
+
 const capitalize = (s) =>
     "string" != typeof s || 0 === s.length
       ? ""
@@ -425,6 +427,9 @@ const capitalize = (s) =>
     return chrome.i18n.getMessage(key);
   },
   setBadgeBgIcon = (daylight, icon, temperature, whiteIcon) => {
+    // Invalidate any pending icon+temperature composition before showing a plain icon.
+    weatherBadgeRenderToken++;
+
     const tempSuffix =
       "sunny" === icon && daylight
         ? temperature >= 283.15 || 1 === whiteIcon
@@ -446,6 +451,125 @@ const capitalize = (s) =>
     chrome.action.setIcon({
       path: { 128: `images/badge/${iconName}` },
     });
+  },
+  setBadgeBgIconWithTemperature = (
+    daylight,
+    icon,
+    temperature,
+    whiteIcon,
+    displayTemperature,
+    unit,
+    isWeatherAlert,
+    badgeAlert,
+  ) => {
+    const renderToken = ++weatherBadgeRenderToken;
+    const tempSuffix =
+      "sunny" === icon && daylight
+        ? temperature >= 283.15 || 1 === whiteIcon
+          ? ""
+          : "-cold"
+        : "";
+
+    if ("sunny" === icon && !daylight) {
+      icon = "starry";
+    }
+
+    const mainSuffix = daylight ? (1 === whiteIcon ? "dark" : "day") : "night";
+    const imagePath = `images/badge/${icon}-${mainSuffix}${tempSuffix}-128.png`;
+
+    // Chrome's native badge text has an opaque backing. Clear it and draw the
+    // temperature directly onto the transparent toolbar icon instead.
+    chrome.action.setBadgeText({ text: "" });
+
+    (async () => {
+      let bitmap;
+      try {
+        const response = await fetch(chrome.runtime.getURL(imagePath));
+        if (!response.ok) {
+          throw new Error(`Failed to load ${imagePath}: HTTP ${response.status}`);
+        }
+        bitmap = await createImageBitmap(await response.blob());
+        if (renderToken !== weatherBadgeRenderToken) return;
+
+        const canvas = new OffscreenCanvas(128, 128);
+        const ctx = canvas.getContext("2d", { alpha: true });
+        if (!ctx) throw new Error("Unable to create transparent badge canvas");
+
+        // Start with a fully transparent canvas and draw the existing badge art.
+        ctx.clearRect(0, 0, 128, 128);
+        ctx.drawImage(bitmap, 0, 0, 128, 128);
+
+        const numberText = String(displayTemperature);
+        const unitText = String(unit).toUpperCase();
+        let numberFont = 58;
+        let unitFont = 29;
+        const gap = 2;
+        const maxTextWidth = 112;
+
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+        let numberWidth = ctx.measureText(numberText).width;
+        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        let unitWidth = ctx.measureText(unitText).width;
+        let totalWidth = numberWidth + gap + unitWidth;
+
+        // Keep the text within the lower-right corner even for negative values.
+        if (totalWidth > maxTextWidth) {
+          const scale = maxTextWidth / totalWidth;
+          numberFont = Math.max(34, Math.floor(numberFont * scale));
+          unitFont = Math.max(19, Math.floor(unitFont * scale));
+          ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+          numberWidth = ctx.measureText(numberText).width;
+          ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+          unitWidth = ctx.measureText(unitText).width;
+          totalWidth = numberWidth + gap + unitWidth;
+        }
+
+        const rightMargin = 3;
+        const numberX = Math.max(1, 128 - rightMargin - totalWidth);
+        const baseline = 124;
+        const unitBaseline = baseline - Math.max(7, Math.round(numberFont * 0.18));
+
+        // No rectangle or filled background is drawn. A narrow glyph outline
+        // keeps white text legible on bright weather artwork without a panel.
+        ctx.lineJoin = "round";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.86)";
+        ctx.fillStyle = "#ff0000";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.38)";
+        ctx.shadowBlur = 1.5;
+
+        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+        ctx.strokeText(numberText, numberX, baseline);
+        ctx.fillText(numberText, numberX, baseline);
+
+        const unitX = numberX + numberWidth + gap;
+        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        ctx.strokeText(unitText, unitX, unitBaseline);
+        ctx.fillText(unitText, unitX, unitBaseline);
+
+        // Keep the alert visible, if enabled, without adding a background panel.
+        if (isWeatherAlert && badgeAlert) {
+          ctx.shadowBlur = 0;
+          ctx.beginPath();
+          ctx.arc(117, 11, 7, 0, 2 * Math.PI);
+          ctx.fillStyle = "#f80000";
+          ctx.fill();
+        }
+
+        if (renderToken !== weatherBadgeRenderToken) return;
+        chrome.action.setIcon({ imageData: ctx.getImageData(0, 0, 128, 128) });
+      } catch (error) {
+        console.error("WeatherPulse: transparent temperature badge failed", error);
+        if (renderToken === weatherBadgeRenderToken) {
+          // Fallback to the weather icon without reintroducing native badge text.
+          chrome.action.setIcon({ path: { 128: imagePath } });
+        }
+      } finally {
+        if (bitmap) bitmap.close();
+      }
+    })();
   },
   setBadgeBgColor = (
     daylight,
@@ -886,16 +1010,16 @@ const setBadge = (
                   isWeatherAlert,
                   badgeAlert,
                 )
-              : (chrome.action.setBadgeText({
-                  text: `${k2c(temperature)}ᶜ`,
-                }),
-                chrome.action.setBadgeBackgroundColor({
-                  color: [0, 0, 0, 0],
-                }),
-                chrome.action.setBadgeTextColor({
-                  color: [255, 255, 255, 255],
-                }),
-                setBadgeBgIcon(daylight, iconBadge, temperature, whiteIcon));
+              : setBadgeBgIconWithTemperature(
+                  daylight,
+                  iconBadge,
+                  temperature,
+                  whiteIcon,
+                  k2c(temperature),
+                  "C",
+                  isWeatherAlert,
+                  badgeAlert,
+                );
           }),
           (tempf = () => {
             1 == currentBadgeSize
@@ -905,16 +1029,16 @@ const setBadge = (
                   isWeatherAlert,
                   badgeAlert,
                 )
-              : (chrome.action.setBadgeText({
-                  text: `${k2f(temperature)}ᶠ`,
-                }),
-                chrome.action.setBadgeBackgroundColor({
-                  color: [0, 0, 0, 0],
-                }),
-                chrome.action.setBadgeTextColor({
-                  color: [255, 255, 255, 255],
-                }),
-                setBadgeBgIcon(daylight, iconBadge, temperature, whiteIcon));
+              : setBadgeBgIconWithTemperature(
+                  daylight,
+                  iconBadge,
+                  temperature,
+                  whiteIcon,
+                  k2f(temperature),
+                  "F",
+                  isWeatherAlert,
+                  badgeAlert,
+                );
           }),
           (uvi = () => {
             let uvIndexText = uvIndex > 9 ? "UV" + uvIndex : "UV " + uvIndex;

@@ -97,29 +97,29 @@ function applyUvIconState(uvIndex) {
     tint =
       "brightness(0) saturate(100%) invert(64%) sepia(43%) saturate(650%) hue-rotate(65deg) brightness(91%) contrast(89%)";
 
-  // UV 3.0–5.9: Moderate
-  // Sunscreen + sunglasses + hat.
+    // UV 3.0–5.9: Moderate
+    // Sunscreen + sunglasses + hat.
   } else if (uv < 6) {
     count = 3;
     tint =
       "brightness(0) saturate(100%) invert(82%) sepia(74%) saturate(700%) hue-rotate(2deg) brightness(101%) contrast(95%)";
 
-  // UV 6.0–7.9: High
-  // Add protective clothing.
+    // UV 6.0–7.9: High
+    // Add protective clothing.
   } else if (uv < 8) {
     count = 4;
     tint =
       "brightness(0) saturate(100%) invert(64%) sepia(83%) saturate(1850%) hue-rotate(352deg) brightness(103%) contrast(98%)";
 
-  // UV 8.0–10.9: Very High
-  // Add seeking shade.
+    // UV 8.0–10.9: Very High
+    // Add seeking shade.
   } else if (uv < 11) {
     count = 5;
     tint =
       "brightness(0) saturate(100%) invert(39%) sepia(89%) saturate(2048%) hue-rotate(340deg) brightness(96%) contrast(92%)";
 
-  // UV 11+: Extreme
-  // Add limiting/avoiding direct sun exposure.
+    // UV 11+: Extreme
+    // Add limiting/avoiding direct sun exposure.
   } else {
     count = 6;
     tint =
@@ -439,20 +439,14 @@ const capitalize = (s) =>
 
     // Select the appropriate image for the time of day.
     // The dark-icon setting applies to daytime only.
-    const mainSuffix = daylight
-      ? 1 === whiteIcon
-        ? "dark"
-        : "day"
-      : "night";
+    const mainSuffix = daylight ? (1 === whiteIcon ? "dark" : "day") : "night";
 
     const iconName = `${icon}-${mainSuffix}${tempSuffix}-128.png`;
 
     chrome.action.setIcon({
-      path: { 128: `images/badge/${iconName}` }
+      path: { 128: `images/badge/${iconName}` },
     });
   },
-
-
   setBadgeBgColor = (
     daylight,
     iconBadge,
@@ -892,14 +886,15 @@ const setBadge = (
                   isWeatherAlert,
                   badgeAlert,
                 )
-              : (chrome.action.setBadgeText({ text: k2c(temperature) + "°C" }),
-                setBadgeBgColor(
-                  daylight,
-                  iconBadge,
-                  temperature,
-                  whiteIcon,
-                  isWeatherAlert,
-                ),
+              : (chrome.action.setBadgeText({
+                  text: `${k2c(temperature)}ᶜ`,
+                }),
+                chrome.action.setBadgeBackgroundColor({
+                  color: [0, 0, 0, 0],
+                }),
+                chrome.action.setBadgeTextColor({
+                  color: [255, 255, 255, 255],
+                }),
                 setBadgeBgIcon(daylight, iconBadge, temperature, whiteIcon));
           }),
           (tempf = () => {
@@ -910,14 +905,15 @@ const setBadge = (
                   isWeatherAlert,
                   badgeAlert,
                 )
-              : (chrome.action.setBadgeText({ text: k2f(temperature) + "°F" }),
-                setBadgeBgColor(
-                  daylight,
-                  iconBadge,
-                  temperature,
-                  whiteIcon,
-                  isWeatherAlert,
-                ),
+              : (chrome.action.setBadgeText({
+                  text: `${k2f(temperature)}ᶠ`,
+                }),
+                chrome.action.setBadgeBackgroundColor({
+                  color: [0, 0, 0, 0],
+                }),
+                chrome.action.setBadgeTextColor({
+                  color: [255, 255, 255, 255],
+                }),
                 setBadgeBgIcon(daylight, iconBadge, temperature, whiteIcon));
           }),
           (uvi = () => {

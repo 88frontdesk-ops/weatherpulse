@@ -563,10 +563,10 @@ const capitalize = (s) =>
 
         const numberText = String(displayTemperature);
         const unitText = String(unit).toUpperCase();
-        let numberFont = 76;
-        let unitFont = 38;
+        let numberFont = 80;
+        let unitFont = 34;
         const gap = 2;
-        const maxTextWidth = 118;
+        const maxTextWidth = 116;
 
         ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";
@@ -591,7 +591,7 @@ const capitalize = (s) =>
         // Position the temperature in the upper-right corner.
         const rightMargin = 3;
         const numberX = Math.max(1, 128 - rightMargin - totalWidth);
-        const baseline = 68;
+        const baseline = 76;
         const unitBaseline =
           baseline - Math.max(8, Math.round(numberFont * 0.18));
 
@@ -624,7 +624,7 @@ const capitalize = (s) =>
           unitBaseline + unitDescent,
         );
 
-        // Draw a compact black background with 50% opacity.
+        // Draw a compact black background with 70% opacity (30% transparent).
         const paddingX = 5;
         const paddingY = 4;
         const bgX = Math.max(0, numberX - paddingX);
@@ -639,16 +639,22 @@ const capitalize = (s) =>
         ctx.fill();
         ctx.restore();
 
-        // Draw yellow temperature text over the translucent background.
+        // Draw a bold temperature text with a dark outline.
         ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "rgb(255, 255, 255)";
+        ctx.lineWidth = 0;
+        ctx.lineJoin = "round";
         ctx.shadowColor = "rgba(0, 0, 0, 0)";
         ctx.shadowBlur = 0;
-        ctx.lineWidth = 0;
 
+        // Temperature number.
         ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+        ctx.strokeText(numberText, numberX, baseline);
         ctx.fillText(numberText, numberX, baseline);
 
+        // Smaller C or F unit.
         ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        ctx.strokeText(unitText, unitX, unitBaseline);
         ctx.fillText(unitText, unitX, unitBaseline);
 
         // Keep the alert visible, if enabled, without adding a background panel.

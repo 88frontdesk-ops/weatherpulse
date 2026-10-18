@@ -337,7 +337,6 @@
         ? data.properties.periods
         : [];
     } catch (error) {
-      console.warn("NWS forecast unavailable.", error);
       return null;
     }
   };
@@ -415,7 +414,6 @@
         }),
       };
     } catch (error) {
-      console.warn("NWS alerts unavailable.", error);
       return { alerts: [] };
     }
   };

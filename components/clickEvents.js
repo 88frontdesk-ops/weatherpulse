@@ -469,8 +469,7 @@ const clickEvents = () => {
           (chrome.storage.local.set({ backgroundType: "image" }),
             imageBackground.classList.remove("hidden"),
             (defaultImageButton.checked = !0),
-            (icon = getWeIcon(condition, daylight, cloudCover)),
-            bgLocal(icon, daylight),
+            bgLocal(condition, daylight),
             mp_setting("Background Type", "Image"),
             delayButtons(),
             releaseButtons());

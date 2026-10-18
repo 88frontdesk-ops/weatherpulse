@@ -6,6 +6,7 @@ const weCast = (
   reject,
   forceRefresh = false,
 ) => {
+  globalThis.weatherpulseFetchStatus = "loading";
   const [lat, lng] = String(latlong || "")
     .split(",")
     .map(Number);
@@ -187,13 +188,11 @@ const weCast = (
       if (!forceRefresh && cacheIsFresh) {
         try {
           const result = applyWeather(cachedWeather);
+          globalThis.weatherpulseFetchStatus = "cache";
           resolve && resolve(result);
           return;
         } catch (error) {
-          console.warn(
-            "Cached weather data invalid; fetching fresh data.",
-            error,
-          );
+          // Invalid cache is ignored; the fresh request below may still succeed.
         }
       }
       return loadWeatherData({
@@ -205,27 +204,26 @@ const weCast = (
         .then((weather) => {
           const result = applyWeather(weather);
           chrome.storage.local.set({ wCastCachedAt: Date.now() });
+          globalThis.weatherpulseFetchStatus = "fresh";
           resolve && resolve(result);
         })
         .catch((error) => {
           if (cachedWeather) {
             try {
-              console.warn(
-                "Weather refresh failed; using cached weather data.",
-                error,
-              );
               const result = applyWeather(cachedWeather);
+              globalThis.weatherpulseFetchStatus = "stale-cache";
               resolve && resolve(result);
               return;
             } catch (cacheError) {
-              console.warn("Cached weather data is unavailable.", cacheError);
+              // If the cache is invalid, show the empty-state recovery UI.
             }
           }
+          globalThis.weatherpulseFetchStatus = "failed";
           throw error;
         });
     })
     .catch((error) => {
-      console.error("Weather provider request failed.", error);
+      globalThis.weatherpulseFetchStatus = "failed";
       reject && reject(error);
     });
 };

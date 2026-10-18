@@ -104,7 +104,6 @@
       render(data);
       return data;
     } catch (error) {
-      console.warn("Open-Meteo air-quality data unavailable.", error);
       text("current_aqi_subTitle", message("noData", "Air-quality data is unavailable."));
       text("aqiDominantPollutant", "");
       text("aqiHealthDes", message("noData", "Air-quality data is unavailable."));

@@ -641,7 +641,7 @@ const capitalize = (s) =>
 
         // Draw a bold temperature text with a dark outline.
         ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "rgb(255, 255, 255)";
+        ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 0;
         ctx.lineJoin = "round";
         ctx.shadowColor = "rgba(0, 0, 0, 0)";

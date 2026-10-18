@@ -486,7 +486,9 @@ const capitalize = (s) =>
       try {
         const response = await fetch(chrome.runtime.getURL(imagePath));
         if (!response.ok) {
-          throw new Error(`Failed to load ${imagePath}: HTTP ${response.status}`);
+          throw new Error(
+            `Failed to load ${imagePath}: HTTP ${response.status}`,
+          );
         }
         bitmap = await createImageBitmap(await response.blob());
         if (renderToken !== weatherBadgeRenderToken) return;
@@ -495,16 +497,76 @@ const capitalize = (s) =>
         const ctx = canvas.getContext("2d", { alpha: true });
         if (!ctx) throw new Error("Unable to create transparent badge canvas");
 
-        // Start with a fully transparent canvas and draw the existing badge art.
+        // Crop transparent margins from the source icon.
+        const sourceCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+        const sourceCtx = sourceCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
+
+        sourceCtx.drawImage(bitmap, 0, 0);
+
+        const pixels = sourceCtx.getImageData(
+          0,
+          0,
+          bitmap.width,
+          bitmap.height,
+        ).data;
+
+        let minX = bitmap.width;
+        let minY = bitmap.height;
+        let maxX = -1;
+        let maxY = -1;
+
+        for (let y = 0; y < bitmap.height; y++) {
+          for (let x = 0; x < bitmap.width; x++) {
+            const alpha = pixels[(y * bitmap.width + x) * 4 + 3];
+
+            if (alpha > 8) {
+              minX = Math.min(minX, x);
+              minY = Math.min(minY, y);
+              maxX = Math.max(maxX, x);
+              maxY = Math.max(maxY, y);
+            }
+          }
+        }
+
+        // Fall back to the full image if it contains no visible pixels.
+        if (maxX < minX || maxY < minY) {
+          minX = 0;
+          minY = 0;
+          maxX = bitmap.width - 1;
+          maxY = bitmap.height - 1;
+        }
+
+        const cropWidth = maxX - minX + 1;
+        const cropHeight = maxY - minY + 1;
+
+        // Scale artwork to the largest size that fits, preserving proportions.
+        const scale = Math.min(128 / cropWidth, 128 / cropHeight);
+        const drawWidth = cropWidth * scale;
+        const drawHeight = cropHeight * scale;
+        const drawX = (128 - drawWidth) / 2;
+        const drawY = (128 - drawHeight) / 2;
+
         ctx.clearRect(0, 0, 128, 128);
-        ctx.drawImage(bitmap, 0, 0, 128, 128);
+        ctx.drawImage(
+          bitmap,
+          minX,
+          minY,
+          cropWidth,
+          cropHeight,
+          drawX,
+          drawY,
+          drawWidth,
+          drawHeight,
+        );
 
         const numberText = String(displayTemperature);
         const unitText = String(unit).toUpperCase();
-        let numberFont = 58;
-        let unitFont = 29;
+        let numberFont = 76;
+        let unitFont = 38;
         const gap = 2;
-        const maxTextWidth = 112;
+        const maxTextWidth = 118;
 
         ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";
@@ -526,27 +588,67 @@ const capitalize = (s) =>
           totalWidth = numberWidth + gap + unitWidth;
         }
 
+        // Position the temperature in the upper-right corner.
         const rightMargin = 3;
         const numberX = Math.max(1, 128 - rightMargin - totalWidth);
-        const baseline = 124;
-        const unitBaseline = baseline - Math.max(7, Math.round(numberFont * 0.18));
+        const baseline = 68;
+        const unitBaseline =
+          baseline - Math.max(8, Math.round(numberFont * 0.18));
 
-        // No rectangle or filled background is drawn. A narrow glyph outline
-        // keeps white text legible on bright weather artwork without a panel.
-        ctx.lineJoin = "round";
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.86)";
-        ctx.fillStyle = "#ff0000";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.38)";
-        ctx.shadowBlur = 1.5;
+        // Measure the actual text bounds so the background fits the text.
+        const unitX = numberX + numberWidth + gap;
 
         ctx.font = `700 ${numberFont}px Arial, sans-serif`;
-        ctx.strokeText(numberText, numberX, baseline);
+        const numberMetrics = ctx.measureText(numberText);
+
+        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        const unitMetrics = ctx.measureText(unitText);
+
+        const numberAscent =
+          numberMetrics.actualBoundingBoxAscent || numberFont * 0.75;
+        const numberDescent =
+          numberMetrics.actualBoundingBoxDescent || numberFont * 0.15;
+
+        const unitAscent =
+          unitMetrics.actualBoundingBoxAscent || unitFont * 0.75;
+        const unitDescent =
+          unitMetrics.actualBoundingBoxDescent || unitFont * 0.15;
+
+        const textTop = Math.min(
+          baseline - numberAscent,
+          unitBaseline - unitAscent,
+        );
+
+        const textBottom = Math.max(
+          baseline + numberDescent,
+          unitBaseline + unitDescent,
+        );
+
+        // Draw a compact black background with 50% opacity.
+        const paddingX = 5;
+        const paddingY = 4;
+        const bgX = Math.max(0, numberX - paddingX);
+        const bgY = Math.max(0, textTop - paddingY);
+        const bgRight = Math.min(128, unitX + unitWidth + paddingX);
+        const bgBottom = Math.min(128, textBottom + paddingY);
+
+        ctx.save();
+        ctx.fillStyle = "rgba(0, 0, 0, 1)";
+        ctx.beginPath();
+        ctx.roundRect(bgX, bgY, bgRight - bgX, bgBottom - bgY, 6);
+        ctx.fill();
+        ctx.restore();
+
+        // Draw yellow temperature text over the translucent background.
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0, 0, 0, 0)";
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = 0;
+
+        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
         ctx.fillText(numberText, numberX, baseline);
 
-        const unitX = numberX + numberWidth + gap;
         ctx.font = `700 ${unitFont}px Arial, sans-serif`;
-        ctx.strokeText(unitText, unitX, unitBaseline);
         ctx.fillText(unitText, unitX, unitBaseline);
 
         // Keep the alert visible, if enabled, without adding a background panel.
@@ -561,7 +663,10 @@ const capitalize = (s) =>
         if (renderToken !== weatherBadgeRenderToken) return;
         chrome.action.setIcon({ imageData: ctx.getImageData(0, 0, 128, 128) });
       } catch (error) {
-        console.error("WeatherPulse: transparent temperature badge failed", error);
+        console.error(
+          "WeatherPulse: transparent temperature badge failed",
+          error,
+        );
         if (renderToken === weatherBadgeRenderToken) {
           // Fallback to the weather icon without reintroducing native badge text.
           chrome.action.setIcon({ path: { 128: imagePath } });

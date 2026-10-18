@@ -7,6 +7,159 @@ document.addEventListener("DOMContentLoaded", () => {
         : ((elem.style.display = "none"), clearInterval(timer));
     }, interval);
   }
+  const ensureStatusNoticeStack = () => {
+    let stack = document.getElementById("weatherpulse_notice_stack");
+    if (!stack) {
+      stack = document.createElement("div");
+      stack.id = "weatherpulse_notice_stack";
+      stack.setAttribute("aria-label", "WeatherPulse status messages");
+      Object.assign(stack.style, {
+        position: "fixed",
+        top: "48px",
+        right: "8px",
+        zIndex: "10001",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: "4px",
+        width: "max-content",
+        maxWidth: "250px",
+        pointerEvents: "none",
+        boxSizing: "border-box"
+      });
+      document.body.appendChild(stack);
+    }
+    return stack;
+  };
+  const showStatusNotice = (message, kind = "info") => {
+    const noticeId = kind === "warning"
+      ? "weatherpulse_api_notice"
+      : "weatherpulse_background_notice";
+    const stack = ensureStatusNoticeStack();
+    stack.style.display = "flex";
+    let notice = document.getElementById(noticeId);
+    if (!notice) {
+      notice = document.createElement("div");
+      notice.id = noticeId;
+      notice.setAttribute("role", "status");
+      notice.setAttribute("aria-live", "polite");
+      Object.assign(notice.style, {
+        boxSizing: "border-box",
+        maxWidth: "250px",
+        padding: "5px 8px",
+        borderRadius: "6px",
+        fontSize: "10px",
+        lineHeight: "1.25",
+        fontFamily: "Arial, sans-serif",
+        whiteSpace: "normal",
+        overflowWrap: "break-word",
+        textAlign: "left",
+        boxShadow: "0 1px 5px rgba(0,0,0,.18)",
+        border: "1px solid rgba(255,255,255,.18)",
+        pointerEvents: "none"
+      });
+      stack.appendChild(notice);
+    } else if (notice.parentElement !== stack) {
+      stack.appendChild(notice);
+    }
+    notice.textContent = message;
+    notice.style.background = kind === "warning"
+      ? "rgba(92,57,12,.94)"
+      : "rgba(20,42,62,.88)";
+    notice.style.color = "#fff";
+    notice.style.display = "block";
+  };
+  const hideStatusNotice = (kind = "all") => {
+    const ids = kind === "warning"
+      ? ["weatherpulse_api_notice"]
+      : kind === "info"
+        ? ["weatherpulse_background_notice"]
+        : ["weatherpulse_api_notice", "weatherpulse_background_notice"];
+    ids.forEach((id) => {
+      const notice = document.getElementById(id);
+      if (notice) notice.style.display = "none";
+    });
+    const stack = document.getElementById("weatherpulse_notice_stack");
+    if (stack && !Array.from(stack.children).some((child) => child.style.display !== "none")) {
+      stack.style.display = "none";
+    } else if (stack) {
+      stack.style.display = "flex";
+    }
+  };
+  const showWeatherLoadFailure = () => {
+    hideStatusNotice("all");
+    document.querySelectorAll("#noInternet_popup, #overloaded_popup, #preload_body")
+      .forEach((el) => { el.style.display = "none"; el.style.visibility = "hidden"; });
+    let panel = document.getElementById("weatherpulse_load_failure");
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = "weatherpulse_load_failure";
+      Object.assign(panel.style, {
+        position: "fixed", inset: "0", zIndex: "20000", display: "flex",
+        flexDirection: "column", alignItems: "center", justifyContent: "center",
+        gap: "12px", padding: "24px", boxSizing: "border-box",
+        background: "#f5f7fa", color: "#202a35", textAlign: "center",
+        font: "13px Arial, sans-serif"
+      });
+      const message = document.createElement("div");
+      message.textContent = "Weather data is unavailable and no usable cache was found.";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "Reload extension";
+      Object.assign(button.style, {
+        border: "0", borderRadius: "7px", padding: "9px 14px",
+        background: "#1769aa", color: "white", fontWeight: "600", cursor: "pointer"
+      });
+      button.addEventListener("click", () => chrome.runtime.reload());
+      panel.append(message, button);
+      document.body.appendChild(panel);
+    }
+    panel.style.display = "flex";
+  };
+  // Console helper for validating background states without changing stored weather data.
+  // Example: wpTestBackgroundEffect("unknown", "day") or wpTestBackgroundEffect("unknown", "night").
+  globalThis.wpTestBackgroundEffect = async (conditionName = "unknown", period = "day") => {
+    const isDay = typeof period === "boolean"
+      ? period
+      : !["night", "false", "0", "n"].includes(String(period).toLowerCase());
+    const normalized = globalThis.weatherpulseNormalizeBackgroundCondition?.(conditionName) || "unknown";
+    if (typeof bgLocal === "function") await bgLocal(conditionName, isDay);
+    if (normalized === "unknown") {
+      showStatusNotice("Unknown weather condition — background animation unavailable.", "info");
+    } else {
+      hideStatusNotice("info");
+    }
+    return {
+      input: String(conditionName),
+      normalizedCondition: normalized,
+      period: isDay ? "day" : "night",
+      unknownNoticeVisible: normalized === "unknown",
+      backgroundImage: normalized === "unknown"
+        ? (isDay ? "images/background/unknown/day/unknown-day.jpg" : "images/background/unknown/night/unknown-night.jpg")
+        : "condition-specific background",
+    };
+  };
+  // Compatibility alias for testing instructions used in earlier builds.
+  globalThis.wpTestPopup = (conditionName = "unknown", isDay = true) => {
+    const day = typeof isDay === "string"
+      ? !["night", "false", "0", "n"].includes(isDay.toLowerCase())
+      : Boolean(isDay);
+    return globalThis.wpTestBackgroundEffect(conditionName, day ? "day" : "night");
+  };
+
+  // UI-only helpers to preview the two API-failure states. They do not block network requests.
+  globalThis.wpTestApiFailureUI = (mode = "cached") => {
+    const normalizedMode = String(mode).toLowerCase();
+    if (["no-cache", "nocache", "empty", "failed"].includes(normalizedMode)) {
+      showWeatherLoadFailure();
+      return "Previewed the no-cache failure UI. Reload the popup to restore normal display.";
+    }
+    const failurePanel = document.getElementById("weatherpulse_load_failure");
+    if (failurePanel) failurePanel.style.display = "none";
+    showStatusNotice("Failed to fetch API. Showing cached data; try again.", "warning");
+    return "Previewed the cached-data API warning. This helper does not make a real API request.";
+  };
+
   const renderApiAccuracy = (wCast) => {
     if (!wCast || !wCast.forecastHourly || !wCast.forecastDaily) return;
     chrome.storage.local.get(
@@ -206,21 +359,22 @@ document.addEventListener("DOMContentLoaded", () => {
           .then((_ref) => {
             let [wCast] = _ref;
             refreshPopup(wCast);
+            if (globalThis.weatherpulseFetchStatus === "stale-cache") {
+              showStatusNotice("Failed to fetch API. Showing cached data; try again.", "warning");
+            } else {
+              // Clear only the API warning; retain the unknown-background tip when needed.
+              hideStatusNotice("warning");
+            }
             fadeOutElement(preloader, 1, 0.3, 50);
             fadeOutElement(preloaderLocation, 0.9, 0.1, 50);
             if (favouriteCheck) favourite();
           })
-          .catch((error) => {
-            console.error("Weather popup could not load weather data.", error);
-            const errorPopup = document.getElementById(
-              navigator.onLine ? "overloaded_popup" : "noInternet_popup",
-            );
-            if (errorPopup) errorPopup.style.visibility = "visible";
+          .catch(() => {
+            // No usable cache exists. Keep the popup quiet and offer recovery.
+            showWeatherLoadFailure();
             document
               .querySelectorAll(".preloader, .preloaderLocation")
-              .forEach((item) => {
-                item.style.display = "none";
-              });
+              .forEach((item) => { item.style.display = "none"; });
           });
       },
     );
@@ -238,8 +392,16 @@ document.addEventListener("DOMContentLoaded", () => {
       (data) => {
         updateTime = toTimestamp(wCast.currentWeather.asOf);
         if ("image" == data.backgroundType) {
-          const icon = getWeIcon(condition, daylight, cloudCover);
-          bgLocal(icon, daylight);
+          // Pass the canonical condition so background effects can distinguish
+          // thunderstorms and unknown conditions from generic rain/clear icons.
+          bgLocal(condition, daylight);
+          const normalizedBackgroundCondition =
+            globalThis.weatherpulseNormalizeBackgroundCondition?.(condition) || "unknown";
+          if (normalizedBackgroundCondition === "unknown") {
+            showStatusNotice("Tip: Background animation is unavailable for this unknown condition.", "info");
+          } else {
+            hideStatusNotice("info");
+          }
         }
         if ("c" === data.setSettingFC) ctemp(wCast);
         else ftemp(wCast);
@@ -329,12 +491,18 @@ document.addEventListener("DOMContentLoaded", () => {
         })
           .then((freshWeather) => {
             refreshPopup(freshWeather);
-            if (manualRefreshStatus)
-              manualRefreshStatus.textContent = " Updated";
+            if (globalThis.weatherpulseFetchStatus === "stale-cache") {
+              showStatusNotice("Failed to fetch API. Showing cached data; try again.", "warning");
+              if (manualRefreshStatus) manualRefreshStatus.textContent = " Showing cached data";
+            } else {
+              hideStatusNotice("warning");
+              if (manualRefreshStatus) manualRefreshStatus.textContent = " Updated";
+            }
           })
           .catch(() => {
+            showWeatherLoadFailure();
             if (manualRefreshStatus)
-              manualRefreshStatus.textContent = " Refresh failed";
+              manualRefreshStatus.textContent = " No weather data";
           })
           .finally(() => {
             manualRefreshButton.disabled = false;

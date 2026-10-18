@@ -97,29 +97,29 @@ function applyUvIconState(uvIndex) {
     tint =
       "brightness(0) saturate(100%) invert(64%) sepia(43%) saturate(650%) hue-rotate(65deg) brightness(91%) contrast(89%)";
 
-  // UV 3.0–5.9: Moderate
-  // Sunscreen + sunglasses + hat.
+    // UV 3.0–5.9: Moderate
+    // Sunscreen + sunglasses + hat.
   } else if (uv < 6) {
     count = 3;
     tint =
       "brightness(0) saturate(100%) invert(82%) sepia(74%) saturate(700%) hue-rotate(2deg) brightness(101%) contrast(95%)";
 
-  // UV 6.0–7.9: High
-  // Add protective clothing.
+    // UV 6.0–7.9: High
+    // Add protective clothing.
   } else if (uv < 8) {
     count = 4;
     tint =
       "brightness(0) saturate(100%) invert(64%) sepia(83%) saturate(1850%) hue-rotate(352deg) brightness(103%) contrast(98%)";
 
-  // UV 8.0–10.9: Very High
-  // Add seeking shade.
+    // UV 8.0–10.9: Very High
+    // Add seeking shade.
   } else if (uv < 11) {
     count = 5;
     tint =
       "brightness(0) saturate(100%) invert(39%) sepia(89%) saturate(2048%) hue-rotate(340deg) brightness(96%) contrast(92%)";
 
-  // UV 11+: Extreme
-  // Add limiting/avoiding direct sun exposure.
+    // UV 11+: Extreme
+    // Add limiting/avoiding direct sun exposure.
   } else {
     count = 6;
     tint =
@@ -136,6 +136,8 @@ function applyUvIconState(uvIndex) {
       });
   }
 }
+
+let weatherBadgeRenderToken = 0;
 
 const capitalize = (s) =>
     "string" != typeof s || 0 === s.length
@@ -228,8 +230,9 @@ const capitalize = (s) =>
       case "clear":
         iconBadge = daylight ? "sunny" : "starry";
         break;
+      case "unknown":
       default:
-        iconBadge = "starry";
+        iconBadge = "unknown";
     }
     return iconBadge;
   },
@@ -424,23 +427,260 @@ const capitalize = (s) =>
     return chrome.i18n.getMessage(key);
   },
   setBadgeBgIcon = (daylight, icon, temperature, whiteIcon) => {
+    // Invalidate any pending icon+temperature composition before showing a plain icon.
+    weatherBadgeRenderToken++;
+
     const tempSuffix =
       "sunny" === icon && daylight
         ? temperature >= 283.15 || 1 === whiteIcon
           ? ""
           : "-cold"
         : "";
-    let baseIconName;
-    ("sunny" !== icon || daylight || (icon = "starry"),
-      1 !== whiteIcon || daylight
-        ? daylight || (mainSuffix = "night")
-        : (mainSuffix = "dark"),
-      1 === whiteIcon && daylight
-        ? (mainSuffix = "dark")
-        : daylight && (mainSuffix = "day"),
-      (baseIconName = `${icon}-${mainSuffix}${tempSuffix}`));
-    const iconName = `${baseIconName}-128.png`;
-    chrome.action.setIcon({ path: { 128: `images/badge/${iconName}` } });
+
+    // A clear night uses the starry/moon icon family.
+    if ("sunny" === icon && !daylight) {
+      icon = "starry";
+    }
+
+    // Select the appropriate image for the time of day.
+    // The dark-icon setting applies to daytime only.
+    const mainSuffix = daylight ? (1 === whiteIcon ? "dark" : "day") : "night";
+
+    const iconName = `${icon}-${mainSuffix}${tempSuffix}-128.png`;
+
+    chrome.action.setIcon({
+      path: { 128: `images/badge/${iconName}` },
+    });
+  },
+  setBadgeBgIconWithTemperature = (
+    daylight,
+    icon,
+    temperature,
+    whiteIcon,
+    displayTemperature,
+    unit,
+    isWeatherAlert,
+    badgeAlert,
+  ) => {
+    const renderToken = ++weatherBadgeRenderToken;
+    const tempSuffix =
+      "sunny" === icon && daylight
+        ? temperature >= 283.15 || 1 === whiteIcon
+          ? ""
+          : "-cold"
+        : "";
+
+    if ("sunny" === icon && !daylight) {
+      icon = "starry";
+    }
+
+    const mainSuffix = daylight ? (1 === whiteIcon ? "dark" : "day") : "night";
+    const imagePath = `images/badge/${icon}-${mainSuffix}${tempSuffix}-128.png`;
+
+    // Chrome's native badge text has an opaque backing. Clear it and draw the
+    // temperature directly onto the transparent toolbar icon instead.
+    chrome.action.setBadgeText({ text: "" });
+
+    (async () => {
+      let bitmap;
+      try {
+        const response = await fetch(chrome.runtime.getURL(imagePath));
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load ${imagePath}: HTTP ${response.status}`,
+          );
+        }
+        bitmap = await createImageBitmap(await response.blob());
+        if (renderToken !== weatherBadgeRenderToken) return;
+
+        const canvas = new OffscreenCanvas(128, 128);
+        const ctx = canvas.getContext("2d", { alpha: true });
+        if (!ctx) throw new Error("Unable to create transparent badge canvas");
+
+        // Crop transparent margins from the source icon.
+        const sourceCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+        const sourceCtx = sourceCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
+
+        sourceCtx.drawImage(bitmap, 0, 0);
+
+        const pixels = sourceCtx.getImageData(
+          0,
+          0,
+          bitmap.width,
+          bitmap.height,
+        ).data;
+
+        let minX = bitmap.width;
+        let minY = bitmap.height;
+        let maxX = -1;
+        let maxY = -1;
+
+        for (let y = 0; y < bitmap.height; y++) {
+          for (let x = 0; x < bitmap.width; x++) {
+            const alpha = pixels[(y * bitmap.width + x) * 4 + 3];
+
+            if (alpha > 8) {
+              minX = Math.min(minX, x);
+              minY = Math.min(minY, y);
+              maxX = Math.max(maxX, x);
+              maxY = Math.max(maxY, y);
+            }
+          }
+        }
+
+        // Fall back to the full image if it contains no visible pixels.
+        if (maxX < minX || maxY < minY) {
+          minX = 0;
+          minY = 0;
+          maxX = bitmap.width - 1;
+          maxY = bitmap.height - 1;
+        }
+
+        const cropWidth = maxX - minX + 1;
+        const cropHeight = maxY - minY + 1;
+
+        // Scale artwork to the largest size that fits, preserving proportions.
+        const scale = Math.min(128 / cropWidth, 128 / cropHeight);
+        const drawWidth = cropWidth * scale;
+        const drawHeight = cropHeight * scale;
+        const drawX = (128 - drawWidth) / 2;
+        const drawY = (128 - drawHeight) / 2;
+
+        ctx.clearRect(0, 0, 128, 128);
+        ctx.drawImage(
+          bitmap,
+          minX,
+          minY,
+          cropWidth,
+          cropHeight,
+          drawX,
+          drawY,
+          drawWidth,
+          drawHeight,
+        );
+
+        const numberText = String(displayTemperature);
+        const unitText = String(unit).toUpperCase();
+        let numberFont = 80;
+        let unitFont = 34;
+        const gap = 2;
+        const maxTextWidth = 116;
+
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+        let numberWidth = ctx.measureText(numberText).width;
+        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        let unitWidth = ctx.measureText(unitText).width;
+        let totalWidth = numberWidth + gap + unitWidth;
+
+        // Keep the text within the lower-right corner even for negative values.
+        if (totalWidth > maxTextWidth) {
+          const scale = maxTextWidth / totalWidth;
+          numberFont = Math.max(34, Math.floor(numberFont * scale));
+          unitFont = Math.max(19, Math.floor(unitFont * scale));
+          ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+          numberWidth = ctx.measureText(numberText).width;
+          ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+          unitWidth = ctx.measureText(unitText).width;
+          totalWidth = numberWidth + gap + unitWidth;
+        }
+
+        // Position the temperature in the upper-right corner.
+        const rightMargin = 3;
+        const numberX = Math.max(1, 128 - rightMargin - totalWidth);
+        const baseline = 76;
+        const unitBaseline =
+          baseline - Math.max(8, Math.round(numberFont * 0.18));
+
+        // Measure the actual text bounds so the background fits the text.
+        const unitX = numberX + numberWidth + gap;
+
+        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+        const numberMetrics = ctx.measureText(numberText);
+
+        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        const unitMetrics = ctx.measureText(unitText);
+
+        const numberAscent =
+          numberMetrics.actualBoundingBoxAscent || numberFont * 0.75;
+        const numberDescent =
+          numberMetrics.actualBoundingBoxDescent || numberFont * 0.15;
+
+        const unitAscent =
+          unitMetrics.actualBoundingBoxAscent || unitFont * 0.75;
+        const unitDescent =
+          unitMetrics.actualBoundingBoxDescent || unitFont * 0.15;
+
+        const textTop = Math.min(
+          baseline - numberAscent,
+          unitBaseline - unitAscent,
+        );
+
+        const textBottom = Math.max(
+          baseline + numberDescent,
+          unitBaseline + unitDescent,
+        );
+
+        // Draw a compact black background with 70% opacity (30% transparent).
+        const paddingX = 5;
+        const paddingY = 4;
+        const bgX = Math.max(0, numberX - paddingX);
+        const bgY = Math.max(0, textTop - paddingY);
+        const bgRight = Math.min(128, unitX + unitWidth + paddingX);
+        const bgBottom = Math.min(128, textBottom + paddingY);
+
+        ctx.save();
+        ctx.fillStyle = "rgba(0, 0, 0, 1)";
+        ctx.beginPath();
+        ctx.roundRect(bgX, bgY, bgRight - bgX, bgBottom - bgY, 6);
+        ctx.fill();
+        ctx.restore();
+
+        // Draw a bold temperature text with a dark outline.
+        ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "rgb(0, 0, 0)";
+        ctx.lineWidth = 0;
+        ctx.lineJoin = "round";
+        ctx.shadowColor = "rgba(0, 0, 0, 0)";
+        ctx.shadowBlur = 0;
+
+        // Temperature number.
+        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
+        ctx.strokeText(numberText, numberX, baseline);
+        ctx.fillText(numberText, numberX, baseline);
+
+        // Smaller C or F unit.
+        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
+        ctx.strokeText(unitText, unitX, unitBaseline);
+        ctx.fillText(unitText, unitX, unitBaseline);
+
+        // Keep the alert visible, if enabled, without adding a background panel.
+        if (isWeatherAlert && badgeAlert) {
+          ctx.shadowBlur = 0;
+          ctx.beginPath();
+          ctx.arc(117, 11, 7, 0, 2 * Math.PI);
+          ctx.fillStyle = "#f80000";
+          ctx.fill();
+        }
+
+        if (renderToken !== weatherBadgeRenderToken) return;
+        chrome.action.setIcon({ imageData: ctx.getImageData(0, 0, 128, 128) });
+      } catch (error) {
+        console.error(
+          "WeatherPulse: transparent temperature badge failed",
+          error,
+        );
+        if (renderToken === weatherBadgeRenderToken) {
+          // Fallback to the weather icon without reintroducing native badge text.
+          chrome.action.setIcon({ path: { 128: imagePath } });
+        }
+      } finally {
+        if (bitmap) bitmap.close();
+      }
+    })();
   },
   setBadgeBgColor = (
     daylight,
@@ -522,12 +762,16 @@ const capitalize = (s) =>
           : 'url("images/weather_icon/a_partly-cloudy-night.svg")';
       case "partly-cloudy-night":
         return 'url("images/weather_icon/a_partly-cloudy-night.svg")';
+      case "unknown":
+        return 'url("images/weather_icon/unknown.svg")';
       default:
         return 'url("images/weather_icon/a_clear-day.svg")';
     }
   },
   iconCurrent = (iconName) => {
     switch (iconName) {
+      case "unknown":
+        return 'url("images/weather_icon/unknown.svg")';
       case "clear-day":
       default:
         return 'url("images/weather_icon/wi_sun.svg")';
@@ -877,15 +1121,16 @@ const setBadge = (
                   isWeatherAlert,
                   badgeAlert,
                 )
-              : (chrome.action.setBadgeText({ text: k2c(temperature) + "°C" }),
-                setBadgeBgColor(
+              : setBadgeBgIconWithTemperature(
                   daylight,
                   iconBadge,
                   temperature,
                   whiteIcon,
+                  k2c(temperature),
+                  "C",
                   isWeatherAlert,
-                ),
-                setBadgeBgIcon(daylight, iconBadge, temperature, whiteIcon));
+                  badgeAlert,
+                );
           }),
           (tempf = () => {
             1 == currentBadgeSize
@@ -895,15 +1140,16 @@ const setBadge = (
                   isWeatherAlert,
                   badgeAlert,
                 )
-              : (chrome.action.setBadgeText({ text: k2f(temperature) + "°F" }),
-                setBadgeBgColor(
+              : setBadgeBgIconWithTemperature(
                   daylight,
                   iconBadge,
                   temperature,
                   whiteIcon,
+                  k2f(temperature),
+                  "F",
                   isWeatherAlert,
-                ),
-                setBadgeBgIcon(daylight, iconBadge, temperature, whiteIcon));
+                  badgeAlert,
+                );
           }),
           (uvi = () => {
             let uvIndexText = uvIndex > 9 ? "UV" + uvIndex : "UV " + uvIndex;

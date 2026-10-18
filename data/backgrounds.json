@@ -1,120 +1,128 @@
 ﻿{
-    "version":  4,
-    "entries":  {
-                    "clear":  {
-                                  "day":  [
-                                              "images/background/clear/day/clear-day.jpg",
-                                              "images/background/clear/day/sun-1.webp",
-                                              "images/background/clear/day/sun-11.webp",
-                                              "images/background/clear/day/sun-12.webp",
-                                              "images/background/clear/day/sun-2.webp",
-                                              "images/background/clear/day/sun-4.webp",
-                                              "images/background/clear/day/sun-5.webp",
-                                              "images/background/clear/day/sun-6.webp",
-                                              "images/background/clear/day/sun-9.webp",
-                                              "images/background/clear/day/Sunlit Alpine Lake Panorama.png",
-                                              "images/background/clear/day/Sunny Waterfront Skyline Panorama.png"
-                                          ],
-                                  "night":  [
-                                                "images/background/clear/night/clear-night.jpg",
-                                                "images/background/clear/night/Moonlit Mountain Lake Under Stars.png",
-                                                "images/background/clear/night/night-11.webp",
-                                                "images/background/clear/night/night-12.webp",
-                                                "images/background/clear/night/night-2.webp",
-                                                "images/background/clear/night/night-5.webp",
-                                                "images/background/clear/night/night-7.webp",
-                                                "images/background/clear/night/night-8.webp"
-                                            ]
-                              },
-                    "partly-cloudy":  {
-                                          "day":  [
-                                                      "images/background/partly-cloudy/day/partly-cloudy-day.jpg",
-                                                      "images/background/partly-cloudy/day/partly-cloudy-day-01.jpg"
-                                                  ],
-                                          "night":  [
-                                                        "images/background/partly-cloudy/night/partly-cloudy-night.jpg"
-                                                    ]
-                                      },
-                    "cloudy":  {
-                                   "day":  [
-                                               "images/background/cloudy/day/clouds-1.webp",
-                                               "images/background/cloudy/day/clouds-11.webp",
-                                               "images/background/cloudy/day/clouds-12.webp",
-                                               "images/background/cloudy/day/clouds-2.webp",
-                                               "images/background/cloudy/day/clouds-5.webp",
-                                               "images/background/cloudy/day/clouds-7.webp",
-                                               "images/background/cloudy/day/clouds-8.webp",
-                                               "images/background/cloudy/day/clouds-9.webp",
-                                               "images/background/cloudy/day/Tranquil Mountain Lake Panorama.png"
-                                           ],
-                                   "night":  [
-                                                 "images/background/cloudy/night/cloudy-night.jpg",
-                                                 "images/background/cloudy/night/night-1.webp",
-                                                 "images/background/cloudy/night/night-10.webp"
-                                             ]
-                               },
-                    "rain":  {
-                                 "day":  [
-                                             "images/background/rain/day/rain-12.webp",
-                                             "images/background/rain/day/rain-2.webp",
-                                             "images/background/rain/day/rain-3.webp",
-                                             "images/background/rain/day/rain-7.webp",
-                                             "images/background/rain/day/rain-8.webp",
-                                             "images/background/rain/day/rain-day.jpg"
-                                         ],
-                                 "night":  [
-                                               "images/background/rain/night/rain-11.webp",
-                                               "images/background/rain/night/rain-4.webp",
-                                               "images/background/rain/night/rain-night.jpg"
-                                           ]
-                             },
-                    "snow":  {
-                                 "day":  [
-                                             "images/background/snow/day/snow-1.webp",
-                                             "images/background/snow/day/snow-11.webp",
-                                             "images/background/snow/day/snow-12.webp",
-                                             "images/background/snow/day/snow-2.webp",
-                                             "images/background/snow/day/snow-3.webp",
-                                             "images/background/snow/day/snow-4.webp",
-                                             "images/background/snow/day/snow-7.webp",
-                                             "images/background/snow/day/snow-9.webp",
-                                             "images/background/snow/day/snow-day.jpg"
-                                         ],
-                                 "night":  [
-                                               "images/background/snow/night/snow-night.jpg"
-                                           ]
-                             },
-                    "sleet":  {
-                                  "day":  [
-                                              "images/background/sleet/day/sleet-day.jpg"
-                                          ],
-                                  "night":  [
-                                                "images/background/sleet/night/sleet-night.jpg"
-                                            ]
-                              },
-                    "wind":  {
-                                 "day":  [
-                                             "images/background/wind/day/wind-day.jpg"
-                                         ],
-                                 "night":  [
-                                               "images/background/wind/night/wind-night.jpg"
-                                           ]
-                             },
-                    "fog":  {
-                                "day":  [
-                                            "images/background/fog/day/fog-1.webp",
-                                            "images/background/fog/day/fog-11.webp",
-                                            "images/background/fog/day/fog-12.webp",
-                                            "images/background/fog/day/fog-2.webp",
-                                            "images/background/fog/day/fog-3.webp",
-                                            "images/background/fog/day/fog-4.webp",
-                                            "images/background/fog/day/fog-6.webp",
-                                            "images/background/fog/day/fog-8.webp",
-                                            "images/background/fog/day/fog-day.jpg"
-                                        ],
-                                "night":  [
-                                              "images/background/fog/night/fog-night.jpg"
-                                          ]
-                            }
-                }
+  "version": 4,
+  "entries": {
+    "clear": {
+      "day": [
+        "images/background/clear/day/clear-day.jpg",
+        "images/background/clear/day/sun-1.webp",
+        "images/background/clear/day/sun-11.webp",
+        "images/background/clear/day/sun-12.webp",
+        "images/background/clear/day/sun-2.webp",
+        "images/background/clear/day/sun-4.webp",
+        "images/background/clear/day/sun-5.webp",
+        "images/background/clear/day/sun-6.webp",
+        "images/background/clear/day/sun-9.webp",
+        "images/background/clear/day/Sunlit Alpine Lake Panorama.png",
+        "images/background/clear/day/Sunny Waterfront Skyline Panorama.png"
+      ],
+      "night": [
+        "images/background/clear/night/clear-night.jpg",
+        "images/background/clear/night/Moonlit Mountain Lake Under Stars.png",
+        "images/background/clear/night/night-11.webp",
+        "images/background/clear/night/night-12.webp",
+        "images/background/clear/night/night-2.webp",
+        "images/background/clear/night/night-5.webp",
+        "images/background/clear/night/night-7.webp",
+        "images/background/clear/night/night-8.webp"
+      ]
+    },
+    "partly-cloudy": {
+      "day": [
+        "images/background/partly-cloudy/day/partly-cloudy-day.jpg",
+        "images/background/partly-cloudy/day/partly-cloudy-day-01.jpg"
+      ],
+      "night": [
+        "images/background/partly-cloudy/night/partly-cloudy-night.jpg"
+      ]
+    },
+    "cloudy": {
+      "day": [
+        "images/background/cloudy/day/clouds-1.webp",
+        "images/background/cloudy/day/clouds-11.webp",
+        "images/background/cloudy/day/clouds-12.webp",
+        "images/background/cloudy/day/clouds-2.webp",
+        "images/background/cloudy/day/clouds-5.webp",
+        "images/background/cloudy/day/clouds-7.webp",
+        "images/background/cloudy/day/clouds-8.webp",
+        "images/background/cloudy/day/clouds-9.webp",
+        "images/background/cloudy/day/Tranquil Mountain Lake Panorama.png"
+      ],
+      "night": [
+        "images/background/cloudy/night/cloudy-night.jpg",
+        "images/background/cloudy/night/night-1.webp",
+        "images/background/cloudy/night/night-10.webp"
+      ]
+    },
+    "rain": {
+      "day": [
+        "images/background/rain/day/rain-12.webp",
+        "images/background/rain/day/rain-2.webp",
+        "images/background/rain/day/rain-3.webp",
+        "images/background/rain/day/rain-7.webp",
+        "images/background/rain/day/rain-8.webp",
+        "images/background/rain/day/rain-day.jpg"
+      ],
+      "night": [
+        "images/background/rain/night/rain-11.webp",
+        "images/background/rain/night/rain-4.webp",
+        "images/background/rain/night/rain-night.jpg"
+      ]
+    },
+    "snow": {
+      "day": [
+        "images/background/snow/day/snow-1.webp",
+        "images/background/snow/day/snow-11.webp",
+        "images/background/snow/day/snow-12.webp",
+        "images/background/snow/day/snow-2.webp",
+        "images/background/snow/day/snow-3.webp",
+        "images/background/snow/day/snow-4.webp",
+        "images/background/snow/day/snow-7.webp",
+        "images/background/snow/day/snow-9.webp",
+        "images/background/snow/day/snow-day.jpg"
+      ],
+      "night": [
+        "images/background/snow/night/snow-night.jpg"
+      ]
+    },
+    "sleet": {
+      "day": [
+        "images/background/sleet/day/sleet-day.jpg"
+      ],
+      "night": [
+        "images/background/sleet/night/sleet-night.jpg"
+      ]
+    },
+    "wind": {
+      "day": [
+        "images/background/wind/day/wind-day.jpg"
+      ],
+      "night": [
+        "images/background/wind/night/wind-night.jpg"
+      ]
+    },
+    "fog": {
+      "day": [
+        "images/background/fog/day/fog-1.webp",
+        "images/background/fog/day/fog-11.webp",
+        "images/background/fog/day/fog-12.webp",
+        "images/background/fog/day/fog-2.webp",
+        "images/background/fog/day/fog-3.webp",
+        "images/background/fog/day/fog-4.webp",
+        "images/background/fog/day/fog-6.webp",
+        "images/background/fog/day/fog-8.webp",
+        "images/background/fog/day/fog-day.jpg"
+      ],
+      "night": [
+        "images/background/fog/night/fog-night.jpg"
+      ]
+    },
+    "unknown": {
+      "day": [
+        "images/background/unknown/day/unknown-day.jpg"
+      ],
+      "night": [
+        "images/background/unknown/night/unknown-night.jpg"
+      ]
+    }
+  }
 }

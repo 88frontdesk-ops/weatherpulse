@@ -477,8 +477,8 @@ const capitalize = (s) =>
     const mainSuffix = daylight ? (1 === whiteIcon ? "dark" : "day") : "night";
     const imagePath = `images/badge/${icon}-${mainSuffix}${tempSuffix}-128.png`;
 
-    // Chrome's native badge text has an opaque backing. Clear it and draw the
-    // temperature directly onto the transparent toolbar icon instead.
+    // The temperature is composed into this icon, so clear any separate native
+    // badge text to prevent a second label from covering the artwork.
     chrome.action.setBadgeText({ text: "" });
 
     (async () => {
@@ -497,14 +497,13 @@ const capitalize = (s) =>
         const ctx = canvas.getContext("2d", { alpha: true });
         if (!ctx) throw new Error("Unable to create transparent badge canvas");
 
-        // Crop transparent margins from the source icon.
+        // Crop transparent margins from the source icon so the artwork can be
+        // placed in the lower-left without wasting the toolbar's limited space.
         const sourceCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
         const sourceCtx = sourceCanvas.getContext("2d", {
           willReadFrequently: true,
         });
-
         sourceCtx.drawImage(bitmap, 0, 0);
-
         const pixels = sourceCtx.getImageData(
           0,
           0,
@@ -516,12 +515,9 @@ const capitalize = (s) =>
         let minY = bitmap.height;
         let maxX = -1;
         let maxY = -1;
-
         for (let y = 0; y < bitmap.height; y++) {
           for (let x = 0; x < bitmap.width; x++) {
-            const alpha = pixels[(y * bitmap.width + x) * 4 + 3];
-
-            if (alpha > 8) {
+            if (pixels[(y * bitmap.width + x) * 4 + 3] > 8) {
               minX = Math.min(minX, x);
               minY = Math.min(minY, y);
               maxX = Math.max(maxX, x);
@@ -530,7 +526,7 @@ const capitalize = (s) =>
           }
         }
 
-        // Fall back to the full image if it contains no visible pixels.
+        // Fall back to the full image if no visible pixels were detected.
         if (maxX < minX || maxY < minY) {
           minX = 0;
           minY = 0;
@@ -540,13 +536,16 @@ const capitalize = (s) =>
 
         const cropWidth = maxX - minX + 1;
         const cropHeight = maxY - minY + 1;
-
-        // Scale artwork to the largest size that fits, preserving proportions.
-        const scale = Math.min(128 / cropWidth, 128 / cropHeight);
-        const drawWidth = cropWidth * scale;
-        const drawHeight = cropHeight * scale;
-        const drawX = (128 - drawWidth) / 2;
-        const drawY = (128 - drawHeight) / 2;
+        const maxIconWidth = 92;
+        const maxIconHeight = 78;
+        const iconScale = Math.min(
+          maxIconWidth / cropWidth,
+          maxIconHeight / cropHeight,
+        );
+        const iconWidth = cropWidth * iconScale;
+        const iconHeight = cropHeight * iconScale;
+        const iconX = 0;
+        const iconY = 128 - iconHeight;
 
         ctx.clearRect(0, 0, 128, 128);
         ctx.drawImage(
@@ -555,113 +554,106 @@ const capitalize = (s) =>
           minY,
           cropWidth,
           cropHeight,
-          drawX,
-          drawY,
-          drawWidth,
-          drawHeight,
+          iconX,
+          iconY,
+          iconWidth,
+          iconHeight,
         );
 
+        // Restore the compact legacy-style temperature label: white text on a
+        // red rounded background, tightly cropped to the text in the upper-right.
         const numberText = String(displayTemperature);
         const unitText = String(unit).toUpperCase();
-        let numberFont = 80;
-        let unitFont = 34;
-        const gap = 2;
-        const maxTextWidth = 116;
+        const numberFont = 78;
+        const unitFont = 37;
+        const textGap = 2;
+        const rightMargin = 3;
 
         ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";
         ctx.font = `700 ${numberFont}px Arial, sans-serif`;
-        let numberWidth = ctx.measureText(numberText).width;
-        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
-        let unitWidth = ctx.measureText(unitText).width;
-        let totalWidth = numberWidth + gap + unitWidth;
-
-        // Keep the text within the lower-right corner even for negative values.
-        if (totalWidth > maxTextWidth) {
-          const scale = maxTextWidth / totalWidth;
-          numberFont = Math.max(34, Math.floor(numberFont * scale));
-          unitFont = Math.max(19, Math.floor(unitFont * scale));
-          ctx.font = `700 ${numberFont}px Arial, sans-serif`;
-          numberWidth = ctx.measureText(numberText).width;
-          ctx.font = `700 ${unitFont}px Arial, sans-serif`;
-          unitWidth = ctx.measureText(unitText).width;
-          totalWidth = numberWidth + gap + unitWidth;
-        }
-
-        // Position the temperature in the upper-right corner.
-        const rightMargin = 3;
-        const numberX = Math.max(1, 128 - rightMargin - totalWidth);
-        const baseline = 76;
-        const unitBaseline =
-          baseline - Math.max(8, Math.round(numberFont * 0.18));
-
-        // Measure the actual text bounds so the background fits the text.
-        const unitX = numberX + numberWidth + gap;
-
-        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
         const numberMetrics = ctx.measureText(numberText);
-
+        const numberWidth = numberMetrics.width;
         ctx.font = `700 ${unitFont}px Arial, sans-serif`;
         const unitMetrics = ctx.measureText(unitText);
+        const unitWidth = unitMetrics.width;
+        const totalTextWidth = numberWidth + textGap + unitWidth;
+        const maxPanelWidth = 120;
+        const scale = totalTextWidth > maxPanelWidth - 10
+          ? (maxPanelWidth - 10) / totalTextWidth
+          : 1;
+        const finalNumberFont = Math.max(38, Math.floor(numberFont * scale));
+        const finalUnitFont = Math.max(21, Math.floor(unitFont * scale));
 
+        // Re-measure using the fitted legacy font sizes (for negative/two- or
+        // three-digit temperatures) so the red backing has no excess blank area.
+        ctx.font = `700 ${finalNumberFont}px Arial, sans-serif`;
+        const finalNumberMetrics = ctx.measureText(numberText);
+        const finalNumberWidth = finalNumberMetrics.width;
+        ctx.font = `700 ${finalUnitFont}px Arial, sans-serif`;
+        const finalUnitMetrics = ctx.measureText(unitText);
+        const finalUnitWidth = finalUnitMetrics.width;
+        const finalTextWidth = finalNumberWidth + textGap + finalUnitWidth;
+        const finalBaseline = Math.max(44, Math.ceil(finalNumberFont * 0.84));
+        const finalUnitBaseline = finalBaseline - Math.max(
+          8,
+          Math.round(finalNumberFont * 0.18),
+        );
         const numberAscent =
-          numberMetrics.actualBoundingBoxAscent || numberFont * 0.75;
+          finalNumberMetrics.actualBoundingBoxAscent || finalNumberFont * 0.75;
         const numberDescent =
-          numberMetrics.actualBoundingBoxDescent || numberFont * 0.15;
-
+          finalNumberMetrics.actualBoundingBoxDescent || finalNumberFont * 0.15;
         const unitAscent =
-          unitMetrics.actualBoundingBoxAscent || unitFont * 0.75;
+          finalUnitMetrics.actualBoundingBoxAscent || finalUnitFont * 0.75;
         const unitDescent =
-          unitMetrics.actualBoundingBoxDescent || unitFont * 0.15;
-
+          finalUnitMetrics.actualBoundingBoxDescent || finalUnitFont * 0.15;
         const textTop = Math.min(
-          baseline - numberAscent,
-          unitBaseline - unitAscent,
+          finalBaseline - numberAscent,
+          finalUnitBaseline - unitAscent,
         );
-
         const textBottom = Math.max(
-          baseline + numberDescent,
-          unitBaseline + unitDescent,
+          finalBaseline + numberDescent,
+          finalUnitBaseline + unitDescent,
         );
-
-        // Draw a compact black background with 70% opacity (30% transparent).
-        const paddingX = 5;
-        const paddingY = 4;
-        const bgX = Math.max(0, numberX - paddingX);
-        const bgY = Math.max(0, textTop - paddingY);
-        const bgRight = Math.min(128, unitX + unitWidth + paddingX);
-        const bgBottom = Math.min(128, textBottom + paddingY);
+        const paddingX = 4;
+        const paddingY = 3;
+        const textX = 128 - rightMargin - finalTextWidth;
+        const unitX = textX + finalNumberWidth + textGap;
+        const panelX = Math.max(1, textX - paddingX);
+        const panelY = Math.max(1, textTop - paddingY);
+        const panelRight = Math.min(
+          127,
+          unitX + finalUnitWidth + paddingX,
+        );
+        const panelBottom = Math.min(126, textBottom + paddingY);
 
         ctx.save();
-        ctx.fillStyle = "rgba(0, 0, 0, 1)";
+        ctx.fillStyle = "#f80000";
         ctx.beginPath();
-        ctx.roundRect(bgX, bgY, bgRight - bgX, bgBottom - bgY, 6);
+        ctx.roundRect(
+          panelX,
+          panelY,
+          panelRight - panelX,
+          panelBottom - panelY,
+          5,
+        );
         ctx.fill();
         ctx.restore();
 
-        // Draw a bold temperature text with a dark outline.
         ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "rgb(0, 0, 0)";
-        ctx.lineWidth = 0;
-        ctx.lineJoin = "round";
+        ctx.textBaseline = "alphabetic";
         ctx.shadowColor = "rgba(0, 0, 0, 0)";
         ctx.shadowBlur = 0;
-
-        // Temperature number.
-        ctx.font = `700 ${numberFont}px Arial, sans-serif`;
-        ctx.strokeText(numberText, numberX, baseline);
-        ctx.fillText(numberText, numberX, baseline);
-
-        // Smaller C or F unit.
-        ctx.font = `700 ${unitFont}px Arial, sans-serif`;
-        ctx.strokeText(unitText, unitX, unitBaseline);
-        ctx.fillText(unitText, unitX, unitBaseline);
+        ctx.font = `700 ${finalNumberFont}px Arial, sans-serif`;
+        ctx.fillText(numberText, textX, finalBaseline);
+        ctx.font = `700 ${finalUnitFont}px Arial, sans-serif`;
+        ctx.fillText(unitText, unitX, finalUnitBaseline);
 
         // Keep the alert visible, if enabled, without adding a background panel.
         if (isWeatherAlert && badgeAlert) {
           ctx.shadowBlur = 0;
           ctx.beginPath();
-          ctx.arc(117, 11, 7, 0, 2 * Math.PI);
+          ctx.arc(11, 11, 7, 0, 2 * Math.PI);
           ctx.fillStyle = "#f80000";
           ctx.fill();
         }

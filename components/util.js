@@ -52,12 +52,8 @@ function getColorWeatherIcon(iconName) {
   }
 }
 
-// Applies the UV-index state to the six protection icons.
-// Active icons are tinted by UV category instead of remaining grey/white.
-// Applies the UV-index protection icons based on recommended UV exposure protection.
-// The raw UV value is used for thresholds, so decimal values such as 5.1 are handled correctly.
-// Applies the UV-index protection icons based on recommended UV exposure protection.
-// The raw UV value is used for thresholds, so decimal values such as 5.1 are handled correctly.
+// Lights protection icons cumulatively at their UV thresholds.
+// Active items are tinted to match the current UV category.
 function applyUvIconState(uvIndex) {
   const uv = Number(uvIndex);
 
@@ -84,57 +80,55 @@ function applyUvIconState(uvIndex) {
     el.style.filter = "none";
   });
 
-  // Invalid, missing, or below-1 UV: leave all icons dimmed.
-  if (!Number.isFinite(uv) || uv < 1) return;
+  // Invalid, missing, or below-2 UV: leave all icons dimmed.
+  if (!Number.isFinite(uv) || uv < 2) return [];
 
-  let count;
+  const activationThreshold = { 1: 3, 2: 2, 3: 4, 4: 6, 5: 8, 6: 11 };
   let tint;
 
-  // UV 1.0–2.9: Low
-  // Basic UV awareness / eye protection.
+  // Keep icon tinting tied to the UV risk band, independent of activation steps.
   if (uv < 3) {
-    count = 1;
     tint =
       "brightness(0) saturate(100%) invert(64%) sepia(43%) saturate(650%) hue-rotate(65deg) brightness(91%) contrast(89%)";
 
-    // UV 3.0–5.9: Moderate
-    // Sunscreen + sunglasses + hat.
   } else if (uv < 6) {
-    count = 3;
     tint =
       "brightness(0) saturate(100%) invert(82%) sepia(74%) saturate(700%) hue-rotate(2deg) brightness(101%) contrast(95%)";
 
-    // UV 6.0–7.9: High
-    // Add protective clothing.
   } else if (uv < 8) {
-    count = 4;
     tint =
       "brightness(0) saturate(100%) invert(64%) sepia(83%) saturate(1850%) hue-rotate(352deg) brightness(103%) contrast(98%)";
 
-    // UV 8.0–10.9: Very High
-    // Add seeking shade.
   } else if (uv < 11) {
-    count = 5;
     tint =
       "brightness(0) saturate(100%) invert(39%) sepia(89%) saturate(2048%) hue-rotate(340deg) brightness(96%) contrast(92%)";
 
-    // UV 11+: Extreme
-    // Add limiting/avoiding direct sun exposure.
   } else {
-    count = 6;
     tint =
       "brightness(0) saturate(100%) invert(33%) sepia(29%) saturate(1240%) hue-rotate(238deg) brightness(89%) contrast(94%)";
   }
 
-  // Activate the required number of protection icons.
-  for (let i = 1; i <= count; i++) {
+  // Activate each item once its own UV threshold is reached.
+  const actionMessageKeys = {
+    1: "applySunscreen",
+    2: "wearSunglasses",
+    3: "wearHat",
+    4: "wearSunClothing",
+    5: "stayInShade",
+    6: "reduceTimeSun",
+  };
+  const activeItems = [];
+  for (const i of [2, 1, 3, 4, 5, 6]) {
+    if (uv < activationThreshold[i]) continue;
     document
       .querySelectorAll(`#icon_uv_${i}, #icon_uv_${i}_tooltip`)
       .forEach((el) => {
         el.style.opacity = "1";
         el.style.filter = tint;
       });
+    activeItems.push(chrome.i18n.getMessage(actionMessageKeys[i]));
   }
+  return activeItems;
 }
 
 let weatherBadgeRenderToken = 0;

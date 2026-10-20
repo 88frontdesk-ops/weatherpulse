@@ -147,6 +147,25 @@ document.addEventListener("DOMContentLoaded", () => {
     return globalThis.wpTestBackgroundEffect(conditionName, day ? "day" : "night");
   };
 
+  // Preview cumulative UV-protection icons from the popup DevTools console.
+  globalThis.wpTestUvRecommendations = (uvIndex) => {
+    const uv = Number(uvIndex);
+    const activeItems = applyUvIconState(uv);
+    const uvIcon = document.getElementById("icon_uv");
+    if (uvIcon) uvIcon.style.display = Number.isFinite(uv) && uv >= 1 ? "block" : "none";
+    document.querySelectorAll(".current_uv").forEach((item) => {
+      item.textContent = Number.isFinite(uv) ? String(uv) : "—";
+    });
+    const uvNote = document.getElementById("current_uv_note");
+    if (uvNote && Number.isFinite(uv) && typeof getUvNote === "function") {
+      uvNote.textContent = ` ${getUvNote(uv, typeof daylight !== "undefined" && daylight)}`;
+    }
+    return {
+      uvIndex: Number.isFinite(uv) ? uv : null,
+      activeItems,
+    };
+  };
+
   // UI-only helpers to preview the two API-failure states. They do not block network requests.
   globalThis.wpTestApiFailureUI = (mode = "cached") => {
     const normalizedMode = String(mode).toLowerCase();

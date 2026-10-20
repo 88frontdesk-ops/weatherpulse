@@ -111,12 +111,35 @@ const loadLocations = () => {
       closeAddLocation());
   },
   myLocation = (selectedLocation) => {
-    const useCoordinates = (latitude, longitude, cityName = "Current location", countryCode = "", timezoneName) => {
+    const useCoordinates = async (latitude, longitude, cityName = "Current location", countryCode = "", timezoneName) => {
       const finish = (resolvedCity, resolvedCountry, resolvedTimezone) => {
         citys = resolvedCity || cityName; country = resolvedCountry || countryCode || ""; latlong = `${latitude},${longitude}`; timezone = resolvedTimezone || timezoneName || tzlookup(latitude, longitude);
         chrome.storage.local.set({ timezone, citys, latlong, country, selectedLocationUpdated: 1 }, () => selectedLocations(selectedLocation));
       };
-      finish(cityName, countryCode, timezoneName);
+      let place = {};
+      try {
+        const url = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+        url.search = new URLSearchParams({
+          latitude: String(latitude),
+          longitude: String(longitude),
+          localityLanguage: "en",
+        });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          if (response.ok) place = await response.json();
+        } finally {
+          clearTimeout(timeout);
+        }
+      } catch {
+        // Keep the generic current-location label if reverse geocoding fails.
+      }
+      finish(
+        place.city || place.locality || cityName,
+        place.countryCode || countryCode,
+        timezoneName,
+      );
     };
     if (!navigator.geolocation) return myLocationAlter();
     navigator.geolocation.getCurrentPosition((position) => useCoordinates(position.coords.latitude, position.coords.longitude), () => myLocationAlter(), { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 });

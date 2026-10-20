@@ -158,14 +158,6 @@ const clickEvents = () => {
           });
         }),
       document
-        .getElementById("setting_badge_source_realtime_all")
-        .addEventListener("click", (e) => {
-          chrome.storage.local.get("weatherpulseFullAccess", (_ref2) => {
-            let { weatherpulseFullAccess: weatherpulseFullAccess } = _ref2;
-            weatherpulseFullAccess || vipPage();
-          });
-        }),
-      document
         .getElementById("setting_defualt_button_t_all")
         .addEventListener("click", (e) => {
           (mp_setting("Badge Type", "Temperature"),
@@ -497,7 +489,7 @@ const clickEvents = () => {
         .getElementById("setting_defualt_button_hazard_today_all")
         .addEventListener("click", (e) => {
           (chrome.storage.local.set({ tomorrowHazard: !1 }),
-            mp_setting("Hazard Data", "Tomorrow"),
+            mp_setting("Hazard Data", "Today"),
             (document.getElementById(
               "setting_defualt_button_hazard_today",
             ).checked = !0),

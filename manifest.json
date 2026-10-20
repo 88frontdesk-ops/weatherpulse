@@ -29,12 +29,14 @@
     "storage",
     "alarms",
     "idle",
-    "geolocation"
+    "geolocation",
+    "offscreen"
   ],
   "host_permissions": [
     "https://api.weather.gov/*",
     "https://api.open-meteo.com/*",
-    "https://geocoding-api.open-meteo.com/*"
+    "https://geocoding-api.open-meteo.com/*",
+    "https://api.bigdatacloud.net/*"
   ],
   "version": "2.0.67",
   "web_accessible_resources": [

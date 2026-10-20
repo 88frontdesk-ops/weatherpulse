@@ -1173,9 +1173,6 @@
    "settingAppearance": {
       "message": "APPEARANCE"
    },
-   "settingAutoBrowser": {
-      "message": "Auto (Browser Default)"
-   },
    "settingBackgroundType": {
       "message": "Background Type"
    },
@@ -1184,9 +1181,6 @@
    },
    "settingBadgeUpdateInterval": {
       "message": "Badge Update Interval (mins)"
-   },
-   "settingBadgeWeatherDataSource": {
-      "message": "Badge Weather Data Source"
    },
    "settingBft": {
       "message": "Bft"
@@ -1226,12 +1220,6 @@
    "settingHealthSafety": {
       "message": "Health & Safety Data View"
    },
-   "settingHighAccuracy": {
-      "message": "(High Accuracy)"
-   },
-   "settingHourlyForecastedData": {
-      "message": "Hourly Forecasted Data"
-   },
    "settingHumidity": {
       "message": "Humidity"
    },
@@ -1255,9 +1243,6 @@
    },
    "settingLightThemeColor": {
       "message": "Light Theme Color"
-   },
-   "settingNearLiveData": {
-      "message": "Near Live Data"
    },
    "settingPrecipitation": {
       "message": "Precipitation"

@@ -1,53 +1,56 @@
 !(function () {
-  var savedLang = localStorage.getItem("weatherpulse_language");
-  if (savedLang && "auto" !== savedLang) {
-    var messages = null,
-      fallback = null;
-    try {
-      var xhr = new XMLHttpRequest();
-      (xhr.open("GET", "/_locales/" + savedLang + "/messages.json", !1),
-        xhr.send(),
-        200 === xhr.status && (messages = JSON.parse(xhr.responseText)));
-    } catch (e) {}
-    if ("en" !== savedLang)
+  var supportedLanguages = ["en", "es", "fr"];
+  var savedLang = localStorage.getItem("weatherpulse_language") || "en";
+  if (!supportedLanguages.includes(savedLang)) {
+    savedLang = "en";
+    localStorage.setItem("weatherpulse_language", savedLang);
+  }
+  var loadMessages = function (language) {
       try {
-        var xhrEn = new XMLHttpRequest();
-        (xhrEn.open("GET", "/_locales/en/messages.json", !1),
-          xhrEn.send(),
-          200 === xhrEn.status && (fallback = JSON.parse(xhrEn.responseText)));
-      } catch (e) {}
-    messages &&
-      (chrome.i18n.getMessage = function (key, substitutions) {
-        var entry = messages[key] || (fallback && fallback[key]);
-        if (!entry) return "";
-        var text = entry.message;
-        if (substitutions) {
-          if (
-            (Array.isArray(substitutions) || (substitutions = [substitutions]),
-            entry.placeholders)
-          )
-            for (var name in entry.placeholders) {
-              for (
-                var content = entry.placeholders[name].content, j = 0;
-                j < substitutions.length;
-                j++
-              )
-                content = content.replace(
-                  new RegExp("\\$" + (j + 1), "g"),
-                  substitutions[j],
-                );
-              text = text.replace(
-                new RegExp("\\$" + name + "\\$", "gi"),
-                content,
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/_locales/" + language + "/messages.json", false);
+        xhr.send();
+        return xhr.status === 200 ? JSON.parse(xhr.responseText) : null;
+      } catch (e) {
+        return null;
+      }
+    },
+    messages = loadMessages(savedLang),
+    fallback = savedLang === "en" ? null : loadMessages("en");
+
+  if (messages || fallback) {
+    messages = messages || fallback;
+    chrome.i18n.getMessage = function (key, substitutions) {
+      var entry = messages[key] || (fallback && fallback[key]);
+      if (!entry) return "";
+      var text = entry.message;
+      if (substitutions) {
+        if (
+          (Array.isArray(substitutions) || (substitutions = [substitutions]),
+          entry.placeholders)
+        )
+          for (var name in entry.placeholders) {
+            for (
+              var content = entry.placeholders[name].content, j = 0;
+              j < substitutions.length;
+              j++
+            )
+              content = content.replace(
+                new RegExp("\\$" + (j + 1), "g"),
+                substitutions[j],
               );
-            }
-          for (var i = 0; i < substitutions.length; i++)
             text = text.replace(
-              new RegExp("\\$" + (i + 1), "g"),
-              substitutions[i],
+              new RegExp("\\$" + name + "\\$", "gi"),
+              content,
             );
-        }
-        return text;
-      });
+          }
+        for (var i = 0; i < substitutions.length; i++)
+          text = text.replace(
+            new RegExp("\\$" + (i + 1), "g"),
+            substitutions[i],
+          );
+      }
+      return text;
+    };
   }
 })();

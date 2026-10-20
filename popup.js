@@ -278,18 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
           return fallback || "clear";
         };
         (wCast.forecastHourly.hours || []).forEach((hour, index) => {
-          const apiCondition =
-            hour.description ||
-            (typeof hour.conditionCode === "string"
-              ? getWeDescription(hour.conditionCode)
-              : description(hour));
-          set(`forecast_${index}_hourly_condition`, apiCondition);
-          set(
-            `forecast_${index}_hours_rain`,
-            fmtPop(Number(hour.precipitationChance)),
-          );
-          set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
-          set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
           const code =
             hour.conditionCode ||
             (Number.isFinite(Number(hour.weatherCode))
@@ -297,11 +285,21 @@ document.addEventListener("DOMContentLoaded", () => {
                   Number(hour.weatherCode),
                   Number(hour.windSpeed) || 0,
                 )
-              : conditionFromDescription(hour.description, hour.conditionCode)),
-            icon = getWeIcon(code, hour.daylight, hour.cloudCover),
-            node = document.querySelector(
-              `.forecast_${index}_hours_icon_Class`,
-            );
+              : conditionFromDescription(hour.description, hour.conditionCode));
+          set(
+            `forecast_${index}_hourly_condition`,
+            getWeDescription(code, hour.daylight, hour.cloudCover),
+          );
+          set(
+            `forecast_${index}_hours_rain`,
+            fmtPop(Number(hour.precipitationChance)),
+          );
+          set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
+          set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
+          const icon = getWeIcon(code, hour.daylight, hour.cloudCover);
+          const node = document.querySelector(
+            `.forecast_${index}_hours_icon_Class`,
+          );
           if (node)
             node.style.backgroundImage = `url("images/weather_icon/${getColorWeatherIcon(icon)}")`;
         });
@@ -340,10 +338,13 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         });
         fitDailyDescriptions();
-        if (wCast.currentWeather && wCast.currentWeather.description) {
-          set("current_condition", wCast.currentWeather.description);
-          set("current_condition_table", wCast.currentWeather.description);
-        }
+        const currentDescription = getWeDescription(
+          condition,
+          daylight,
+          cloudCover,
+        );
+        set("current_condition", currentDescription);
+        set("current_condition_table", currentDescription);
         if (
           wCast.currentWeather &&
           Number.isFinite(wCast.currentWeather.uvIndex)

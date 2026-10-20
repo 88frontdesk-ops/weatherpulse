@@ -2,7 +2,7 @@ const current = () => {
   ((document.querySelector(".current_accufeel_shade").style.display =
     uvIndex > 0 ? "inline-block" : "none"),
     (document.getElementById("current_condition_table").textContent =
-      window.wCast?.currentWeather?.description || getWeDescription(condition)),
+      getWeDescription(condition, daylight, cloudCover)),
     (document.getElementById("title_current_text").textContent =
       citys.length > 20 ? citys.slice(0, 17) + "..." : citys),
     document.querySelectorAll(".current_uv").forEach((item) => {

@@ -1,6 +1,6 @@
 !(function () {
   for (
-    var r = /__MSG_(\w+)__/g,
+    var r = /__WPMSG_([A-Za-z0-9]+)__/g,
       w = document.createTreeWalker(
         document.body,
         NodeFilter.SHOW_TEXT,

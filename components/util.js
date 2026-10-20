@@ -536,8 +536,8 @@ const capitalize = (s) =>
 
         const cropWidth = maxX - minX + 1;
         const cropHeight = maxY - minY + 1;
-        const maxIconWidth = 92;
-        const maxIconHeight = 78;
+        const maxIconWidth = 128;
+        const maxIconHeight = 128;
         const iconScale = Math.min(
           maxIconWidth / cropWidth,
           maxIconHeight / cropHeight,
@@ -560,12 +560,12 @@ const capitalize = (s) =>
           iconHeight,
         );
 
-        // Restore the compact legacy-style temperature label: white text on a
-        // red rounded background, tightly cropped to the text in the upper-right.
+        // Keep the temperature readable in a compact red corner tag so it
+        // obscures as little of the enlarged weather icon as possible.
         const numberText = String(displayTemperature);
         const unitText = String(unit).toUpperCase();
-        const numberFont = 78;
-        const unitFont = 37;
+        const numberFont = 58;
+        const unitFont = 22;
         const textGap = 2;
         const rightMargin = 3;
 
@@ -578,15 +578,15 @@ const capitalize = (s) =>
         const unitMetrics = ctx.measureText(unitText);
         const unitWidth = unitMetrics.width;
         const totalTextWidth = numberWidth + textGap + unitWidth;
-        const maxPanelWidth = 120;
+        const maxPanelWidth = 104;
         const scale = totalTextWidth > maxPanelWidth - 10
           ? (maxPanelWidth - 10) / totalTextWidth
           : 1;
         const finalNumberFont = Math.max(38, Math.floor(numberFont * scale));
-        const finalUnitFont = Math.max(21, Math.floor(unitFont * scale));
+        const finalUnitFont = Math.max(16, Math.floor(unitFont * scale));
 
-        // Re-measure using the fitted legacy font sizes (for negative/two- or
-        // three-digit temperatures) so the red backing has no excess blank area.
+        // Re-measure using the fitted font sizes so wider readings still fit
+        // and the red backing stays close to the text.
         ctx.font = `700 ${finalNumberFont}px Arial, sans-serif`;
         const finalNumberMetrics = ctx.measureText(numberText);
         const finalNumberWidth = finalNumberMetrics.width;
@@ -594,7 +594,7 @@ const capitalize = (s) =>
         const finalUnitMetrics = ctx.measureText(unitText);
         const finalUnitWidth = finalUnitMetrics.width;
         const finalTextWidth = finalNumberWidth + textGap + finalUnitWidth;
-        const finalBaseline = Math.max(44, Math.ceil(finalNumberFont * 0.84));
+        const finalBaseline = Math.max(40, Math.ceil(finalNumberFont * 0.84));
         const finalUnitBaseline = finalBaseline - Math.max(
           8,
           Math.round(finalNumberFont * 0.18),

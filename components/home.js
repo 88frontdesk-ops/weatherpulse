@@ -10,6 +10,7 @@ const home = () => {
       currentIcon.style.backgroundImage = animatedIcon
         ? iconCurrent_animated(icon, daylight)
         : iconCurrent(icon);
+      currentIcon.classList.toggle("weather-icon-animated", animatedIcon);
     }),
     chrome.storage.local.get("humidityUnit", (data) => {
       let humidityValue;

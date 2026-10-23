@@ -102,6 +102,7 @@ const toggleActions = (wCast) => {
                 icon,
                 daylight,
               )),
+              currentIcon.classList.add("weather-icon-animated"),
               setTimeout(() => {
                 checkboxAnimated.disabled = !1;
               }, 1e3))
@@ -110,6 +111,7 @@ const toggleActions = (wCast) => {
               (checkboxAnimated.checked = !1),
               (checkboxAnimated.disabled = !0),
               (currentIcon.style.backgroundImage = iconCurrent(icon)),
+              currentIcon.classList.remove("weather-icon-animated"),
               setTimeout(() => {
                 checkboxAnimated.disabled = !1;
               }, 1e3));

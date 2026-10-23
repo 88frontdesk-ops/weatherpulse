@@ -221,12 +221,11 @@ const setting = () => {
           }));
         var langSelect = document.getElementById("setting_language_select");
         if (langSelect) {
-          var currentLang = localStorage.getItem("weatherpulse_language") || "auto";
+          var currentLang = localStorage.getItem("weatherpulse_language") || "en";
           ((langSelect.value = currentLang),
             langSelect.addEventListener("change", function () {
               var lang = langSelect.value;
               (localStorage.setItem("weatherpulse_language", lang),
-                chrome.storage.local.set({ weatherpulse_language: lang }),
                 window.location.reload());
             }));
         }

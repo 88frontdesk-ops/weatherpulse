@@ -6,10 +6,12 @@ const weCast = (
   reject,
   forceRefresh = false,
 ) => {
+  const WEATHER_CACHE_SCHEMA = 2;
   globalThis.weatherpulseFetchStatus = "loading";
   const [lat, lng] = String(latlong || "")
     .split(",")
     .map(Number);
+  const cacheLocation = `${lat},${lng}`;
   const getCacheSettings = async () =>
     new Promise((resolve) => {
       chrome.storage.local.get("WeatherCacheMinutes", (data) => {
@@ -27,6 +29,8 @@ const weCast = (
     chrome.storage.local.get([
       "wCast",
       "wCastCachedAt",
+      "wCastLocation",
+      "wCastSchema",
       "weatherpulseFullAccess",
     ]);
 
@@ -55,7 +59,7 @@ const weCast = (
       };
 
     if (self.document) window.wCast = wCast;
-    chrome.storage.local.set({ wCast });
+    chrome.storage.local.set({ wCast, wCastLocation: cacheLocation });
 
     const current = wCast.currentWeather;
     const hour = wCast.forecastHourly.hours[0];
@@ -181,8 +185,13 @@ const weCast = (
     .then(([cached, cacheMinutes]) => {
       const cachedWeather = cached?.wCast;
       const cachedAt = Number(cached?.wCastCachedAt) || 0;
+      const cacheMatchesLocation = cached?.wCastLocation === cacheLocation;
+      const cacheMatchesSchema =
+        cached?.wCastSchema === WEATHER_CACHE_SCHEMA;
       const cacheIsFresh =
         cachedWeather &&
+        cacheMatchesLocation &&
+        cacheMatchesSchema &&
         cachedAt > 0 &&
         Date.now() - cachedAt < cacheMinutes * 60 * 1000;
       if (!forceRefresh && cacheIsFresh) {
@@ -203,12 +212,16 @@ const weCast = (
       })
         .then((weather) => {
           const result = applyWeather(weather);
-          chrome.storage.local.set({ wCastCachedAt: Date.now() });
+          chrome.storage.local.set({
+            wCastCachedAt: Date.now(),
+            wCastLocation: cacheLocation,
+            wCastSchema: WEATHER_CACHE_SCHEMA,
+          });
           globalThis.weatherpulseFetchStatus = "fresh";
           resolve && resolve(result);
         })
         .catch((error) => {
-          if (cachedWeather) {
+          if (cachedWeather && cacheMatchesLocation) {
             try {
               const result = applyWeather(cachedWeather);
               globalThis.weatherpulseFetchStatus = "stale-cache";

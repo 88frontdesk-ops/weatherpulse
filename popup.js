@@ -147,6 +147,25 @@ document.addEventListener("DOMContentLoaded", () => {
     return globalThis.wpTestBackgroundEffect(conditionName, day ? "day" : "night");
   };
 
+  // Preview cumulative UV-protection icons from the popup DevTools console.
+  globalThis.wpTestUvRecommendations = (uvIndex) => {
+    const uv = Number(uvIndex);
+    const activeItems = applyUvIconState(uv);
+    const uvIcon = document.getElementById("icon_uv");
+    if (uvIcon) uvIcon.style.display = Number.isFinite(uv) && uv >= 1 ? "block" : "none";
+    document.querySelectorAll(".current_uv").forEach((item) => {
+      item.textContent = Number.isFinite(uv) ? String(uv) : "—";
+    });
+    const uvNote = document.getElementById("current_uv_note");
+    if (uvNote && Number.isFinite(uv) && typeof getUvNote === "function") {
+      uvNote.textContent = ` ${getUvNote(uv, typeof daylight !== "undefined" && daylight)}`;
+    }
+    return {
+      uvIndex: Number.isFinite(uv) ? uv : null,
+      activeItems,
+    };
+  };
+
   // UI-only helpers to preview the two API-failure states. They do not block network requests.
   globalThis.wpTestApiFailureUI = (mode = "cached") => {
     const normalizedMode = String(mode).toLowerCase();
@@ -259,18 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
           return fallback || "clear";
         };
         (wCast.forecastHourly.hours || []).forEach((hour, index) => {
-          const apiCondition =
-            hour.description ||
-            (typeof hour.conditionCode === "string"
-              ? getWeDescription(hour.conditionCode)
-              : description(hour));
-          set(`forecast_${index}_hourly_condition`, apiCondition);
-          set(
-            `forecast_${index}_hours_rain`,
-            fmtPop(Number(hour.precipitationChance)),
-          );
-          set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
-          set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
           const code =
             hour.conditionCode ||
             (Number.isFinite(Number(hour.weatherCode))
@@ -278,11 +285,21 @@ document.addEventListener("DOMContentLoaded", () => {
                   Number(hour.weatherCode),
                   Number(hour.windSpeed) || 0,
                 )
-              : conditionFromDescription(hour.description, hour.conditionCode)),
-            icon = getWeIcon(code, hour.daylight, hour.cloudCover),
-            node = document.querySelector(
-              `.forecast_${index}_hours_icon_Class`,
-            );
+              : conditionFromDescription(hour.description, hour.conditionCode));
+          set(
+            `forecast_${index}_hourly_condition`,
+            getWeDescription(code, hour.daylight, hour.cloudCover),
+          );
+          set(
+            `forecast_${index}_hours_rain`,
+            fmtPop(Number(hour.precipitationChance)),
+          );
+          set(`forecast_${index}_hourly_uv`, fmtUv(hour.uvIndex));
+          set(`forecast_${index}_hourly_temp`, fmtTemp(hour.temperature));
+          const icon = getWeIcon(code, hour.daylight, hour.cloudCover);
+          const node = document.querySelector(
+            `.forecast_${index}_hours_icon_Class`,
+          );
           if (node)
             node.style.backgroundImage = `url("images/weather_icon/${getColorWeatherIcon(icon)}")`;
         });
@@ -321,10 +338,13 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         });
         fitDailyDescriptions();
-        if (wCast.currentWeather && wCast.currentWeather.description) {
-          set("current_condition", wCast.currentWeather.description);
-          set("current_condition_table", wCast.currentWeather.description);
-        }
+        const currentDescription = getWeDescription(
+          condition,
+          daylight,
+          cloudCover,
+        );
+        set("current_condition", currentDescription);
+        set("current_condition_table", currentDescription);
         if (
           wCast.currentWeather &&
           Number.isFinite(wCast.currentWeather.uvIndex)
@@ -344,7 +364,24 @@ document.addEventListener("DOMContentLoaded", () => {
         latlong = data.latlong;
         country = data.country;
         citys = data.citys;
-        timezone = data.timezone;
+        timezone =
+          typeof data.timezone === "string" && moment.tz.zone(data.timezone)
+            ? data.timezone
+            : undefined;
+        if (
+          !timezone &&
+          typeof latlong === "string" &&
+          typeof tzlookup === "function"
+        ) {
+          const [latitude, longitude] = latlong.split(",").map(Number);
+          if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+            const resolvedTimeZone = tzlookup(latitude, longitude);
+            if (resolvedTimeZone && moment.tz.zone(resolvedTimeZone)) {
+              timezone = resolvedTimeZone;
+              chrome.storage.local.set({ timezone });
+            }
+          }
+        }
         timeZoneBadge = getTimezoneOffset(timezone);
         Promise.all([
           (function (latlong, country, timezone) {

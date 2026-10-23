@@ -320,24 +320,141 @@
   globalThis.weatherpulseConditionFromOpenMeteo = conditionFromOpenMeteo;
   globalThis.weatherpulseOpenMeteoDescription = openMeteoDescription;
 
+  const nwsHeaders = {
+    Accept: "application/geo+json",
+    "User-Agent": "Weather Pulse weather extension",
+  };
+  const distanceKm = (latitudeA, longitudeA, latitudeB, longitudeB) => {
+    const radians = (degrees) => (degrees * Math.PI) / 180;
+    const deltaLatitude = radians(latitudeB - latitudeA);
+    const deltaLongitude = radians(longitudeB - longitudeA);
+    const arc =
+      Math.sin(deltaLatitude / 2) ** 2 +
+      Math.cos(radians(latitudeA)) *
+        Math.cos(radians(latitudeB)) *
+        Math.sin(deltaLongitude / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(arc), Math.sqrt(1 - arc));
+  };
+
+  const fetchNwsCurrentObservation = async (
+    stationsUrl,
+    latitude,
+    longitude,
+  ) => {
+    if (!stationsUrl) return null;
+    try {
+      const stationData = await requestJson(stationsUrl, nwsHeaders);
+      const stations = (stationData.features || [])
+        .map((feature) => {
+          const coordinates = feature.geometry?.coordinates;
+          const stationId = feature.properties?.stationIdentifier;
+          if (!stationId || !Array.isArray(coordinates)) return null;
+          const stationLongitude = Number(coordinates[0]);
+          const stationLatitude = Number(coordinates[1]);
+          if (
+            !Number.isFinite(stationLatitude) ||
+            !Number.isFinite(stationLongitude)
+          )
+            return null;
+          return {
+            stationId,
+            name: feature.properties?.name || stationId,
+            distance: distanceKm(
+              latitude,
+              longitude,
+              stationLatitude,
+              stationLongitude,
+            ),
+          };
+        })
+        .filter((station) => station && station.distance <= 20)
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 4);
+
+      const observations = await Promise.all(
+        stations.map(async (station) => {
+          try {
+            const data = await requestJson(
+              `https://api.weather.gov/stations/${station.stationId}/observations/latest`,
+              nwsHeaders,
+            );
+            const properties = data?.properties || {};
+            const rawValue = properties.temperature?.value;
+            if (rawValue === null || rawValue === undefined) return null;
+            const value = Number(rawValue);
+            const timestamp = Date.parse(properties.timestamp || "");
+            const ageMs = Date.now() - timestamp;
+            const unitCode = String(properties.temperature?.unitCode || "");
+            if (
+              !Number.isFinite(value) ||
+              !Number.isFinite(timestamp) ||
+              ageMs < -5 * 60 * 1000 ||
+              ageMs > 60 * 60 * 1000
+            )
+              return null;
+
+            const temperatureC = unitCode.includes("degF")
+              ? ((value - 32) * 5) / 9
+              : unitCode.includes("degC")
+                ? value
+                : null;
+            if (temperatureC === null) return null;
+            return {
+              temperature: temperatureC,
+              timestamp: new Date(timestamp).toISOString(),
+              ageMs,
+              stationId: station.stationId,
+              stationName: station.name,
+              distance: station.distance,
+            };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      const validObservations = observations.filter(Boolean);
+      if (!validObservations.length) return null;
+      const nearest = [...validObservations].sort(
+        (a, b) => a.distance - b.distance,
+      )[0];
+      const freshest = [...validObservations].sort(
+        (a, b) => a.ageMs - b.ageMs,
+      )[0];
+      // Keep the nearest reading unless a farther station is materially newer.
+      return nearest.ageMs - freshest.ageMs > 20 * 60 * 1000
+        ? freshest
+        : nearest;
+    } catch {
+      return null;
+    }
+  };
+
   const fetchNwsForecast = async (latitude, longitude) => {
     try {
-      const headers = {
-        Accept: "application/geo+json",
-        "User-Agent": "Weather Pulse weather extension",
-      };
       const points = await requestJson(
         `https://api.weather.gov/points/${latitude},${longitude}`,
-        headers,
+        nwsHeaders,
       );
       const forecastUrl = points?.properties?.forecast;
-      if (!forecastUrl) return null;
-      const data = await requestJson(forecastUrl, headers);
-      return Array.isArray(data?.properties?.periods)
-        ? data.properties.periods
-        : [];
+      const [forecastData, currentObservation] = await Promise.all([
+        forecastUrl
+          ? requestJson(forecastUrl, nwsHeaders).catch(() => null)
+          : Promise.resolve(null),
+        fetchNwsCurrentObservation(
+          points?.properties?.observationStations,
+          latitude,
+          longitude,
+        ),
+      ]);
+      return {
+        periods: Array.isArray(forecastData?.properties?.periods)
+          ? forecastData.properties.periods
+          : [],
+        currentObservation,
+      };
     } catch (error) {
-      return null;
+      return { periods: [], currentObservation: null };
     }
   };
 
@@ -434,8 +551,17 @@
       timezone,
     );
     if (String(country || "").toUpperCase() === "US") {
-      const periods = await fetchNwsForecast(Number(latitude), Number(longitude));
-      applyNwsDetailedForecasts(weather, periods, timezone);
+      const nws = await fetchNwsForecast(Number(latitude), Number(longitude));
+      applyNwsDetailedForecasts(weather, nws.periods, timezone);
+      if (nws.currentObservation) {
+        weather.currentWeather = {
+          ...weather.currentWeather,
+          temperature: nws.currentObservation.temperature,
+          asOf: nws.currentObservation.timestamp,
+          temperatureSource: "National Weather Service",
+          temperatureStation: nws.currentObservation.stationName,
+        };
+      }
       weather.weatherAlerts = await fetchNwsAlerts(
         Number(latitude),
         Number(longitude),

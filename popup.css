@@ -448,9 +448,11 @@ input[type="checkbox"]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 
 .current_icon_update {
   background-position: center;
-  background-size: cover;
-  width: 30px;
-  height: 30px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 68px;
+  height: 68px;
+  flex: 0 0 68px;
   z-index: 2;
 }
 
@@ -3346,7 +3348,7 @@ sup {
 .current_minutely_alert_group {
   display: flex;
   position: absolute;
-  top: 231px;
+  top: 250px;
   width: 300px;
   justify-content: center;
   align-items: baseline;
@@ -5224,6 +5226,13 @@ button:focus {
   filter: none !important;
   opacity: 1 !important;
 }
+.hourly_table_Class .forecast_icon_modal_Class {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
 /* Final Daily icon positioning: the legacy class positioned these 350px away from the card. */
 .popDaily_group_Class .forecast_icon_modal_Class {
   position: relative !important;
@@ -5286,12 +5295,11 @@ button:focus {
 }
 
 /* Animated colorful weather icons use the existing a_*.svg artwork.
-   The SVGs contain their own lightweight motion; this class adds only a subtle
-   lift/scale to the icon container and is disabled for reduced-motion users. */
+   This shared lift/scale effect keeps their motion visible at popup icon sizes. */
 .weather-icon-animated {
   will-change: transform;
   transform-origin: center center;
-  animation: weatherIconFloat 3.8s ease-in-out infinite;
+  animation: weatherIconFloat 2.8s ease-in-out infinite;
 }
 
 @keyframes weatherIconFloat {
@@ -5300,7 +5308,7 @@ button:focus {
     transform: translateY(0) scale(1);
   }
   50% {
-    transform: translateY(-1px) scale(1.015);
+    transform: translateY(-3px) scale(1.1);
   }
 }
 

@@ -11,24 +11,25 @@ if (!self.document) {
     );
 
     const setLocationDefaults = (location) => {
-      chrome.storage.local.set({
-        timezone: location.timezone,
-        citys: location.citys,
-        latlong: location.latlong,
-        country: location.country,
-        ipCountry: location.country,
-        verUpdate: 1,
-        badgeSize: "0",
-        whiteIcon: "1",
-        setSettingFC: "c",
-        theme: "dark",
-        animatedIcon: "1",
-        badgeDataSource: "realtime",
-        IntervalUpdate: "5",
-        WeatherCacheMinutes: "5",
-        badgeAlert: true,
-      });
-      badgeTempUV(location.latlong, location.country, location.timezone);
+      chrome.storage.local.set(
+        {
+          timezone: location.timezone,
+          citys: location.citys,
+          latlong: location.latlong,
+          country: location.country,
+          ipCountry: location.country,
+          verUpdate: 1,
+          badgeSize: "0",
+          whiteIcon: "1",
+          setSettingFC: "c",
+          theme: "dark",
+          animatedIcon: "1",
+          IntervalUpdate: "5",
+          WeatherCacheMinutes: "5",
+          badgeAlert: true,
+        },
+        () => badgeTempUV(location.latlong, location.country, location.timezone),
+      );
     };
 
     const defaultCity = () =>
@@ -39,42 +40,103 @@ if (!self.document) {
         country: "US",
       });
 
-    const initializeLocation = () => {
-      chrome.storage.local.get("verUpdate", (data) => {
-        if ([1, 2].includes(data.verUpdate)) return;
-        // Do not send the user's IP to a third-party geolocation service.
-        // Use the browser's location permission when available, otherwise use
-        // the existing safe default. Weather providers only receive the
-        // coordinates already selected for Weather Pulse.
-        if (!navigator.geolocation) return defaultCity();
+    let locationInitializationStarted = false;
+    let creatingOffscreenDocument;
 
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+    const ensureOffscreenDocument = async () => {
+      const offscreenUrl = chrome.runtime.getURL("offscreen.html");
+      const openClients = await clients.matchAll();
+      if (openClients.some((client) => client.url === offscreenUrl)) return;
+      if (creatingOffscreenDocument) return creatingOffscreenDocument;
+
+      creatingOffscreenDocument = chrome.offscreen.createDocument({
+        url: "offscreen.html",
+        reasons: [
+          chrome.offscreen.Reason.GEOLOCATION ||
+            chrome.offscreen.Reason.DOM_SCRAPING,
+        ],
+        justification:
+          "Get the current location to show local weather on first install.",
+      });
+      try {
+        await creatingOffscreenDocument;
+      } finally {
+        creatingOffscreenDocument = undefined;
+      }
+    };
+
+    const getCurrentLocation = async () => {
+      await ensureOffscreenDocument();
+      try {
+        return await new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+            { target: "offscreen", type: "get-geolocation" },
+            (response) => {
+              if (chrome.runtime.lastError || !response?.ok) {
+                resolve(null);
+                return;
+              }
+              resolve(response);
+            },
+          );
+        });
+      } finally {
+        const offscreenUrl = chrome.runtime.getURL("offscreen.html");
+        const openClients = await clients.matchAll();
+        if (openClients.some((client) => client.url === offscreenUrl))
+          await chrome.offscreen.closeDocument().catch(() => {});
+      }
+    };
+
+    const initializeLocation = () => {
+      if (locationInitializationStarted) return;
+      locationInitializationStarted = true;
+      chrome.storage.local.get(["verUpdate", "latlong", "citys"], (data) => {
+        const hasExistingLocation =
+          [1, 2].includes(data.verUpdate) && data.latlong;
+        const savedCity =
+          typeof data.citys === "string" ? data.citys.trim().toLowerCase() : "";
+        const needsCityName =
+          !savedCity ||
+          ["current location", "current condition"].includes(savedCity);
+        if (hasExistingLocation && !needsCityName) return;
+        getCurrentLocation()
+          .then((location) => {
+            if (!location) {
+              if (!hasExistingLocation) defaultCity();
+              return;
+            }
+            const latitude = location.latitude;
+            const longitude = location.longitude;
             const timezone = tzlookup(latitude, longitude);
-            setLocationDefaults({
-              citys: "Current location",
+            const resolvedLocation = {
+              citys: location.city || location.locality || "Current location",
               latlong: `${latitude},${longitude}`,
               timezone,
-              country: "",
-            });
-          },
-          defaultCity,
-          { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 },
-        );
+              country: location.country || "",
+            };
+            if (hasExistingLocation) {
+              chrome.storage.local.set(resolvedLocation, () =>
+                badgeTempUV(
+                  resolvedLocation.latlong,
+                  resolvedLocation.country,
+                  resolvedLocation.timezone,
+                ),
+              );
+            } else {
+              setLocationDefaults(resolvedLocation);
+            }
+          })
+          .catch(() => {
+            if (!hasExistingLocation) defaultCity();
+          });
       });
     };
 
     const badgeTempUV = (latlong, country, timezone) => {
       if (!latlong || !timezone) return;
       timeZoneBadge = getTimezoneOffset(timezone);
-      chrome.storage.local.get(
-        ["badgeDataSource", "IntervalUpdate"],
-        () => {
-          weCast(latlong, country, timezone);
-        },
-      );
+      weCast(latlong, country, timezone);
     };
 
     const intervalUpdate = () => {
@@ -89,8 +151,16 @@ if (!self.document) {
       });
     };
 
-    chrome.storage.local.get("verUpdate", (data) => {
-      if (![1, 2].includes(data.verUpdate)) initializeLocation();
+    chrome.storage.local.get(["verUpdate", "latlong", "citys"], (data) => {
+      if (
+        ![1, 2].includes(data.verUpdate) ||
+        !data.latlong ||
+        !data.citys ||
+        ["current location", "current condition"].includes(
+          typeof data.citys === "string" ? data.citys.trim().toLowerCase() : "",
+        )
+      )
+        initializeLocation();
       else {
         chrome.storage.local.get(
           ["latlong", "country", "timezone"],
@@ -109,8 +179,14 @@ if (!self.document) {
     });
 
     chrome.runtime.onInstalled.addListener((details) => {
+      chrome.storage.local.remove("badgeDataSource");
       if (details.reason === "install") {
-        chrome.storage.local.set({ setSettingFC: "c", TimeFormat: "12h", IntervalUpdate: "5", WeatherCacheMinutes: "5" });
+        chrome.storage.local.set({
+          setSettingFC: "c",
+          TimeFormat: "12h",
+          IntervalUpdate: "5",
+          WeatherCacheMinutes: "5",
+        });
         initializeLocation();
       } else if (details.reason === "update") {
         chrome.storage.local.get(["latlong", "country"], (data) => {

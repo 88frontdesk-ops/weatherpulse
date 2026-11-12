@@ -39,7 +39,7 @@ This response contains the location information used to select a location, inclu
 
 This is the **exact Open-Meteo forecast request used by Weather Pulse for the 10013 example**:
 
-https://api.open-meteo.com/v1/forecast?latitude=40.713&longitude=-74.0072&timezone=America%2FNew_York&wind_speed_unit=kmh&forecast_days=10&forecast_hours=240&current=temperature_2m%2Cdew_point_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cprecipitation%2Crain%2Cshowers%2Csnowfall%2Cweather_code%2Ccloud_cover%2Cpressure_msl%2Cwind_speed_10m%2Cwind_gusts_10m%2Cwind_direction_10m%2Cvisibility%2Cuv_index%2Cis_day&hourly=temperature_2m%2Crelative_humidity_2m%2Cprecipitation%2Cprecipitation_probability%2Crain%2Cshowers%2Csnowfall%2Cweather_code%2Ccloud_cover%2Cwind_speed_10m%2Cwind_gusts_10m%2Cwind_direction_10m%2Cuv_index%2Cis_day&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum%2Cprecipitation_probability_max%2Cuv_index_max%2Csunrise%2Csunset%2Cwind_speed_10m_max%2Cwind_gusts_10m_max%2Cwind_direction_10m_dominant%2Cmoonrise%2Cmoonset
+https://api.open-meteo.com/v1/forecast?latitude=40.713&longitude=-74.0072&timezone=America%2FNew_York&wind_speed_unit=kmh&forecast_days=10&forecast_hours=240&timeformat=unixtime&current=temperature_2m%2Cdew_point_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cprecipitation%2Crain%2Cshowers%2Csnowfall%2Cweather_code%2Ccloud_cover%2Cpressure_msl%2Cwind_speed_10m%2Cwind_gusts_10m%2Cwind_direction_10m%2Cvisibility%2Cuv_index%2Cis_day&hourly=temperature_2m%2Crelative_humidity_2m%2Cprecipitation%2Cprecipitation_probability%2Crain%2Cshowers%2Csnowfall%2Cweather_code%2Ccloud_cover%2Cwind_speed_10m%2Cwind_gusts_10m%2Cwind_direction_10m%2Cuv_index%2Cis_day&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_sum%2Cprecipitation_probability_max%2Cuv_index_max%2Csunrise%2Csunset%2Cwind_speed_10m_max%2Cwind_gusts_10m_max%2Cwind_direction_10m_dominant%2Cmoonrise%2Cmoonset
 
 The response is divided into three main sections:
 
@@ -99,6 +99,9 @@ The response is divided into three main sections:
 - `wind_direction_10m_dominant`
 - `moonrise`
 - `moonset`
+
+Forecast timestamps use Unix time so hourly and solar values remain aligned
+across daylight-saving transitions.
 
 ## 3. Open-Meteo Air Quality — AQI and pollutants
 

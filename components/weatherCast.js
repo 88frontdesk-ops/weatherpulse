@@ -73,10 +73,14 @@ const weCast = (
     pressureTrend = current.pressureTrend || "";
     windDirection = Number(current.windDirection) || 0;
     visibility = Number(current.visibility) || 16093;
+    const dewPointC = Number(current.temperatureDewPoint);
+    const temperatureC = Number(current.temperature);
     dewPoint =
-      (Number(current.temperatureDewPoint) ||
-        Number(current.temperature) ||
-        0) + 273.15;
+      (Number.isFinite(dewPointC)
+        ? dewPointC
+        : Number.isFinite(temperatureC)
+          ? temperatureC
+          : 0) + 273.15;
     humidity =
       typeof current.humidity === "number"
         ? Math.round(current.humidity * 100)

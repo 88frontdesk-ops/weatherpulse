@@ -104,6 +104,7 @@
       wind_speed_unit: "kmh",
       forecast_days: "10",
       forecast_hours: "240",
+      timeformat: "unixtime",
       current:
         "temperature_2m,dew_point_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,uv_index,is_day",
       hourly:
@@ -125,20 +126,31 @@
     const current = data.current || {};
     const hourly = data.hourly || {};
     const daily = data.daily || {};
-    const offsetSeconds = Number(data.utc_offset_seconds) || 0;
+    const responseTimezone = data.timezone || timezone || "UTC";
     const localTimeToIso = (value) => {
-      if (!value) return "";
-      const localAsUtc = Date.parse(`${value}:00Z`);
-      return Number.isFinite(localAsUtc)
-        ? new Date(localAsUtc - offsetSeconds * 1000).toISOString()
+      if (value === null || value === undefined || value === "") return "";
+      const timestamp = Number(value);
+      return Number.isFinite(timestamp)
+        ? new Date(timestamp * 1000).toISOString()
         : "";
     };
-    const localDateToIso = (value) => localTimeToIso(`${value}T00:00`);
+    const localDate = (value) =>
+      moment.unix(Number(value)).tz(responseTimezone).format("YYYY-MM-DD");
+    const solarTimesForDate = (date) => {
+      const localNoon = moment
+        .tz(`${date}T12:00`, responseTimezone)
+        .toDate();
+      return SunCalc.getTimes(localNoon, latitude, longitude);
+    };
+    const solarTimeToIso = (value) =>
+      value instanceof Date && Number.isFinite(value.getTime())
+        ? value.toISOString()
+        : "";
     const times = hourly.time || [];
     const hours = times.map((time, index) => {
       const code = hourly.weather_code?.[index];
       return {
-        forecastDate: String(time).slice(0, 10),
+        forecastDate: localDate(time),
         forecastStart: localTimeToIso(time),
         temperature: hourly.temperature_2m?.[index] ?? 0,
         uvIndex: hourly.uv_index?.[index] ?? 0,
@@ -212,9 +224,11 @@
     };
     const days = daily.time.map((date, index) => {
       const code = daily.weather_code?.[index];
+      const forecastDate = localDate(date);
+      const solarTimes = solarTimesForDate(forecastDate);
       const description = openMeteoDescription(code);
       const baseDay = {
-        forecastStart: localDateToIso(date),
+        forecastStart: localTimeToIso(date),
         temperature: daily.temperature_2m_max?.[index] ?? 0,
         conditionCode: conditionFromOpenMeteo(code, daily.wind_speed_10m_max?.[index] ?? 0),
         description: conditionFromOpenMeteo(code, daily.wind_speed_10m_max?.[index] ?? 0) === "windy" ? "Windy" : description,
@@ -247,21 +261,21 @@
         baseNight,
       );
       return {
-        forecastDate: date,
-        forecastStart: localDateToIso(date),
+        forecastDate,
+        forecastStart: localTimeToIso(date),
         temperatureMax: daily.temperature_2m_max?.[index] ?? 0,
         temperatureMin: daily.temperature_2m_min?.[index] ?? 0,
         maxUvIndex: daily.uv_index_max?.[index] ?? 0,
         sunrise: localTimeToIso(daily.sunrise?.[index]),
         sunset: localTimeToIso(daily.sunset?.[index]),
-        sunriseCivil: localTimeToIso(daily.sunrise?.[index]),
-        sunsetCivil: localTimeToIso(daily.sunset?.[index]),
-        sunriseAstronomical: localTimeToIso(daily.sunrise?.[index]),
-        sunsetAstronomical: localTimeToIso(daily.sunset?.[index]),
-        sunriseNautical: localTimeToIso(daily.sunrise?.[index]),
-        sunsetNautical: localTimeToIso(daily.sunset?.[index]),
-        solarNoon: localTimeToIso(daily.sunrise?.[index]),
-        solarMidnight: localTimeToIso(daily.sunset?.[index]),
+        sunriseCivil: solarTimeToIso(solarTimes.dawn),
+        sunsetCivil: solarTimeToIso(solarTimes.dusk),
+        sunriseAstronomical: solarTimeToIso(solarTimes.nightEnd),
+        sunsetAstronomical: solarTimeToIso(solarTimes.night),
+        sunriseNautical: solarTimeToIso(solarTimes.nauticalDawn),
+        sunsetNautical: solarTimeToIso(solarTimes.nauticalDusk),
+        solarNoon: solarTimeToIso(solarTimes.solarNoon),
+        solarMidnight: solarTimeToIso(solarTimes.nadir),
         moonrise: localTimeToIso(daily.moonrise?.[index]),
         moonset: localTimeToIso(daily.moonset?.[index]),
         daytimeForecast: dayForecast,

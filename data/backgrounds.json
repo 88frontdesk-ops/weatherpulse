@@ -4,13 +4,7 @@
                     "clear":  {
                                   "day":  [
                                               "images/background/clear/day/clear-day.jpg",
-                                              "images/background/clear/day/sun-1.webp",
-                                              "images/background/clear/day/sun-11.webp",
                                               "images/background/clear/day/sun-12.webp",
-                                              "images/background/clear/day/sun-2.webp",
-                                              "images/background/clear/day/sun-4.webp",
-                                              "images/background/clear/day/sun-5.webp",
-                                              "images/background/clear/day/sun-6.webp",
                                               "images/background/clear/day/sun-9.webp",
                                               "images/background/clear/day/Sunlit Alpine Lake Panorama.png",
                                               "images/background/clear/day/Sunny Waterfront Skyline Panorama.png"
@@ -29,7 +23,8 @@
                     "partly-cloudy":  {
                                           "day":  [
                                                       "images/background/partly-cloudy/day/partly-cloudy-day.jpg",
-                                                      "images/background/partly-cloudy/day/partly-cloudy-day-01.jpg"
+                                                      "images/background/partly-cloudy/day/partly-cloudy-day-01.jpg",
+                                                      "images/background/partly-cloudy/day/sun-5.webp"
                                                   ],
                                           "night":  [
                                                         "images/background/partly-cloudy/night/partly-cloudy-night.jpg"

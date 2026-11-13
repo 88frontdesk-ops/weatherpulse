@@ -34,6 +34,7 @@ Example search for ZIP code 10013:
 https://geocoding-api.open-meteo.com/v1/search?name=10013&count=8&language=en&format=json
 
 This response contains the location information used to select a location, including latitude, longitude, name, country, and time zone when available.
+For U.S. ZIP-code searches, Weather Pulse displays the matching county when the geocoder provides it; for example, ZIP code 11229 is labeled **Kings County** rather than Brooklyn.
 
 ### 2. Open-Meteo Forecast — Current, Hourly, and Daily
 

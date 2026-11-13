@@ -17,14 +17,24 @@ const searchMap = async () => {
   const setStatus = (text) => {
     if (status) status.textContent = text || "";
   };
-  const selectLocation = (item) => {
+  const getLocationName = (item, query) => {
+    const zipCode = query.match(/^\d{5}(?:-\d{4})?$/)?.[0].slice(0, 5);
+    if (
+      item.country_code === "US" &&
+      zipCode &&
+      item.admin2 &&
+      item.postcodes?.includes(zipCode)
+    )
+      return `${item.admin2} County`;
+    return item.name || item.admin2 || item.admin1 || "Selected location";
+  };
+  const selectLocation = (item, query) => {
     const latitude = Number(item.latitude),
       longitude = Number(item.longitude);
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
     const selectedCountry =
       String(item.country_code || "").toUpperCase() || "US";
-    const selectedCity =
-      item.name || item.admin2 || item.admin1 || "Selected location";
+    const selectedCity = getLocationName(item, query);
     const selectedTimezone = item.timezone || tzlookup(latitude, longitude);
     latlong = `${latitude},${longitude}`;
     citys = selectedCity;
@@ -40,18 +50,19 @@ const searchMap = async () => {
       },
     );
   };
-  const renderResults = (items) => {
+  const renderResults = (items, query) => {
     clearResults();
     items.forEach((item) => {
       const row = document.createElement("div");
       row.className = "location_search_result";
       row.setAttribute("role", "option");
-      row.textContent = [item.name, item.admin1, item.country]
+      const locationName = getLocationName(item, query);
+      row.textContent = [locationName, item.admin1, item.country]
         .filter(Boolean)
         .join(", ");
       row.addEventListener("mousedown", (event) => {
         event.preventDefault();
-        selectLocation(item);
+        selectLocation(item, query);
       });
       results.appendChild(row);
     });
@@ -75,7 +86,7 @@ const searchMap = async () => {
       const data = await response.json();
       if (currentRequest !== requestId) return;
       const items = Array.isArray(data.results) ? data.results : [];
-      renderResults(items);
+      renderResults(items, query);
       setStatus(items.length ? "" : "No locations found");
     } catch (error) {
       if (currentRequest !== requestId) return;

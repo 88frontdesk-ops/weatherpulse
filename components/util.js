@@ -568,8 +568,8 @@ const capitalize = (s) =>
         // obscures as little of the enlarged weather icon as possible.
         const numberText = String(displayTemperature);
         const unitText = String(unit).toUpperCase();
-        const numberFont = 70;
-        const unitFont = 24;
+        const numberFont = 90;
+        const unitFont = 20;
         const textGap = 2;
         const rightMargin = 3;
 
@@ -582,7 +582,7 @@ const capitalize = (s) =>
         const unitMetrics = ctx.measureText(unitText);
         const unitWidth = unitMetrics.width;
         const totalTextWidth = numberWidth + textGap + unitWidth;
-        const maxPanelWidth = 104;
+        const maxPanelWidth = 124;
         const scale = totalTextWidth > maxPanelWidth - 10
           ? (maxPanelWidth - 10) / totalTextWidth
           : 1;
@@ -619,8 +619,8 @@ const capitalize = (s) =>
           finalBaseline + numberDescent,
           finalUnitBaseline + unitDescent,
         );
-        const paddingX = 4;
-        const paddingY = 3;
+        const paddingX = 10;
+        const paddingY = 5;
         const textX = 128 - rightMargin - finalTextWidth;
         const unitX = textX + finalNumberWidth + textGap;
         const panelX = Math.max(1, textX - paddingX);
@@ -632,7 +632,7 @@ const capitalize = (s) =>
         const panelBottom = Math.min(126, textBottom + paddingY);
 
         ctx.save();
-        ctx.fillStyle = "#f80000";
+        ctx.fillStyle = "#263238";
         ctx.beginPath();
         ctx.roundRect(
           panelX,
@@ -644,7 +644,7 @@ const capitalize = (s) =>
         ctx.fill();
         ctx.restore();
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#F5F7FA";
         ctx.textBaseline = "alphabetic";
         ctx.shadowColor = "rgba(0, 0, 0, 0)";
         ctx.shadowBlur = 0;
